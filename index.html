@@ -64,7 +64,12 @@
     <section id="view-logbook">
       <div class="card">
         <form id="elogForm">
-          <h2>Add Faculty Log</h2>
+<h2>Add Faculty Log</h2>
+<div class="row">
+  <div class="col">
+    <input id="log_id" placeholder="Log ID (auto)" readonly>
+  </div>
+</div>
           <div class="row">
             <div class="col"><input id="faculty_name" placeholder="Faculty Name" required></div>
             <div class="col"><input id="department" placeholder="Department" required></div>
@@ -126,7 +131,11 @@
     let logs=JSON.parse(localStorage.getItem('facultyLogs'))||[],logCounter=logs.length?Math.max(...logs.map(l=>l.log_id||0))+1:1;
     function showToast(m){toast.textContent=m;toast.style.display='block';setTimeout(()=>toast.style.display='none',3000);}
     function renderTable(){tableBody.innerHTML='';logs.forEach(l=>{const r=document.createElement('tr');r.innerHTML=`<td>${l.log_id}</td><td>${l.faculty_name}</td><td>${l.department}</td><td>${l.room_name}</td><td>${l.room_number}</td><td>${l.equipment}</td><td>${l.date}</td><td>${l.time_in}</td><td>${l.time_out}</td><td>${l.purpose}</td><td>${l.remarks}</td>`;tableBody.appendChild(r)});localStorage.setItem('facultyLogs',JSON.stringify(logs));updateReports();}
-    function setDate(){const n=new Date();document.getElementById('date').value=n.toISOString().split('T')[0];}
+function setDate(){
+  const n=new Date();
+  document.getElementById('date').value = n.toISOString().split('T')[0];
+  document.getElementById('log_id').value = logCounter;
+}
     form.addEventListener('submit',async e=>{
       e.preventDefault();
       const newLog={log_id:logCounter++,faculty_name:form.faculty_name.value,department:form.department.value,room_name:form.room_name.value,room_number:form.room_number.value,equipment:form.equipment.value,date:form.date.value,time_in:form.time_in.value,time_out:form.time_out.value,purpose:form.purpose.value,remarks:form.remarks.value};
@@ -164,3 +173,4 @@
   </script>
 </body>
 </html>
+

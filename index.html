@@ -5,7 +5,46 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Faculty Laboratory eLog — Good Samaritan Colleges</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-
+<style>
+  :root{--gsc-blue:#1e3a8a;--gsc-accent:#2563eb;--gsc-bg:#f1f5f9}
+  body{font-family:Segoe UI,Arial,sans-serif;margin:0;background:var(--gsc-bg);color:#222}
+  header{background:white;color:var(--gsc-blue);padding:15px 20px;box-shadow:0 4px 10px rgba(0,0,0,.08);border-bottom:4px solid var(--gsc-blue)}
+  .header-container{display:flex;align-items:center;gap:18px;max-width:1100px;margin:0 auto}
+  .gsc-logo{width:100px;height:auto}
+  .header-text h1{margin:0;font-size:22px;color:var(--gsc-blue)}
+  .header-text p{margin:4px 0 0;font-size:14px;color:var(--gsc-accent);font-weight:500}
+  nav{max-width:1100px;margin:16px auto 0;padding:0 20px;display:flex;gap:10px}
+  .tab{background:white;padding:10px 16px;border-radius:8px;border:1px solid #e6eefc;cursor:pointer;font-weight:600;color:var(--gsc-blue)}
+  .tab.active{background:linear-gradient(90deg,var(--gsc-blue),var(--gsc-accent));color:white;border-color:transparent}
+  main{max-width:1100px;margin:18px auto;padding:0 20px 40px}
+  .card{background:white;border-radius:12px;padding:18px;box-shadow:0 6px 16px rgba(15,23,42,.04);margin-bottom:18px}
+  form h2{margin:0 0 12px 0;text-align:center;color:var(--gsc-blue)}
+  input,textarea,select,button{width:100%;padding:10px;margin-bottom:10px;border:1px solid #ced4da;border-radius:6px;font-size:14px}
+  input:focus,textarea:focus{outline:none;border-color:var(--gsc-accent);box-shadow:0 0 6px rgba(37,99,235,.15)}
+  button.primary{background:var(--gsc-accent);color:white;border:none;cursor:pointer;font-weight:700}
+  button.secondary{background:#fff;border:1px solid #ddd;color:#333;cursor:pointer}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .row .col{flex:1;min-width:150px}
+  .controls{display:flex;gap:10px;justify-content:flex-end;margin-bottom:12px;flex-wrap:wrap}
+  table{width:100%;border-collapse:collapse;background:white;border-radius:8px;overflow:hidden;box-shadow:0 6px 16px rgba(15,23,42,.04)}
+  th,td{padding:10px;border:1px solid #e6eefc;text-align:left;font-size:13px;white-space:nowrap}
+  th{background:var(--gsc-blue);color:white;font-weight:700}
+  tr:nth-child(even) td{background:#fbfdff}
+  .list-area{width:260px;max-height:220px;overflow:auto;padding:6px 8px;border-left:1px solid #eef4ff}
+  .list-item{display:flex;justify-content:space-between;padding:6px 4px;border-bottom:1px dashed #f1f6ff;font-size:13px}
+  footer{max-width:1100px;margin:22px auto;padding:18px 20px;color:#555;font-size:13px;text-align:center}
+  .toast{position:fixed;right:18px;bottom:18px;background:rgba(37,99,235,.95);color:white;padding:10px 14px;border-radius:8px;box-shadow:0 6px 18px rgba(15,23,42,.2);z-index:9999;font-weight:600;display:none}
+  @media (min-width:900px){ .reports-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px} }
+  @media (min-width:1200px){ .reports-grid{grid-template-columns:1fr 1fr 1fr} }
+  .card table{display:block;width:100%;overflow-x:auto}
+  #elogTable{table-layout:auto}
+  /* print tweaks */
+  @media print {
+    nav, .controls, form, footer, .toast { display:none !important; }
+    .reports-print{ display:block !important; }
+    .print-footer { position: fixed; bottom: 0; left:0; right:0; text-align:center; font-size:11px; }
+  }
+</style>
 </head>
 <body>
   <header>
@@ -24,245 +63,7 @@
   </nav>
 
   <main>
-    <!-- LOGBOOK <style>
-  :root {
-    --gsc-blue: #1e3a8a;
-    --gsc-accent: #2563eb;
-    --gsc-bg: #f1f5f9;
-  }
-
-  body {
-    font-family: 'Segoe UI', Arial, sans-serif;
-    margin: 0;
-    background: var(--gsc-bg);
-    color: #222;
-  }
-
-  header {
-    background: white;
-    color: var(--gsc-blue);
-    padding: 15px 20px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-    border-bottom: 4px solid var(--gsc-blue);
-  }
-
-  .header-container {
-    display: flex;
-    align-items: center;
-    gap: 18px;
-    max-width: 1100px;
-    margin: 0 auto;
-    flex-wrap: wrap;
-  }
-
-  .gsc-logo {
-    width: 90px;
-    height: auto;
-  }
-
-  .header-text h1 {
-    margin: 0;
-    font-size: 20px;
-    color: var(--gsc-blue);
-  }
-
-  .header-text p {
-    margin: 3px 0 0;
-    font-size: 13px;
-    color: var(--gsc-accent);
-    font-weight: 500;
-  }
-
-  nav {
-    max-width: 1100px;
-    margin: 16px auto 0;
-    padding: 0 20px;
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-
-  .tab {
-    background: white;
-    padding: 10px 16px;
-    border-radius: 8px;
-    border: 1px solid #e6eefc;
-    cursor: pointer;
-    font-weight: 600;
-    color: var(--gsc-blue);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-  }
-
-  .tab.active {
-    background: linear-gradient(90deg, var(--gsc-blue), var(--gsc-accent));
-    color: white;
-    border-color: transparent;
-  }
-
-  main {
-    max-width: 1100px;
-    margin: 18px auto;
-    padding: 0 20px 40px;
-  }
-
-  .card {
-    background: white;
-    border-radius: 12px;
-    padding: 22px;
-    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.05);
-    margin-bottom: 18px;
-  }
-
-  form h2 {
-    margin: 0 0 18px 0;
-    text-align: center;
-    color: var(--gsc-blue);
-  }
-
-  input, textarea, select, button {
-    width: 100%;
-    padding: 12px 14px;
-    margin-bottom: 12px;
-    border: 1px solid #ced4da;
-    border-radius: 6px;
-    font-size: 15px;
-    box-sizing: border-box;
-  }
-
-  input:focus, textarea:focus {
-    outline: none;
-    border-color: var(--gsc-accent);
-    box-shadow: 0 0 6px rgba(37, 99, 235, 0.15);
-  }
-
-  button.primary {
-    background: var(--gsc-accent);
-    color: white;
-    border: none;
-    cursor: pointer;
-    font-weight: 700;
-    padding: 10px;
-  }
-
-  button.secondary {
-    background: #fff;
-    border: 1px solid #ddd;
-    color: #333;
-    cursor: pointer;
-  }
-
-  .row {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-
-  .row .col {
-    flex: 1;
-    min-width: 200px;
-  }
-
-  .controls {
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-    margin-bottom: 12px;
-    flex-wrap: wrap;
-  }
-
-  /* TABLE FIX */
-  .table-wrapper {
-    width: 100%;
-    overflow-x: auto;
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.04);
-    min-width: 800px;
-  }
-
-  th, td {
-    padding: 10px;
-    border: 1px solid #e6eefc;
-    text-align: left;
-    font-size: 13px;
-  }
-
-  th {
-    background: var(--gsc-blue);
-    color: white;
-    font-weight: 700;
-  }
-
-  tr:nth-child(even) td {
-    background: #fbfdff;
-  }
-
-  footer {
-    max-width: 1100px;
-    margin: 22px auto;
-    padding: 18px 20px;
-    color: #555;
-    font-size: 13px;
-    text-align: center;
-  }
-
-  /* MOBILE FIXES */
-  @media (max-width: 768px) {
-    header, main, footer {
-      padding: 10px;
-    }
-
-    .header-container {
-      flex-direction: column;
-      text-align: center;
-    }
-
-    .card {
-      padding: 18px 14px;
-    }
-
-    input, textarea, button {
-      font-size: 14px;
-    }
-
-    button.primary, button.secondary {
-      width: 100%;
-    }
-
-    .controls {
-      flex-direction: column;
-      align-items: stretch;
-    }
-
-    table, th, td {
-      font-size: 12px;
-    }
-
-    .tab {
-      flex: 1;
-      text-align: center;
-    }
-    /* Make the log table scrollable on small screens */
-.table-wrapper {
-  overflow-x: auto;
-  width: 100%;
-}
-
-.table-wrapper table {
-  min-width: 900px;
-  border-collapse: collapse;
-}
-
- 
-    
-</style>
--->
+    <!-- LOGBOOK -->
     <section id="view-logbook">
       <div class="card">
         <form id="elogForm">
@@ -304,27 +105,15 @@
           <button id="printLogsBtn" class="secondary">Print Logs</button>
         </div>
 
-       <div class="table-wrapper">
-  <table id="elogTable" class="card">
-    <thead>
-      <tr>
-        <th>Faculty Name</th>
-        <th>Department</th>
-        <th>Room Name</th>
-        <th>Room #</th>
-        <th>Equipment Used</th>
-        <th>Date</th>
-        <th>Time In</th>
-        <th>Time Out</th>
-        <th>Purpose</th>
-        <th>Remarks</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-</div>
-
+        <table id="elogTable">
+          <thead>
+            <tr>
+              <th>Timestamp</th><th>Faculty Name</th><th>Department</th><th>Room Name</th><th>Room #</th>
+              <th>Equipment</th><th>Date</th><th>Time In</th><th>Time Out</th><th>Purpose</th><th>Remarks</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
       </div>
     </section>
 
@@ -630,5 +419,3 @@ window.addEventListener('focus', ()=> { if (chartRooms) chartRooms.resize(); if 
 </script>
 </body>
 </html>
-
-

@@ -253,7 +253,7 @@ function renderTable(){
       <td>${escapeHtml(item.time_out)}</td>
       <td>${escapeHtml(item.purpose)}</td>
       <td>${escapeHtml(item.remarks)}</td>
-      <td><button class="secondary" onclick="deleteLog('${item._id}')">Delete</button></td>
+      <td><button class="secondary" onclick="deleteLog(${item._id})">Delete</button></td>
     `;
     tableBody.appendChild(tr);
   });
@@ -333,8 +333,10 @@ document.getElementById('clearFormBtn').addEventListener('click', ()=>{
 
 window.deleteLog = function(id){
   if (!confirm('Delete this entry?')) return;
-  logs = logs.filter(x=> x._id !== id);
+  logs = logs.filter(x => Number(x._id) !== Number(id));
+  localStorage.setItem('facultyLogs', JSON.stringify(logs));
   renderTable();
+  showToast('🗑️ Entry deleted successfully');
 };
 
 // export CSV
@@ -419,3 +421,4 @@ window.addEventListener('focus', ()=> { if (chartRooms) chartRooms.resize(); if 
 </script>
 </body>
 </html>
+

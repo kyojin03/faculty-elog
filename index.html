@@ -13,6 +13,32 @@
   <meta name="theme-color" content="#1e3a8a">
 
   <style>
+    /* Keep log table scrollable and neatly contained */
+.card table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+}
+
+#elogTable {
+  width: 100%;
+  table-layout: auto;
+}
+
+#elogTable th, #elogTable td {
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  table {
+    font-size: 12px;
+  }
+  th, td {
+    padding: 6px;
+  }
+}
+
     :root{
       --gsc-blue:#1e3a8a;
       --gsc-accent:#2563eb;
@@ -556,4 +582,5 @@
 
   </script>
 </body>
+
 </html>

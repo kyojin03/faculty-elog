@@ -4,128 +4,47 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Faculty Laboratory eLog System - Good Samaritan Colleges</title>
-
-  <!-- Chart.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-
-  <!-- PWA manifest -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#1e3a8a">
-
   <style>
-    /* Keep log table scrollable and neatly contained */
-.card table {
-  display: block;
-  width: 100%;
-  overflow-x: auto;
-  border-collapse: collapse;
-}
-
-#elogTable {
-  width: 100%;
-  table-layout: auto;
-}
-
-#elogTable th, #elogTable td {
-  white-space: nowrap;
-}
-
-@media (max-width: 768px) {
-  table {
-    font-size: 12px;
-  }
-  th, td {
-    padding: 6px;
-  }
-}
-
-    :root{
+    :root {
       --gsc-blue:#1e3a8a;
       --gsc-accent:#2563eb;
       --gsc-bg:#f1f5f9;
     }
-    body { font-family: 'Segoe UI', Arial, sans-serif; margin:0; background:var(--gsc-bg); color:#222; }
-
-    /* HEADER */
-    header { background: white; color:var(--gsc-blue); padding:15px 20px; box-shadow:0 4px 10px rgba(0,0,0,0.08); border-bottom:4px solid var(--gsc-blue); }
-    .header-container{ display:flex; align-items:center; gap:18px; flex-wrap:wrap; max-width:1100px; margin:0 auto; }
-    .gsc-logo{ width:100px; height:auto; display:block; }
-    .header-text h1{ margin:0; font-size:22px; color:var(--gsc-blue); }
-    .header-text p{ margin:4px 0 0; font-size:14px; color:var(--gsc-accent); font-weight:500; }
-
-    /* NAV */
-    nav { max-width:1100px; margin:16px auto 0; padding:0 20px; display:flex; gap:10px; }
-    .tab { background:white; padding:10px 16px; border-radius:8px; border:1px solid #e6eefc; cursor:pointer; font-weight:600; color:var(--gsc-blue); box-shadow:0 2px 6px rgba(0,0,0,0.04); }
-    .tab.active{ background:linear-gradient(90deg,var(--gsc-blue),var(--gsc-accent)); color:white; border-color:transparent; }
-
-    main{ max-width:1100px; margin:18px auto; padding:0 20px 40px; }
-
-    .card{ background:white; border-radius:12px; padding:18px; box-shadow:0 6px 16px rgba(15,23,42,0.04); margin-bottom:18px; }
-    form h2{ margin:0 0 12px 0; text-align:center; color:var(--gsc-blue); }
-
-    input, textarea, select, button { width:100%; padding:10px; margin-bottom:10px; border:1px solid #ced4da; border-radius:6px; font-size:14px; }
-    input:focus, textarea:focus { outline:none; border-color:var(--gsc-accent); box-shadow:0 0 6px rgba(37,99,235,0.15); }
-    button.primary { background:var(--gsc-accent); color:white; border:none; cursor:pointer; font-weight:700; padding:10px; }
-    button.secondary { background:#fff; border:1px solid #ddd; color:#333; cursor:pointer; }
-
-    .row{ display:flex; gap:10px; flex-wrap:wrap; }
-    .row .col{ flex:1; min-width:150px; }
-
-    .controls { display:flex; gap:10px; justify-content:flex-end; margin-bottom:12px; flex-wrap:wrap; }
-
-    table{ width:100%; border-collapse:collapse; background:white; border-radius:8px; overflow:hidden; box-shadow:0 6px 16px rgba(15,23,42,0.04); }
-    th, td{ padding:10px; border:1px solid #e6eefc; text-align:left; vertical-align:top; font-size:13px; }
-    th{ background:var(--gsc-blue); color:white; font-weight:700; }
-    tr:nth-child(even) td{ background:#fbfdff; }
-    .actions button{ padding:6px 8px; font-size:12px; border-radius:6px; cursor:pointer; border:none; }
-    .edit-btn{ background:#0284c7; color:white; }
-    .del-btn{ background:#dc2626; color:white; }
-
-    /* REPORTS */
-    .reports-grid{ display:grid; grid-template-columns:1fr; gap:18px; }
-    .report-card{ display:flex; gap:14px; align-items:flex-start; background:white; padding:14px; border-radius:10px; box-shadow:0 6px 16px rgba(15,23,42,0.04); }
-    .chart-area{ flex:1; min-height:220px; }
-    .list-area{ width:260px; max-height:220px; overflow:auto; padding:6px 8px; border-left:1px solid #eef4ff; }
-    .list-item{ display:flex; justify-content:space-between; padding:6px 4px; border-bottom:1px dashed #f1f6ff; font-size:13px; }
-    .list-item:last-child{ border-bottom:none; }
-
-    /* highlight equipment column in print view */
-    @media print {
-      body{ background:white; color:black; }
-      nav, .controls, form, footer{ display:none !important; }
-      .reports-print{ display:block !important; margin:0; padding:0; }
-      .report-title{ text-align:center; margin:10px 0 18px; font-size:18px; font-weight:700; }
-      .report-card{ break-inside:avoid; page-break-inside:avoid; }
-      td.equipment, th.equipment { background-color:#fff3cd !important; }
-      /* Print footer repeated on every page */
-      .print-footer{ position:fixed; bottom:0; left:0; right:0; text-align:center; font-size:11px; color:#234; background:transparent; padding:6px 0; }
-    }
-    .reports-print{ display:none; }
-
-    footer{ max-width:1100px; margin:22px auto; padding:18px 20px; color:#555; font-size:13px; text-align:center; }
-
-    /* toast */
-    .toast {
-      position: fixed;
-      right: 18px;
-      bottom: 18px;
-      background: rgba(37,99,235,0.95);
-      color: white;
-      padding: 10px 14px;
-      border-radius: 8px;		
-      box-shadow: 0 6px 18px rgba(15,23,42,0.2);
-      z-index: 9999;
-      font-weight:600;
-      display:none;
-    }
-
-    @media (min-width:900px){ .reports-grid{ grid-template-columns: 1fr 1fr; } }
-    @media (min-width:1200px){ .reports-grid{ grid-template-columns: 1fr 1fr 1fr; } }
-
+    body { font-family:'Segoe UI',Arial,sans-serif;margin:0;background:var(--gsc-bg);color:#222; }
+    header { background:white;color:var(--gsc-blue);padding:15px 20px;
+      box-shadow:0 4px 10px rgba(0,0,0,0.08);border-bottom:4px solid var(--gsc-blue); }
+    .header-container{display:flex;align-items:center;gap:18px;flex-wrap:wrap;max-width:1100px;margin:0 auto;}
+    .gsc-logo{width:100px;height:auto;display:block;}
+    .header-text h1{margin:0;font-size:22px;color:var(--gsc-blue);}
+    .header-text p{margin:4px 0 0;font-size:14px;color:var(--gsc-accent);font-weight:500;}
+    nav{max-width:1100px;margin:16px auto 0;padding:0 20px;display:flex;gap:10px;}
+    .tab{background:white;padding:10px 16px;border-radius:8px;border:1px solid #e6eefc;cursor:pointer;font-weight:600;color:var(--gsc-blue);box-shadow:0 2px 6px rgba(0,0,0,0.04);}
+    .tab.active{background:linear-gradient(90deg,var(--gsc-blue),var(--gsc-accent));color:white;border-color:transparent;}
+    main{max-width:1100px;margin:18px auto;padding:0 20px 40px;}
+    .card{background:white;border-radius:12px;padding:18px;box-shadow:0 6px 16px rgba(15,23,42,0.04);margin-bottom:18px;}
+    form h2{text-align:center;color:var(--gsc-blue);}
+    input,textarea,button{width:100%;padding:10px;margin-bottom:10px;border:1px solid #ced4da;border-radius:6px;font-size:14px;}
+    input:focus,textarea:focus{outline:none;border-color:var(--gsc-accent);box-shadow:0 0 6px rgba(37,99,235,0.15);}
+    button.primary{background:var(--gsc-accent);color:white;border:none;cursor:pointer;font-weight:700;}
+    button.secondary{background:#fff;border:1px solid #ddd;color:#333;cursor:pointer;}
+    .row{display:flex;gap:10px;flex-wrap:wrap;}
+    .row .col{flex:1;min-width:150px;}
+    table{width:100%;border-collapse:collapse;background:white;border-radius:8px;overflow:hidden;box-shadow:0 6px 16px rgba(15,23,42,0.04);}
+    th,td{padding:10px;border:1px solid #e6eefc;text-align:left;font-size:13px;}
+    th{background:var(--gsc-blue);color:white;font-weight:700;}
+    tr:nth-child(even) td{background:#fbfdff;}
+    .reports-grid{display:grid;gap:18px;}
+    .report-card{display:flex;gap:14px;align-items:flex-start;background:white;padding:14px;border-radius:10px;box-shadow:0 6px 16px rgba(15,23,42,0.04);}
+    .chart-area{flex:1;min-height:220px;}
+    .list-area{width:260px;max-height:220px;overflow:auto;padding:6px 8px;border-left:1px solid #eef4ff;}
+    .list-item{display:flex;justify-content:space-between;padding:6px 4px;border-bottom:1px dashed #f1f6ff;font-size:13px;}
+    .list-item:last-child{border-bottom:none;}
+    footer{max-width:1100px;margin:22px auto;padding:18px 20px;color:#555;font-size:13px;text-align:center;}
+    .toast{position:fixed;right:18px;bottom:18px;background:rgba(37,99,235,0.95);color:white;padding:10px 14px;border-radius:8px;box-shadow:0 6px 18px rgba(15,23,42,0.2);z-index:9999;font-weight:600;display:none;}
   </style>
 </head>
 <body>
-  <!-- Header -->
   <header>
     <div class="header-container">
       <img src="gs.jfif" alt="GSC logo" class="gsc-logo">
@@ -134,17 +53,14 @@
         <p>Faculty Laboratory eLog System</p>
       </div>
     </div>
-
   </header>
 
-  <!-- Tabs -->
   <nav>
     <div id="tab-logbook" class="tab active">Logbook</div>
     <div id="tab-reports" class="tab">Reports</div>
   </nav>
 
   <main>
-    <!-- LOGBOOK -->
     <section id="view-logbook">
       <div class="card">
         <form id="elogForm">
@@ -153,24 +69,19 @@
             <div class="col"><input id="faculty_name" placeholder="Faculty Name" required></div>
             <div class="col"><input id="department" placeholder="Department" required></div>
           </div>
-
           <div class="row">
             <div class="col"><input id="room_name" placeholder="Laboratory Room Name" required></div>
             <div class="col"><input id="room_number" placeholder="Room Number (optional)"></div>
           </div>
-
           <input id="equipment" placeholder="Special / Major Equipment Used (optional)">
-
           <div class="row">
             <div class="col"><input type="date" id="date" readonly></div>
             <div class="col"><input type="time" id="time_in" required></div>
             <div class="col"><input type="time" id="time_out" required></div>
           </div>
-
           <input id="purpose" placeholder="Purpose / Activity" required>
           <textarea id="remarks" rows="2" placeholder="Remarks (optional)"></textarea>
-
-          <div style="display:flex; gap:10px; justify-content:center;">
+          <div style="display:flex;gap:10px;justify-content:center;">
             <button class="primary" type="submit">Add Log</button>
             <button class="secondary" id="clearFormBtn" type="button">Clear</button>
           </div>
@@ -178,28 +89,11 @@
       </div>
 
       <div class="card">
-        <div class="controls">
-          <button id="exportBtn" class="secondary">Export File</button>
-          <button id="importBtn" class="secondary">Import File</button>
-          <input type="file" id="importFile" accept=".json" style="display:none">
-          <button id="printLogsBtn" class="secondary">Print Logs</button>
-        </div>
-
-        <table id="elogTable" class="card">
+        <table id="elogTable">
           <thead>
             <tr>
-              <th>Log ID</th>
-              <th>Faculty Name</th>
-              <th>Department</th>
-              <th>Room Name</th>
-              <th>Room #</th>
-              <th class="equipment">Equipment Used</th>
-              <th>Date</th>
-              <th>Time In</th>
-              <th>Time Out</th>
-              <th>Purpose</th>
-              <th>Remarks</th>
-              <th>Actions</th>
+              <th>Log ID</th><th>Faculty Name</th><th>Department</th><th>Room Name</th><th>Room #</th>
+              <th>Equipment</th><th>Date</th><th>Time In</th><th>Time Out</th><th>Purpose</th><th>Remarks</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -207,76 +101,13 @@
       </div>
     </section>
 
-    <!-- REPORTS -->
     <section id="view-reports" style="display:none;">
-      <div class="card" style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
-        <div>
-          <h2 style="margin:0; color:var(--gsc-blue)">Faculty Laboratory Usage Report — Good Samaritan Colleges</h2>
-          <div style="margin-top:6px; color:#444">Generated: <span id="reportDatePretty"></span></div>
-        </div>
-        <div>
-          <button id="printReportsBtn" class="primary">Print Reports</button>
-        </div>
-      </div>
-
+      <div class="card"><h2 style="margin:0;color:var(--gsc-blue)">Faculty Laboratory Usage Report — Good Samaritan Colleges</h2></div>
       <div class="reports-grid">
-        <div class="report-card card report-rooms">
-          <div class="chart-area"><canvas id="chartRooms"></canvas></div>
-          <div class="list-area">
-            <strong>Rooms (counts)</strong>
-            <div id="listRooms"></div>
-          </div>
-        </div>
-
-        <div class="report-card card report-equipment">
-          <div class="chart-area"><canvas id="chartEquipment"></canvas></div>
-          <div class="list-area">
-            <strong>Equipment (counts)</strong>
-            <div id="listEquipment"></div>
-          </div>
-        </div>
-
-        <div class="report-card card report-faculty">
-          <div class="chart-area"><canvas id="chartFaculty"></canvas></div>
-          <div class="list-area">
-            <strong>Faculty (counts)</strong>
-            <div id="listFaculty"></div>
-          </div>
-        </div>
+        <div class="report-card card"><div class="chart-area"><canvas id="chartRooms"></canvas></div><div class="list-area"><strong>Rooms</strong><div id="listRooms"></div></div></div>
+        <div class="report-card card"><div class="chart-area"><canvas id="chartEquipment"></canvas></div><div class="list-area"><strong>Equipment</strong><div id="listEquipment"></div></div></div>
+        <div class="report-card card"><div class="chart-area"><canvas id="chartFaculty"></canvas></div><div class="list-area"><strong>Faculty</strong><div id="listFaculty"></div></div></div>
       </div>
-
-      <!-- Printable simplified lists -->
-      <div class="reports-print" id="reportsPrintContainer">
-        <header style="margin-bottom:10px;">
-          <div style="text-align:center;">
-            <img src="gs.jfif" alt="logo" style="width:80px;height:auto;">
-            <div style="font-weight:700;font-size:18px;margin-top:6px;">Faculty Laboratory Usage Report — Good Samaritan Colleges</div>
-            <div style="font-size:12px;margin-top:4px;" id="reportDatePrint"></div>
-          </div>
-        </header>
-
-        <div style="margin:10px 0 0;">
-          <div style="margin-bottom:18px;">
-            <strong>Rooms (counts)</strong>
-            <div id="printListRooms"></div>
-          </div>
-          <div style="margin-bottom:18px;">
-            <strong>Equipment (counts)</strong>
-            <div id="printListEquipment"></div>
-          </div>
-          <div style="margin-bottom:18px;">
-            <strong>Faculty (counts)</strong>
-            <div id="printListFaculty"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Print footer that repeats on every page -->
-      <div class="print-footer" style="display:none;">
-        <div style="font-weight:700;color:#234;">Good Samaritan Colleges</div>
-        <div style="font-size:12px;color:#234;">Prepared by: Piolo L. Bernardino — Laboratory Custodian</div>
-      </div>
-
     </section>
   </main>
 
@@ -284,305 +115,52 @@
     © 2025 Good Samaritan Colleges | Faculty Laboratory eLog System<br>
     Developed by Piolo L. Bernardino – Laboratory Custodian
   </footer>
-
-  <!-- Toast -->
   <div id="toast" class="toast"></div>
 
   <script>
-    // ---------- Configuration ----------
-    const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz-wNmqmTB4BtEO1AjxJFmFS5yQ_Z1cL82au8w6mLXfSTiAZoIULq69MvRyrQsxN7s/exec";
-    const SHOW_CLOUD_TOAST = true; // show confirmation toast after cloud upload
-
-    // DOM
-    const tabLog = document.getElementById('tab-logbook');
-    const tabReports = document.getElementById('tab-reports');
-    const viewLog = document.getElementById('view-logbook');
-    const viewReports = document.getElementById('view-reports');
-
-    const form = document.getElementById('elogForm');
-    const tableBody = document.querySelector('#elogTable tbody');
-    const exportBtn = document.getElementById('exportBtn');
-    const importBtn = document.getElementById('importBtn');
-    const importFile = document.getElementById('importFile');
-    const printLogsBtn = document.getElementById('printLogsBtn');
-    const printReportsBtn = document.getElementById('printReportsBtn');
-    const clearFormBtn = document.getElementById('clearFormBtn');
-
-    const reportDatePretty = document.getElementById('reportDatePretty');
-    const reportDatePrint = document.getElementById('reportDatePrint');
-    const listRooms = document.getElementById('listRooms');
-    const listEquipment = document.getElementById('listEquipment');
-    const listFaculty = document.getElementById('listFaculty');
-    const printListRooms = document.getElementById('printListRooms');
-    const printListEquipment = document.getElementById('printListEquipment');
-    const printListFaculty = document.getElementById('printListFaculty');
-
-    const toastEl = document.getElementById('toast');
-
-    // charts
-    let chartRooms = null, chartEquipment = null, chartFaculty = null;
-
-    // data
-    let logs = JSON.parse(localStorage.getItem('facultyLogs')) || [];
-    let logCounter = logs.length ? (Math.max(...logs.map(l => l.log_id || 0)) + 1) : 1;
-
-    // helpers
-    function showToast(msg, duration=3500){
-      toastEl.textContent = msg;
-      toastEl.style.display = 'block';
-      toastEl.style.opacity = '1';
-      setTimeout(()=> { toastEl.style.opacity = '0'; setTimeout(()=> toastEl.style.display='none',300); }, duration);
-    }
-
-    function escapeHtml(s){ if (s===null || s===undefined) return ''; return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-    function safeGet(obj, key){ return (obj && obj[key] !== undefined) ? obj[key] : ''; }
-
-    // render table
-    function renderTable(){
-      tableBody.innerHTML = '';
-      logs.forEach(log => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${log.log_id}</td>
-          <td>${escapeHtml(safeGet(log,'faculty_name'))}</td>
-          <td>${escapeHtml(safeGet(log,'department'))}</td>
-          <td>${escapeHtml(safeGet(log,'room_name'))}</td>
-          <td>${escapeHtml(safeGet(log,'room_number'))}</td>
-          <td>${escapeHtml(safeGet(log,'equipment'))}</td>
-          <td>${escapeHtml(safeGet(log,'date'))}</td>
-          <td>${escapeHtml(safeGet(log,'time_in'))}</td>
-          <td>${escapeHtml(safeGet(log,'time_out'))}</td>
-          <td>${escapeHtml(safeGet(log,'purpose'))}</td>
-          <td>${escapeHtml(safeGet(log,'remarks'))}</td>
-          <td class="actions">
-            <button class="edit-btn" onclick="editLog(${log.log_id})">Edit</button>
-            <button class="del-btn" onclick="deleteLog(${log.log_id})">Delete</button>
-          </td>
-        `;
-        tableBody.appendChild(tr);
-      });
-      localStorage.setItem('facultyLogs', JSON.stringify(logs));
-      updateReports();
-    }
-
-    // date/time default
-    function setDateTimeNowToForm(){
-      const now = new Date();
-      document.getElementById('date').value = now.toISOString().split('T')[0];
-      const hh = String(now.getHours()).padStart(2,'0'), mm = String(now.getMinutes()).padStart(2,'0');
-      document.getElementById('time_in').value = `${hh}:${mm}`;
-    }
-
-    // submit
-    form.addEventListener('submit', async e => {
+    const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSe2UZ0UhAMuz8e6t5ip3yCPUHoLezNDoPnNQdx1VKMvflUlZQ/formResponse";
+    const tabLog=document.getElementById('tab-logbook'),tabReports=document.getElementById('tab-reports'),
+    viewLog=document.getElementById('view-logbook'),viewReports=document.getElementById('view-reports'),
+    form=document.getElementById('elogForm'),tableBody=document.querySelector('#elogTable tbody'),
+    toast=document.getElementById('toast');
+    let logs=JSON.parse(localStorage.getItem('facultyLogs'))||[],logCounter=logs.length?Math.max(...logs.map(l=>l.log_id||0))+1:1;
+    function showToast(m){toast.textContent=m;toast.style.display='block';setTimeout(()=>toast.style.display='none',3000);}
+    function renderTable(){tableBody.innerHTML='';logs.forEach(l=>{const r=document.createElement('tr');r.innerHTML=`<td>${l.log_id}</td><td>${l.faculty_name}</td><td>${l.department}</td><td>${l.room_name}</td><td>${l.room_number}</td><td>${l.equipment}</td><td>${l.date}</td><td>${l.time_in}</td><td>${l.time_out}</td><td>${l.purpose}</td><td>${l.remarks}</td>`;tableBody.appendChild(r)});localStorage.setItem('facultyLogs',JSON.stringify(logs));updateReports();}
+    function setDate(){const n=new Date();document.getElementById('date').value=n.toISOString().split('T')[0];}
+    form.addEventListener('submit',async e=>{
       e.preventDefault();
-      const newLog = {
-        log_id: logCounter++,
-        faculty_name: form.querySelector('#faculty_name').value.trim(),
-        department: form.querySelector('#department').value.trim(),
-        room_name: form.querySelector('#room_name').value.trim(),
-        room_number: form.querySelector('#room_number').value.trim(),
-        equipment: form.querySelector('#equipment').value.trim(),
-        date: form.querySelector('#date').value,
-        time_in: form.querySelector('#time_in').value,
-        time_out: form.querySelector('#time_out').value,
-        purpose: form.querySelector('#purpose').value.trim(),
-        remarks: form.querySelector('#remarks').value.trim()
-      };
-
-      logs.push(newLog);
-      renderTable();
-      form.reset();
-      setDateTimeNowToForm();
-
-      // cloud backup
-      try {
-        const resp = await fetch(GOOGLE_APPS_SCRIPT_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(newLog),
-          mode: 'cors'
-        });
-        if (resp.ok) {
-          if (SHOW_CLOUD_TOAST) showToast('✅ Log saved to Google Sheet successfully');
-        } else {
-          if (SHOW_CLOUD_TOAST) showToast('⚠️ Saved locally — cloud upload returned an error');
-        }
-      } catch(err){
-        if (SHOW_CLOUD_TOAST) showToast('⚠️ Saved locally — cloud upload failed (check connection)');
-      }
+      const newLog={log_id:logCounter++,faculty_name:form.faculty_name.value,department:form.department.value,room_name:form.room_name.value,room_number:form.room_number.value,equipment:form.equipment.value,date:form.date.value,time_in:form.time_in.value,time_out:form.time_out.value,purpose:form.purpose.value,remarks:form.remarks.value};
+      logs.push(newLog);renderTable();form.reset();setDate();
+      const fd=new FormData();
+      fd.append("entry.1988755767",newLog.faculty_name);
+      fd.append("entry.314437892",newLog.department);
+      fd.append("entry.1699522875",newLog.room_name);
+      fd.append("entry.1623053106",newLog.room_number);
+      fd.append("entry.907740534",newLog.equipment);
+      fd.append("entry.1250492354",newLog.date);
+      fd.append("entry.665060428",newLog.time_in);
+      fd.append("entry.1758389574",newLog.time_out);
+      fd.append("entry.937977332",newLog.purpose);
+      fd.append("entry.195750658",newLog.remarks);
+      try{await fetch(GOOGLE_FORM_URL,{method:'POST',body:fd,mode:'no-cors'});showToast('✅ Log synced to Google Sheet');}catch(err){showToast('⚠️ Saved locally, sync failed');}
     });
-
-    clearFormBtn.addEventListener('click', () => { form.reset(); setDateTimeNowToForm(); });
-
-    // delete / edit
-    window.deleteLog = function(id){
-      if (!confirm('Delete this entry?')) return;
-      logs = logs.filter(l => l.log_id !== id);
-      renderTable();
-    };
-
-    window.editLog = function(id){
-      const log = logs.find(l => l.log_id === id);
-      if (!log) return alert('Log not found');
-      form.querySelector('#faculty_name').value = safeGet(log,'faculty_name');
-      form.querySelector('#department').value = safeGet(log,'department');
-      form.querySelector('#room_name').value = safeGet(log,'room_name');
-      form.querySelector('#room_number').value = safeGet(log,'room_number');
-      form.querySelector('#equipment').value = safeGet(log,'equipment');
-      form.querySelector('#date').value = safeGet(log,'date');
-      form.querySelector('#time_in').value = safeGet(log,'time_in');
-      form.querySelector('#time_out').value = safeGet(log,'time_out');
-      form.querySelector('#purpose').value = safeGet(log,'purpose');
-      form.querySelector('#remarks').value = safeGet(log,'remarks');
-      logs = logs.filter(l => l.log_id !== id);
-      renderTable();
-    };
-
-    // export / import
-    exportBtn.addEventListener('click', () => {
-      const blob = new Blob([JSON.stringify(logs, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'faculty_elog_backup.json';
-      a.click();
-      URL.revokeObjectURL(url);
-    });
-
-    importBtn.addEventListener('click', () => importFile.click());
-    importFile.addEventListener('change', e => {
-      const f = e.target.files[0];
-      if (!f) return;
-      const reader = new FileReader();
-      reader.onload = ev => {
-        try {
-          const imported = JSON.parse(ev.target.result);
-          if (Array.isArray(imported)) {
-            logs = imported;
-          } else if (imported.logs && Array.isArray(imported.logs)) {
-            logs = imported.logs;
-          } else {
-            alert('Invalid file format.');
-            return;
-          }
-          logCounter = logs.length ? (Math.max(...logs.map(l=>l.log_id||0))+1) : 1;
-          renderTable();
-          showToast('✅ Backup imported');
-        } catch(err){
-          alert('Error reading file: ' + err.message);
-        }
-      };
-      reader.readAsText(f);
-      importFile.value = '';
-    });
-
-    // print logs
-    printLogsBtn.addEventListener('click', () => window.print());
-
-    // tabs
-    tabLog.addEventListener('click', () => {
-      tabLog.classList.add('active'); tabReports.classList.remove('active');
-      viewLog.style.display = ''; viewReports.style.display = 'none';
-    });
-    tabReports.addEventListener('click', () => {
-      tabReports.classList.add('active'); tabLog.classList.remove('active');
-      viewReports.style.display = ''; viewLog.style.display = 'none';
-      updateReports();
-    });
-
-    // reports calculations
-    function computeCounts(){
-      const rooms={}, equipment={}, faculty={};
-      logs.forEach(l => {
-        const rn = (l.room_name||'').trim() || '(No room)';
-        const eq = (l.equipment||'').trim() || '(No equipment)';
-        const fac = (l.faculty_name||'').trim() || '(No name)';
-        rooms[rn] = (rooms[rn]||0)+1;
-        equipment[eq] = (equipment[eq]||0)+1;
-        faculty[fac] = (faculty[fac]||0)+1;
-      });
-      return { rooms, equipment, faculty };
-    }
-
-    function toArrays(obj){
-      const labels = Object.keys(obj).sort((a,b)=>a.localeCompare(b));
-      const data = labels.map(k => obj[k]);
-      return { labels, data };
-    }
-
-    function populateList(container, labels, data){
-      container.innerHTML = '';
-      if (!labels.length){ container.innerHTML = '<div style="color:#666;padding:6px;">No entries</div>'; return; }
-      for (let i=0;i<labels.length;i++){
-        const div = document.createElement('div');
-        div.className = 'list-item';
-        const left = document.createElement('div'); left.textContent = labels[i];
-        const right = document.createElement('div'); right.textContent = data[i];
-        div.appendChild(left); div.appendChild(right); container.appendChild(div);
-      }
-    }
-
-    function updateChart(canvasId, labels, data, chartInstance){
-      const ctx = document.getElementById(canvasId).getContext('2d');
-      if (chartInstance){
-        chartInstance.data.labels = labels;
-        chartInstance.data.datasets[0].data = data;
-        chartInstance.update();
-        return chartInstance;
-      }
-      const instance = new Chart(ctx, {
-        type: 'bar',
-        data: { labels, datasets: [{ label:'# of uses', data, backgroundColor: labels.map(()=> 'rgba(37,99,235,0.75)'), borderColor: labels.map(()=> 'rgba(37,99,235,1)'), borderWidth:1 }] },
-        options: { maintainAspectRatio:false, plugins:{ legend:{display:false} }, scales:{ y:{ beginAtZero:true, precision:0 }, x:{ ticks:{ maxRotation:45 } } } }
-      });
-      return instance;
-    }
-
+    tabLog.onclick=()=>{tabLog.classList.add('active');tabReports.classList.remove('active');viewLog.style.display='';viewReports.style.display='none';};
+    tabReports.onclick=()=>{tabReports.classList.add('active');tabLog.classList.remove('active');viewReports.style.display='';viewLog.style.display='none';updateReports();};
+    function count(items){const o={};items.forEach(i=>o[i]=(o[i]||0)+1);return o;}
+    function fillList(c,o){c.innerHTML='';Object.entries(o).forEach(([k,v])=>{const d=document.createElement('div');d.className='list-item';d.innerHTML=`<div>${k}</div><div>${v}</div>`;c.appendChild(d);});}
     function updateReports(){
-      const now = new Date();
-      const pretty = now.toLocaleString();
-      reportDatePretty.textContent = pretty; reportDatePrint.textContent = pretty;
-
-      const counts = computeCounts();
-      const roomsArr = toArrays(counts.rooms);
-      const equipmentArr = toArrays(counts.equipment);
-      const facultyArr = toArrays(counts.faculty);
-
-      populateList(listRooms, roomsArr.labels, roomsArr.data);
-      populateList(listEquipment, equipmentArr.labels, equipmentArr.data);
-      populateList(listFaculty, facultyArr.labels, facultyArr.data);
-      populateList(printListRooms, roomsArr.labels, roomsArr.data);
-      populateList(printListEquipment, equipmentArr.labels, equipmentArr.data);
-      populateList(printListFaculty, facultyArr.labels, facultyArr.data);
-
-      chartRooms = updateChart('chartRooms', roomsArr.labels, roomsArr.data, chartRooms);
-      chartEquipment = updateChart('chartEquipment', equipmentArr.labels, equipmentArr.data, chartEquipment);
-      chartFaculty = updateChart('chartFaculty', facultyArr.labels, facultyArr.data, chartFaculty);
+      const rooms=count(logs.map(l=>l.room_name||'(none)'));
+      const equip=count(logs.map(l=>l.equipment||'(none)'));
+      const fac=count(logs.map(l=>l.faculty_name||'(none)'));
+      fillList(document.getElementById('listRooms'),rooms);
+      fillList(document.getElementById('listEquipment'),equip);
+      fillList(document.getElementById('listFaculty'),fac);
+      new Chart(document.getElementById('chartRooms'),{type:'bar',data:{labels:Object.keys(rooms),datasets:[{data:Object.values(rooms),backgroundColor:'rgba(37,99,235,0.6)'}]},options:{plugins:{legend:{display:false}}}});
+      new Chart(document.getElementById('chartEquipment'),{type:'bar',data:{labels:Object.keys(equip),datasets:[{data:Object.values(equip),backgroundColor:'rgba(16,185,129,0.6)'}]},options:{plugins:{legend:{display:false}}}});
+      new Chart(document.getElementById('chartFaculty'),{type:'bar',data:{labels:Object.keys(fac),datasets:[{data:Object.values(fac),backgroundColor:'rgba(234,179,8,0.6)'}]},options:{plugins:{legend:{display:false}}}});
     }
-
-    // print reports
-    printReportsBtn.addEventListener('click', () => {
-      tabReports.click();
-      // show the print footer only during print
-      document.querySelectorAll('.print-footer').forEach(el => el.style.display = 'block');
-      setTimeout(()=> { window.print(); setTimeout(()=> document.querySelectorAll('.print-footer').forEach(el => el.style.display='none'), 200); }, 300);
-    });
-
-    // init
-    setDateTimeNowToForm();
-    renderTable();
-    updateReports();
-    window.addEventListener('focus', () => { if (chartRooms) chartRooms.resize(); if (chartEquipment) chartEquipment.resize(); if (chartFaculty) chartFaculty.resize(); });
-
-    // register service worker if available
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js').catch(()=>{ /* ignore */ });
-    }
-
+    document.getElementById('clearFormBtn').onclick=()=>{form.reset();setDate();}
+    setDate();renderTable();updateReports();
   </script>
 </body>
-
 </html>
-
-

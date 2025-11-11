@@ -38,6 +38,12 @@
   @media (min-width:1200px){ .reports-grid{grid-template-columns:1fr 1fr 1fr} }
   .card table{display:block;width:100%;overflow-x:auto}
   #elogTable{table-layout:auto}
+  /* print tweaks */
+  @media print {
+    nav, .controls, form, footer, .toast { display:none !important; }
+    .reports-print{ display:block !important; }
+    .print-footer { position: fixed; bottom: 0; left:0; right:0; text-align:center; font-size:11px; }
+  }
 </style>
 </head>
 <body>
@@ -64,22 +70,21 @@
           <h2>Add Faculty Log</h2>
 
           <div class="row">
-            <div class="col"><input id="log_id" placeholder="Log ID (auto)" readonly></div>
             <div class="col"><input id="faculty_name" placeholder="Faculty Name" required></div>
-          </div>
-
-          <div class="row">
             <div class="col"><input id="department" placeholder="Department" required></div>
+          </div>
+
+          <div class="row">
             <div class="col"><input id="room_name" placeholder="Laboratory Room Name" required></div>
-          </div>
-
-          <div class="row">
             <div class="col"><input id="room_number" placeholder="Room Number (optional)"></div>
-            <div class="col"><input id="equipment" placeholder="Special / Major Equipment Used (optional)"></div>
           </div>
 
           <div class="row">
+            <div class="col"><input id="equipment" placeholder="Special / Major Equipment Used (optional)"></div>
             <div class="col"><input type="date" id="date" readonly></div>
+          </div>
+
+          <div class="row">
             <div class="col"><input type="time" id="time_in" required></div>
             <div class="col"><input type="time" id="time_out" required></div>
           </div>
@@ -103,7 +108,7 @@
         <table id="elogTable">
           <thead>
             <tr>
-              <th>Log ID</th><th>Faculty Name</th><th>Department</th><th>Room Name</th><th>Room #</th>
+              <th>Timestamp</th><th>Faculty Name</th><th>Department</th><th>Room Name</th><th>Room #</th>
               <th>Equipment</th><th>Date</th><th>Time In</th><th>Time Out</th><th>Purpose</th><th>Remarks</th><th>Actions</th>
             </tr>
           </thead>
@@ -118,6 +123,9 @@
         <div>
           <h2 style="margin:0;color:var(--gsc-blue)">Faculty Laboratory Usage Report — Good Samaritan Colleges</h2>
           <div style="margin-top:6px;color:#444">Generated: <span id="reportDatePretty"></span></div>
+        </div>
+        <div>
+          <button id="printReportsBtn" class="primary">Print Reports</button>
         </div>
       </div>
 
@@ -146,6 +154,37 @@
           </div>
         </div>
       </div>
+
+      <!-- printable lists -->
+      <div class="reports-print" style="display:none; margin-top:18px;" id="reportsPrintContainer">
+        <header style="text-align:center;margin-bottom:8px;">
+          <img src="gs.jfif" alt="logo" style="width:80px">
+          <div style="font-weight:700;font-size:18px;margin-top:6px;">Faculty Laboratory Usage Report — Good Samaritan Colleges</div>
+          <div style="font-size:12px;margin-top:4px;" id="reportDatePrint"></div>
+        </header>
+
+        <div style="margin-top:10px;">
+          <div style="margin-bottom:16px;">
+            <strong>Rooms (counts)</strong>
+            <div id="printListRooms"></div>
+          </div>
+
+          <div style="margin-bottom:16px;">
+            <strong>Equipment (counts)</strong>
+            <div id="printListEquipment"></div>
+          </div>
+
+          <div style="margin-bottom:16px;">
+            <strong>Faculty (counts)</strong>
+            <div id="printListFaculty"></div>
+          </div>
+        </div>
+
+        <div class="print-footer" style="margin-top:20px;text-align:center;">
+          <div style="font-weight:700;color:#234;">Good Samaritan Colleges</div>
+          <div style="font-size:12px;color:#234;">Prepared by: Piolo L. Bernardino — Laboratory Custodian</div>
+        </div>
+      </div>
     </section>
   </main>
 
@@ -157,40 +196,40 @@
   <div id="toast" class="toast"></div>
 
 <script>
-/* --- FORM CONFIG (from your prefilled link) --- */
+/* ----- Google Form config (from your prefilled link) ----- */
 const GOOGLE_FORM_ACTION = "https://docs.google.com/forms/d/e/1FAIpQLSdPZLGabjI36s4iFdU-grRUK0ouLvoYrkV391MLxPrRWdZiHQ/formResponse";
-
 const FORM_ENTRY = {
-  log_id:        "entry.162082453",
   faculty_name:  "entry.694323400",
   department:    "entry.1656788187",
   room_name:     "entry.1132289973",
   room_number:   "entry.19898501",
   equipment:     "entry.743283452",
-  // note: your prefilled link included entry.1681654886 but there was no matching field name in our app;
-  // if you want that saved, tell me the question name and I will add it.
   date:          "entry.1998901142",
   time_in:       "entry.736543893",
   time_out:      "entry.1466121044",
   purpose:       "entry.589165766",
   remarks:       "entry.1595227859"
 };
-/* --- end config --- */
+/* ----------------------------------------------------- */
 
 const form = document.getElementById('elogForm');
 const tableBody = document.querySelector('#elogTable tbody');
 const exportCsvBtn = document.getElementById('exportCsvBtn');
 const printLogsBtn = document.getElementById('printLogsBtn');
+const printReportsBtn = document.getElementById('printReportsBtn');
 const toastEl = document.getElementById('toast');
+
 const tabLog = document.getElementById('tab-logbook');
 const tabReports = document.getElementById('tab-reports');
 const viewLog = document.getElementById('view-logbook');
 const viewReports = document.getElementById('view-reports');
 
 let logs = JSON.parse(localStorage.getItem('facultyLogs')) || [];
-let logCounter = logs.length ? (Math.max(...logs.map(l=>l.log_id||0))+1) : 1;
 
-function showToast(msg, duration=3000){
+// use timestamp as unique id for delete/edit
+function makeId(){ return Date.now() + Math.floor(Math.random()*1000); }
+
+function showToast(msg, duration=2500){
   toastEl.textContent = msg;
   toastEl.style.display='block';
   setTimeout(()=> toastEl.style.display='none', duration);
@@ -200,21 +239,21 @@ function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, c
 
 function renderTable(){
   tableBody.innerHTML = '';
-  logs.forEach(log=>{
-    const tr=document.createElement('tr');
-    tr.innerHTML=`
-      <td>${log.log_id}</td>
-      <td>${escapeHtml(log.faculty_name)}</td>
-      <td>${escapeHtml(log.department)}</td>
-      <td>${escapeHtml(log.room_name)}</td>
-      <td>${escapeHtml(log.room_number)}</td>
-      <td>${escapeHtml(log.equipment)}</td>
-      <td>${escapeHtml(log.date)}</td>
-      <td>${escapeHtml(log.time_in)}</td>
-      <td>${escapeHtml(log.time_out)}</td>
-      <td>${escapeHtml(log.purpose)}</td>
-      <td>${escapeHtml(log.remarks)}</td>
-      <td class="actions"><button class="secondary" onclick="deleteLog(${log.log_id})">Delete</button></td>
+  logs.forEach(item=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${new Date(item.created_at).toLocaleString()}</td>
+      <td>${escapeHtml(item.faculty_name)}</td>
+      <td>${escapeHtml(item.department)}</td>
+      <td>${escapeHtml(item.room_name)}</td>
+      <td>${escapeHtml(item.room_number)}</td>
+      <td>${escapeHtml(item.equipment)}</td>
+      <td>${escapeHtml(item.date)}</td>
+      <td>${escapeHtml(item.time_in)}</td>
+      <td>${escapeHtml(item.time_out)}</td>
+      <td>${escapeHtml(item.purpose)}</td>
+      <td>${escapeHtml(item.remarks)}</td>
+      <td><button class="secondary" onclick="deleteLog('${item._id}')">Delete</button></td>
     `;
     tableBody.appendChild(tr);
   });
@@ -225,31 +264,35 @@ function renderTable(){
 function setDateTimeNowToForm(){
   const now = new Date();
   document.getElementById('date').value = now.toISOString().split('T')[0];
-  document.getElementById('log_id').value = logCounter;
+  // default time_in to now (HH:MM)
+  const hh = String(now.getHours()).padStart(2,'0'), mm = String(now.getMinutes()).padStart(2,'0');
+  document.getElementById('time_in').value = `${hh}:${mm}`;
 }
 
-async function uploadToGoogleForm(newLog){
-  if (!GOOGLE_FORM_ACTION.includes('1FAIpQLS')) return;
-  try{
+async function uploadToGoogleForm(obj){
+  if (!GOOGLE_FORM_ACTION || GOOGLE_FORM_ACTION.includes('YOUR_FORM_ID')) return;
+  try {
     const fd = new FormData();
     for (const k in FORM_ENTRY){
       const eid = FORM_ENTRY[k];
       if (!eid) continue;
-      fd.append(eid, newLog[k] || '');
+      fd.append(eid, obj[k] || '');
     }
     // no-cors POST to Google Forms
     await fetch(GOOGLE_FORM_ACTION, { method:'POST', mode:'no-cors', body: fd });
-    showToast('✅ Log synced to Google Sheets (via Form)');
+    showToast('✅ Synced to Google Sheets (via Form)');
   } catch(err){
-    console.error('uploadToGoogleForm error', err);
+    console.error('Form upload error', err);
     showToast('⚠️ Saved locally — form sync failed');
   }
 }
 
-form.addEventListener('submit', async e=>{
+form.addEventListener('submit', async (e)=>{
   e.preventDefault();
-  const newLog = {
-    log_id: logCounter++,
+  const now = Date.now();
+  const newItem = {
+    _id: makeId(),
+    created_at: now,
     faculty_name: document.getElementById('faculty_name').value.trim(),
     department: document.getElementById('department').value.trim(),
     room_name: document.getElementById('room_name').value.trim(),
@@ -263,13 +306,24 @@ form.addEventListener('submit', async e=>{
   };
 
   // save locally and render
-  logs.push(newLog);
+  logs.push(newItem);
   renderTable();
   form.reset();
   setDateTimeNowToForm();
 
-  // upload to Google Form (no-cors)
-  uploadToGoogleForm(newLog);
+  // submit to Google Form (no-cors)
+  uploadToGoogleForm({
+    faculty_name: newItem.faculty_name,
+    department: newItem.department,
+    room_name: newItem.room_name,
+    room_number: newItem.room_number,
+    equipment: newItem.equipment,
+    date: newItem.date,
+    time_in: newItem.time_in,
+    time_out: newItem.time_out,
+    purpose: newItem.purpose,
+    remarks: newItem.remarks
+  });
 });
 
 document.getElementById('clearFormBtn').addEventListener('click', ()=>{
@@ -279,18 +333,19 @@ document.getElementById('clearFormBtn').addEventListener('click', ()=>{
 
 window.deleteLog = function(id){
   if (!confirm('Delete this entry?')) return;
-  logs = logs.filter(l=>l.log_id !== id);
+  logs = logs.filter(x=> x._id !== id);
   renderTable();
 };
 
 // export CSV
 exportCsvBtn.addEventListener('click', ()=>{
   if (!logs.length){ showToast('⚠️ No logs to export'); return; }
-  const headers = ['Log ID','Faculty Name','Department','Room Name','Room #','Equipment Used','Date','Time In','Time Out','Purpose','Remarks'];
-  const rows = logs.map(l=>[
-    l.log_id,l.faculty_name,l.department,l.room_name,l.room_number,l.equipment,l.date,l.time_in,l.time_out,l.purpose,l.remarks
+  const headers = ['Timestamp','Faculty Name','Department','Room Name','Room #','Equipment Used','Date','Time In','Time Out','Purpose','Remarks'];
+  const rows = logs.map(r => [
+    new Date(r.created_at).toLocaleString(), r.faculty_name, r.department, r.room_name, r.room_number,
+    r.equipment, r.date, r.time_in, r.time_out, r.purpose, r.remarks
   ]);
-  const csv = [headers].concat(rows).map(r => r.map(cell=>`"${String(cell||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const csv = [headers].concat(rows).map(r => r.map(c=>`"${String(c||'').replace(/"/g,'""')}"`).join(',')).join('\n');
   const blob = new Blob([csv], { type:'text/csv' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a'); a.href=url; a.download=`faculty_elog_export_${(new Date()).toISOString().slice(0,10)}.csv`; a.click();
@@ -298,29 +353,39 @@ exportCsvBtn.addEventListener('click', ()=>{
   showToast('✅ Logs exported as CSV');
 });
 
-// print
-printLogsBtn.addEventListener('click', ()=>{ window.print(); });
+// print logs (table view)
+printLogsBtn.addEventListener('click', ()=> window.print());
+
+// print reports (report view)
+printReportsBtn.addEventListener('click', ()=>{
+  tabReports.click();
+  // show print container and footer
+  document.querySelectorAll('.reports-print').forEach(el=> el.style.display='block');
+  setTimeout(()=> { window.print(); setTimeout(()=> { document.querySelectorAll('.reports-print').forEach(el=> el.style.display='none'); }, 400); }, 300);
+});
 
 // tabs
 tabLog.addEventListener('click', ()=>{ tabLog.classList.add('active'); tabReports.classList.remove('active'); viewLog.style.display=''; viewReports.style.display='none'; });
 tabReports.addEventListener('click', ()=>{ tabReports.classList.add('active'); tabLog.classList.remove('active'); viewReports.style.display=''; viewLog.style.display='none'; updateReports(); });
 
-// reports
+// Reports & Charts
 function computeCounts(){
   const rooms={}, equipment={}, faculty={};
   logs.forEach(l=>{
-    const r=(l.room_name||'(No room)').trim(); rooms[r]=(rooms[r]||0)+1;
-    const e=(l.equipment||'(No equipment)').trim(); equipment[e]=(equipment[e]||0)+1;
-    const f=(l.faculty_name||'(No name)').trim(); faculty[f]=(faculty[f]||0)+1;
+    const rn = (l.room_name||'(No room)').trim(); rooms[rn] = (rooms[rn]||0) + 1;
+    const eq = (l.equipment||'(No equipment)').trim(); equipment[eq] = (equipment[eq]||0) + 1;
+    const f = (l.faculty_name||'(No name)').trim(); faculty[f] = (faculty[f]||0) + 1;
   });
   return { rooms, equipment, faculty };
 }
 
 function populateList(container, obj){
-  container.innerHTML='';
-  const entries = Object.entries(obj).sort((a,b)=>b[1]-a[1]);
-  if(!entries.length){ container.innerHTML='<div style="color:#666;padding:6px">No entries</div>'; return; }
-  entries.forEach(([k,v])=>{ const div=document.createElement('div'); div.className='list-item'; div.innerHTML=`<div>${k}</div><div>${v}</div>`; container.appendChild(div); });
+  container.innerHTML = '';
+  const items = Object.entries(obj).sort((a,b)=>b[1]-a[1]);
+  if (!items.length){ container.innerHTML = '<div style="color:#666;padding:6px">No entries</div>'; return; }
+  items.forEach(([k,v])=>{
+    const div = document.createElement('div'); div.className = 'list-item'; div.innerHTML = `<div>${k}</div><div>${v}</div>`; container.appendChild(div);
+  });
 }
 
 let chartRooms, chartEquipment, chartFaculty;
@@ -329,15 +394,19 @@ function updateChart(canvasId, obj, instance){
   const data = Object.values(obj);
   const ctx = document.getElementById(canvasId).getContext('2d');
   if (instance){ instance.data.labels = labels; instance.data.datasets[0].data = data; instance.update(); return instance; }
-  return new Chart(ctx, { type:'bar', data: { labels, datasets:[{ data, backgroundColor: labels.map(()=> 'rgba(37,99,235,0.75)') }] }, options:{ plugins:{legend:{display:false}}, scales:{ y:{ beginAtZero:true } } } });
+  return new Chart(ctx, { type:'bar', data:{ labels, datasets:[{ data, backgroundColor: labels.map(()=> 'rgba(37,99,235,0.75)') }] }, options:{ plugins:{ legend:{ display:false } }, scales:{ y:{ beginAtZero:true } } } });
 }
 
 function updateReports(){
   document.getElementById('reportDatePretty').textContent = new Date().toLocaleString();
+  document.getElementById('reportDatePrint').textContent = new Date().toLocaleString();
   const counts = computeCounts();
   populateList(document.getElementById('listRooms'), counts.rooms);
   populateList(document.getElementById('listEquipment'), counts.equipment);
   populateList(document.getElementById('listFaculty'), counts.faculty);
+  populateList(document.getElementById('printListRooms'), counts.rooms);
+  populateList(document.getElementById('printListEquipment'), counts.equipment);
+  populateList(document.getElementById('printListFaculty'), counts.faculty);
   chartRooms = updateChart('chartRooms', counts.rooms, chartRooms);
   chartEquipment = updateChart('chartEquipment', counts.equipment, chartEquipment);
   chartFaculty = updateChart('chartFaculty', counts.faculty, chartFaculty);
@@ -346,7 +415,7 @@ function updateReports(){
 // init
 setDateTimeNowToForm();
 renderTable();
-window.addEventListener('focus', ()=>{ if(chartRooms) chartRooms.resize(); if(chartEquipment) chartEquipment.resize(); if(chartFaculty) chartFaculty.resize(); });
+window.addEventListener('focus', ()=> { if (chartRooms) chartRooms.resize(); if (chartEquipment) chartEquipment.resize(); if (chartFaculty) chartFaculty.resize(); });
 </script>
 </body>
 </html>

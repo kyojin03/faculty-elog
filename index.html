@@ -1,152 +1,214 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Faculty Laboratory E-Log | Good Samaritan Colleges</title>
-<link rel="icon" href="gs.jfif">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Faculty Laboratory eLog — Good Samaritan Colleges</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
-  body {font-family: Arial, sans-serif; margin: 0; background: #f8f9fc;}
-  header {background: #2563eb; color: white; padding: 15px; text-align: center;}
-  header h1 {margin: 0; font-size: 1.5rem;}
-  nav {display: flex; justify-content: center; background: #e2e8f0;}
-  nav button {padding: 10px 20px; border: none; background: none; font-size: 1rem; cursor: pointer;}
-  nav button.active {background: #2563eb; color: white; border-radius: 5px;}
-  section {padding: 20px;}
-  form {max-width: 800px; margin: auto; display: grid; gap: 10px;}
-  label {font-weight: bold;}
-  input, select, textarea {padding: 8px; border: 1px solid #ccc; border-radius: 5px;}
-  button.primary {background: #2563eb; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer;}
-  button.secondary {background: #e11d48; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer;}
-  .table-container {overflow-x: auto; margin-top: 20px;}
-  table {width: 100%; border-collapse: collapse; font-size: 0.9rem; background: white;}
-  th, td {border: 1px solid #ccc; padding: 8px; text-align: left; white-space: nowrap;}
-  th {background: #2563eb; color: white;}
-  tr:nth-child(even){background: #f1f5f9;}
-  .toast {display: none; position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); background: #2563eb; color: white; padding: 10px 20px; border-radius: 20px;}
-  .report-container {max-width: 900px; margin: auto;}
-  .report-section {margin-bottom: 20px;}
-  .list-item {display: flex; justify-content: space-between; padding: 5px 10px; border-bottom: 1px solid #ddd;}
-  footer {text-align: center; font-size: 0.85rem; color: gray; margin-top: 30px;}
+  :root{--gsc-blue:#1e3a8a;--gsc-accent:#2563eb;--gsc-bg:#f1f5f9}
+  body{font-family:Segoe UI,Arial,sans-serif;margin:0;background:var(--gsc-bg);color:#222}
+  header{background:white;color:var(--gsc-blue);padding:15px 20px;box-shadow:0 4px 10px rgba(0,0,0,.08);border-bottom:4px solid var(--gsc-blue)}
+  .header-container{display:flex;align-items:center;gap:18px;max-width:1100px;margin:0 auto}
+  .gsc-logo{width:100px;height:auto}
+  .header-text h1{margin:0;font-size:22px;color:var(--gsc-blue)}
+  .header-text p{margin:4px 0 0;font-size:14px;color:var(--gsc-accent);font-weight:500}
+  nav{max-width:1100px;margin:16px auto 0;padding:0 20px;display:flex;gap:10px}
+  .tab{background:white;padding:10px 16px;border-radius:8px;border:1px solid #e6eefc;cursor:pointer;font-weight:600;color:var(--gsc-blue)}
+  .tab.active{background:linear-gradient(90deg,var(--gsc-blue),var(--gsc-accent));color:white;border-color:transparent}
+  main{max-width:1100px;margin:18px auto;padding:0 20px 40px}
+  .card{background:white;border-radius:12px;padding:18px;box-shadow:0 6px 16px rgba(15,23,42,.04);margin-bottom:18px}
+  form h2{margin:0 0 12px 0;text-align:center;color:var(--gsc-blue)}
+  input,textarea,select,button{width:100%;padding:10px;margin-bottom:10px;border:1px solid #ced4da;border-radius:6px;font-size:14px}
+  input:focus,textarea:focus{outline:none;border-color:var(--gsc-accent);box-shadow:0 0 6px rgba(37,99,235,.15)}
+  button.primary{background:var(--gsc-accent);color:white;border:none;cursor:pointer;font-weight:700}
+  button.secondary{background:#fff;border:1px solid #ddd;color:#333;cursor:pointer}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .row .col{flex:1;min-width:150px}
+  .controls{display:flex;gap:10px;justify-content:flex-end;margin-bottom:12px;flex-wrap:wrap}
+  table{width:100%;border-collapse:collapse;background:white;border-radius:8px;overflow:hidden;box-shadow:0 6px 16px rgba(15,23,42,.04)}
+  th,td{padding:10px;border:1px solid #e6eefc;text-align:left;font-size:13px;white-space:nowrap}
+  th{background:var(--gsc-blue);color:white;font-weight:700}
+  tr:nth-child(even) td{background:#fbfdff}
+  .list-area{width:260px;max-height:220px;overflow:auto;padding:6px 8px;border-left:1px solid #eef4ff}
+  .list-item{display:flex;justify-content:space-between;padding:6px 4px;border-bottom:1px dashed #f1f6ff;font-size:13px}
+  footer{max-width:1100px;margin:22px auto;padding:18px 20px;color:#555;font-size:13px;text-align:center}
+  .toast{position:fixed;right:18px;bottom:18px;background:rgba(37,99,235,.95);color:white;padding:10px 14px;border-radius:8px;box-shadow:0 6px 18px rgba(15,23,42,.2);z-index:9999;font-weight:600;display:none}
+  @media (min-width:900px){ .reports-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px} }
+  @media (min-width:1200px){ .reports-grid{grid-template-columns:1fr 1fr 1fr} }
+  .card table{display:block;width:100%;overflow-x:auto}
+  #elogTable{table-layout:auto}
+  /* print tweaks */
   @media print {
-    nav, form, .toast, #exportCsvBtn, #printLogsBtn {display: none;}
-    header {background: none; color: black; text-align: center;}
-    body {background: white;}
-    footer {position: fixed; bottom: 0; left: 0; right: 0; text-align: center;}
+    nav, .controls, form, footer, .toast { display:none !important; }
+    .reports-print{ display:block !important; }
+    .print-footer { position: fixed; bottom: 0; left:0; right:0; text-align:center; font-size:11px; }
   }
 </style>
 </head>
 <body>
   <header>
-    <h1>Faculty Laboratory E-Log — Good Samaritan Colleges</h1>
+    <div class="header-container">
+      <img src="gs.jfif" class="gsc-logo" alt="GSC logo">
+      <div class="header-text">
+        <h1>Good Samaritan Colleges</h1>
+        <p>Faculty Laboratory eLog System</p>
+      </div>
+    </div>
   </header>
 
   <nav>
-    <button id="tab-logbook" class="active">Logbook</button>
-    <button id="tab-reports">Reports</button>
+    <div id="tab-logbook" class="tab active">Logbook</div>
+    <div id="tab-reports" class="tab">Reports</div>
   </nav>
 
-  <!-- Logbook -->
-  <section id="view-logbook">
-    <form id="elogForm">
-      <label>Faculty Name</label>
-      <input type="text" id="faculty_name" required>
-      <label>Department</label>
-      <input type="text" id="department" required>
-      <label>Room Name</label>
-      <input type="text" id="room_name" required>
-      <label>Room Number</label>
-      <input type="text" id="room_number" required>
-      <label>Equipment Used</label>
-      <input type="text" id="equipment">
-      <label>Date</label>
-      <input type="date" id="date" required>
-      <label>Time In</label>
-      <input type="time" id="time_in" required>
-      <label>Time Out</label>
-      <input type="time" id="time_out" required>
-      <label>Purpose</label>
-      <textarea id="purpose" required></textarea>
-      <label>Remarks</label>
-      <textarea id="remarks"></textarea>
-      <div style="display:flex;gap:10px;justify-content:center;margin-top:10px;">
-        <button type="submit" class="primary">Submit Log</button>
-        <button type="button" id="clearFormBtn" class="secondary">Clear</button>
-      </div>
-    </form>
+  <main>
+    <!-- LOGBOOK -->
+    <section id="view-logbook">
+      <div class="card">
+        <form id="elogForm">
+          <h2>Add Faculty Log</h2>
 
-    <div class="table-container">
-      <table id="elogTable">
-        <thead>
-          <tr>
-            <th>Timestamp</th>
-            <th>Faculty Name</th>
-            <th>Department</th>
-            <th>Room Name</th>
-            <th>Room #</th>
-            <th>Equipment</th>
-            <th>Date</th>
-            <th>Time In</th>
-            <th>Time Out</th>
-            <th>Purpose</th>
-            <th>Remarks</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
+          <div class="row">
+            <div class="col"><input id="faculty_name" placeholder="Faculty Name" required></div>
+            <div class="col"><input id="department" placeholder="Department" required></div>
+          </div>
 
-    <div style="text-align:center;margin-top:15px;">
-      <button id="exportCsvBtn" class="primary">Export CSV</button>
-      <button id="printLogsBtn" class="primary">Print Logs</button>
-    </div>
-  </section>
+          <div class="row">
+            <div class="col"><input id="room_name" placeholder="Laboratory Room Name" required></div>
+            <div class="col"><input id="room_number" placeholder="Room Number (optional)"></div>
+          </div>
 
-  <!-- Reports -->
-  <section id="view-reports" style="display:none;">
-    <div class="report-container">
-      <h2 style="text-align:center;">Faculty Laboratory Usage Report</h2>
-      <p style="text-align:center;">Generated: <span id="reportDatePretty"></span></p>
-      <div class="report-section">
-        <h3>Most Used Rooms</h3>
-        <canvas id="chartRooms" height="150"></canvas>
-        <div id="listRooms"></div>
-      </div>
-      <div class="report-section">
-        <h3>Most Used Equipment</h3>
-        <canvas id="chartEquipment" height="150"></canvas>
-        <div id="listEquipment"></div>
-      </div>
-      <div class="report-section">
-        <h3>Most Active Faculty</h3>
-        <canvas id="chartFaculty" height="150"></canvas>
-        <div id="listFaculty"></div>
-      </div>
-      <div style="text-align:center;margin-top:20px;">
-        <button id="printReportsBtn" class="primary">Print Report</button>
-      </div>
-    </div>
-  </section>
+          <div class="row">
+            <div class="col"><input id="equipment" placeholder="Special / Major Equipment Used (optional)"></div>
+            <div class="col"><input type="date" id="date" readonly></div>
+          </div>
 
-  <footer>© 2025 Good Samaritan Colleges — Prepared by: Piolo L. Bernardino, Laboratory Custodian</footer>
+          <div class="row">
+            <div class="col"><input type="time" id="time_in" required></div>
+            <div class="col"><input type="time" id="time_out" required></div>
+          </div>
+
+          <input id="purpose" placeholder="Purpose / Activity" required>
+          <textarea id="remarks" rows="2" placeholder="Remarks (optional)"></textarea>
+
+          <div style="display:flex;gap:10px;justify-content:center;">
+            <button class="primary" type="submit">Add Log</button>
+            <button class="secondary" id="clearFormBtn" type="button">Clear</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="controls">
+          <button id="exportCsvBtn" class="secondary">Export All Logs (CSV)</button>
+          <button id="printLogsBtn" class="secondary">Print Logs</button>
+        </div>
+
+        <table id="elogTable">
+          <thead>
+            <tr>
+              <th>Timestamp</th><th>Faculty Name</th><th>Department</th><th>Room Name</th><th>Room #</th>
+              <th>Equipment</th><th>Date</th><th>Time In</th><th>Time Out</th><th>Purpose</th><th>Remarks</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- REPORTS -->
+    <section id="view-reports" style="display:none;">
+      <div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
+        <div>
+          <h2 style="margin:0;color:var(--gsc-blue)">Faculty Laboratory Usage Report — Good Samaritan Colleges</h2>
+          <div style="margin-top:6px;color:#444">Generated: <span id="reportDatePretty"></span></div>
+        </div>
+        <div>
+          <button id="printReportsBtn" class="primary">Print Reports</button>
+        </div>
+      </div>
+
+      <div class="reports-grid" style="margin-top:12px">
+        <div class="report-card card report-rooms">
+          <div style="flex:1;min-height:220px"><canvas id="chartRooms"></canvas></div>
+          <div class="list-area">
+            <strong>Rooms (counts)</strong>
+            <div id="listRooms"></div>
+          </div>
+        </div>
+
+        <div class="report-card card report-equipment">
+          <div style="flex:1;min-height:220px"><canvas id="chartEquipment"></canvas></div>
+          <div class="list-area">
+            <strong>Equipment (counts)</strong>
+            <div id="listEquipment"></div>
+          </div>
+        </div>
+
+        <div class="report-card card report-faculty">
+          <div style="flex:1;min-height:220px"><canvas id="chartFaculty"></canvas></div>
+          <div class="list-area">
+            <strong>Faculty (counts)</strong>
+            <div id="listFaculty"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- printable lists -->
+      <div class="reports-print" style="display:none; margin-top:18px;" id="reportsPrintContainer">
+        <header style="text-align:center;margin-bottom:8px;">
+          <img src="gs.jfif" alt="logo" style="width:80px">
+          <div style="font-weight:700;font-size:18px;margin-top:6px;">Faculty Laboratory Usage Report — Good Samaritan Colleges</div>
+          <div style="font-size:12px;margin-top:4px;" id="reportDatePrint"></div>
+        </header>
+
+        <div style="margin-top:10px;">
+          <div style="margin-bottom:16px;">
+            <strong>Rooms (counts)</strong>
+            <div id="printListRooms"></div>
+          </div>
+
+          <div style="margin-bottom:16px;">
+            <strong>Equipment (counts)</strong>
+            <div id="printListEquipment"></div>
+          </div>
+
+          <div style="margin-bottom:16px;">
+            <strong>Faculty (counts)</strong>
+            <div id="printListFaculty"></div>
+          </div>
+        </div>
+
+        <div class="print-footer" style="margin-top:20px;text-align:center;">
+          <div style="font-weight:700;color:#234;">Good Samaritan Colleges</div>
+          <div style="font-size:12px;color:#234;">Prepared by: Piolo L. Bernardino — Laboratory Custodian</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    © 2025 Good Samaritan Colleges | Faculty Laboratory eLog System<br>
+    Prepared by Piolo L. Bernardino — Laboratory Custodian
+  </footer>
+
   <div id="toast" class="toast"></div>
 
 <script>
-/* ----- Google Form Integration (your form link) ----- */
+/* ----- Google Form config (from your prefilled link) ----- */
 const GOOGLE_FORM_ACTION = "https://docs.google.com/forms/d/e/1FAIpQLSdPZLGabjI36s4iFdU-grRUK0ouLvoYrkV391MLxPrRWdZiHQ/formResponse";
 const FORM_ENTRY = {
-  faculty_name: "entry.162082453",
-  department: "entry.694323400",
-  room_name: "entry.1656788187",
-  room_number: "entry.1132289973",
-  equipment: "entry.19898501",
-  date: "entry.1998901142",
-  time_in: "entry.736543893",
-  time_out: "entry.1466121044",
-  purpose: "entry.589165766",
-  remarks: "entry.1595227859"
+  faculty_name:  "entry.694323400",
+  department:    "entry.1656788187",
+  room_name:     "entry.1132289973",
+  room_number:   "entry.19898501",
+  equipment:     "entry.743283452",
+  date:          "entry.1998901142",
+  time_in:       "entry.736543893",
+  time_out:      "entry.1466121044",
+  purpose:       "entry.589165766",
+  remarks:       "entry.1595227859"
 };
 /* ----------------------------------------------------- */
 
@@ -156,15 +218,24 @@ const exportCsvBtn = document.getElementById('exportCsvBtn');
 const printLogsBtn = document.getElementById('printLogsBtn');
 const printReportsBtn = document.getElementById('printReportsBtn');
 const toastEl = document.getElementById('toast');
+
 const tabLog = document.getElementById('tab-logbook');
 const tabReports = document.getElementById('tab-reports');
 const viewLog = document.getElementById('view-logbook');
 const viewReports = document.getElementById('view-reports');
 
 let logs = JSON.parse(localStorage.getItem('facultyLogs')) || [];
+
+// use timestamp as unique id for delete/edit
 function makeId(){ return Date.now() + Math.floor(Math.random()*1000); }
 
-function showToast(msg){ toastEl.textContent = msg; toastEl.style.display='block'; setTimeout(()=> toastEl.style.display='none',2000); }
+function showToast(msg, duration=2500){
+  toastEl.textContent = msg;
+  toastEl.style.display='block';
+  setTimeout(()=> toastEl.style.display='none', duration);
+}
+
+function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 function renderTable(){
   tableBody.innerHTML = '';
@@ -172,112 +243,181 @@ function renderTable(){
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${new Date(item.created_at).toLocaleString()}</td>
-      <td>${item.faculty_name}</td>
-      <td>${item.department}</td>
-      <td>${item.room_name}</td>
-      <td>${item.room_number}</td>
-      <td>${item.equipment}</td>
-      <td>${item.date}</td>
-      <td>${item.time_in}</td>
-      <td>${item.time_out}</td>
-      <td>${item.purpose}</td>
-      <td>${item.remarks}</td>
-      <td><button class="secondary" onclick="deleteLog('${item._id}')">Delete</button></td>`;
+      <td>${escapeHtml(item.faculty_name)}</td>
+      <td>${escapeHtml(item.department)}</td>
+      <td>${escapeHtml(item.room_name)}</td>
+      <td>${escapeHtml(item.room_number)}</td>
+      <td>${escapeHtml(item.equipment)}</td>
+      <td>${escapeHtml(item.date)}</td>
+      <td>${escapeHtml(item.time_in)}</td>
+      <td>${escapeHtml(item.time_out)}</td>
+      <td>${escapeHtml(item.purpose)}</td>
+      <td>${escapeHtml(item.remarks)}</td>
+      <td><button class="secondary" onclick="deleteLog(${item._id})">Delete</button></td>
+    `;
     tableBody.appendChild(tr);
   });
   localStorage.setItem('facultyLogs', JSON.stringify(logs));
   updateReports();
 }
 
-async function uploadToGoogleForm(data){
-  try{
-    const fd = new FormData();
-    for(const k in FORM_ENTRY){ fd.append(FORM_ENTRY[k], data[k]||''); }
-    await fetch(GOOGLE_FORM_ACTION, {method:'POST', mode:'no-cors', body: fd});
-    showToast('✅ Synced to Google Sheets');
-  }catch{ showToast('⚠️ Saved locally (Form offline)'); }
+function setDateTimeNowToForm(){
+  const now = new Date();
+  document.getElementById('date').value = now.toISOString().split('T')[0];
+  // default time_in to now (HH:MM)
+  const hh = String(now.getHours()).padStart(2,'0'), mm = String(now.getMinutes()).padStart(2,'0');
+  document.getElementById('time_in').value = `${hh}:${mm}`;
 }
 
-form.addEventListener('submit', e=>{
+async function uploadToGoogleForm(obj){
+  if (!GOOGLE_FORM_ACTION || GOOGLE_FORM_ACTION.includes('YOUR_FORM_ID')) return;
+  try {
+    const fd = new FormData();
+    for (const k in FORM_ENTRY){
+      const eid = FORM_ENTRY[k];
+      if (!eid) continue;
+      fd.append(eid, obj[k] || '');
+    }
+    // no-cors POST to Google Forms
+    await fetch(GOOGLE_FORM_ACTION, { method:'POST', mode:'no-cors', body: fd });
+    showToast('✅ Synced to Google Sheets (via Form)');
+  } catch(err){
+    console.error('Form upload error', err);
+    showToast('⚠️ Saved locally — form sync failed');
+  }
+}
+
+form.addEventListener('submit', async (e)=>{
   e.preventDefault();
-  const obj={
-    _id:makeId(),
-    created_at:Date.now(),
-    faculty_name:faculty_name.value.trim(),
-    department:department.value.trim(),
-    room_name:room_name.value.trim(),
-    room_number:room_number.value.trim(),
-    equipment:equipment.value.trim(),
-    date:date.value,
-    time_in:time_in.value,
-    time_out:time_out.value,
-    purpose:purpose.value.trim(),
-    remarks:remarks.value.trim()
+  const now = Date.now();
+  const newItem = {
+    _id: makeId(),
+    created_at: now,
+    faculty_name: document.getElementById('faculty_name').value.trim(),
+    department: document.getElementById('department').value.trim(),
+    room_name: document.getElementById('room_name').value.trim(),
+    room_number: document.getElementById('room_number').value.trim(),
+    equipment: document.getElementById('equipment').value.trim(),
+    date: document.getElementById('date').value,
+    time_in: document.getElementById('time_in').value,
+    time_out: document.getElementById('time_out').value,
+    purpose: document.getElementById('purpose').value.trim(),
+    remarks: document.getElementById('remarks').value.trim()
   };
-  logs.push(obj); renderTable();
-  uploadToGoogleForm(obj);
+
+  // save locally and render
+  logs.push(newItem);
+  renderTable();
   form.reset();
+  setDateTimeNowToForm();
+
+  // submit to Google Form (no-cors)
+  uploadToGoogleForm({
+    faculty_name: newItem.faculty_name,
+    department: newItem.department,
+    room_name: newItem.room_name,
+    room_number: newItem.room_number,
+    equipment: newItem.equipment,
+    date: newItem.date,
+    time_in: newItem.time_in,
+    time_out: newItem.time_out,
+    purpose: newItem.purpose,
+    remarks: newItem.remarks
+  });
 });
 
-window.deleteLog = id=>{
-  if(confirm('Delete this entry?')){
-    logs = logs.filter(x=>x._id!==id);
-    renderTable();
-  }
+document.getElementById('clearFormBtn').addEventListener('click', ()=>{
+  form.reset();
+  setDateTimeNowToForm();
+});
+
+window.deleteLog = function(id){
+  if (!confirm('Delete this entry?')) return;
+  logs = logs.filter(x => Number(x._id) !== Number(id));
+  localStorage.setItem('facultyLogs', JSON.stringify(logs));
+  renderTable();
+  showToast('🗑️ Entry deleted successfully');
 };
 
-exportCsvBtn.onclick = ()=>{
-  if(!logs.length) return showToast('⚠️ No logs to export');
-  const headers=['Timestamp','Faculty Name','Department','Room Name','Room #','Equipment','Date','Time In','Time Out','Purpose','Remarks'];
-  const rows=logs.map(x=>[new Date(x.created_at).toLocaleString(),x.faculty_name,x.department,x.room_name,x.room_number,x.equipment,x.date,x.time_in,x.time_out,x.purpose,x.remarks]);
-  const csv=[headers,...rows].map(r=>r.map(c=>`"${String(c||'').replace(/"/g,'""')}"`).join(',')).join('\n');
-  const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob);
-  const a=document.createElement('a'); a.href=url; a.download='faculty_elog.csv'; a.click();
+// export CSV
+exportCsvBtn.addEventListener('click', ()=>{
+  if (!logs.length){ showToast('⚠️ No logs to export'); return; }
+  const headers = ['Timestamp','Faculty Name','Department','Room Name','Room #','Equipment Used','Date','Time In','Time Out','Purpose','Remarks'];
+  const rows = logs.map(r => [
+    new Date(r.created_at).toLocaleString(), r.faculty_name, r.department, r.room_name, r.room_number,
+    r.equipment, r.date, r.time_in, r.time_out, r.purpose, r.remarks
+  ]);
+  const csv = [headers].concat(rows).map(r => r.map(c=>`"${String(c||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], { type:'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download=`faculty_elog_export_${(new Date()).toISOString().slice(0,10)}.csv`; a.click();
   URL.revokeObjectURL(url);
-};
+  showToast('✅ Logs exported as CSV');
+});
 
-printLogsBtn.onclick=()=>window.print();
-printReportsBtn.onclick=()=>{ tabReports.click(); setTimeout(()=>window.print(),500); };
+// print logs (table view)
+printLogsBtn.addEventListener('click', ()=> window.print());
 
-tabLog.onclick=()=>{tabLog.classList.add('active');tabReports.classList.remove('active');viewLog.style.display='';viewReports.style.display='none';};
-tabReports.onclick=()=>{tabReports.classList.add('active');tabLog.classList.remove('active');viewReports.style.display='';viewLog.style.display='none';updateReports();};
+// print reports (report view)
+printReportsBtn.addEventListener('click', ()=>{
+  tabReports.click();
+  // show print container and footer
+  document.querySelectorAll('.reports-print').forEach(el=> el.style.display='block');
+  setTimeout(()=> { window.print(); setTimeout(()=> { document.querySelectorAll('.reports-print').forEach(el=> el.style.display='none'); }, 400); }, 300);
+});
 
+// tabs
+tabLog.addEventListener('click', ()=>{ tabLog.classList.add('active'); tabReports.classList.remove('active'); viewLog.style.display=''; viewReports.style.display='none'; });
+tabReports.addEventListener('click', ()=>{ tabReports.classList.add('active'); tabLog.classList.remove('active'); viewReports.style.display=''; viewLog.style.display='none'; updateReports(); });
+
+// Reports & Charts
 function computeCounts(){
-  const rooms={},equip={},faculty={};
+  const rooms={}, equipment={}, faculty={};
   logs.forEach(l=>{
-    rooms[l.room_name]=(rooms[l.room_name]||0)+1;
-    equip[l.equipment]=(equip[l.equipment]||0)+1;
-    faculty[l.faculty_name]=(faculty[l.faculty_name]||0)+1;
+    const rn = (l.room_name||'(No room)').trim(); rooms[rn] = (rooms[rn]||0) + 1;
+    const eq = (l.equipment||'(No equipment)').trim(); equipment[eq] = (equipment[eq]||0) + 1;
+    const f = (l.faculty_name||'(No name)').trim(); faculty[f] = (faculty[f]||0) + 1;
   });
-  return{rooms,equip,faculty};
+  return { rooms, equipment, faculty };
 }
 
-function populateList(container,obj){
-  container.innerHTML='';
-  const arr=Object.entries(obj).sort((a,b)=>b[1]-a[1]);
-  if(!arr.length){container.innerHTML='<div style="color:#666;">No entries</div>';return;}
-  arr.forEach(([k,v])=>{const d=document.createElement('div');d.className='list-item';d.innerHTML=`<div>${k}</div><div>${v}</div>`;container.appendChild(d);});
+function populateList(container, obj){
+  container.innerHTML = '';
+  const items = Object.entries(obj).sort((a,b)=>b[1]-a[1]);
+  if (!items.length){ container.innerHTML = '<div style="color:#666;padding:6px">No entries</div>'; return; }
+  items.forEach(([k,v])=>{
+    const div = document.createElement('div'); div.className = 'list-item'; div.innerHTML = `<div>${k}</div><div>${v}</div>`; container.appendChild(div);
+  });
 }
 
-let chartRooms,chartEquipment,chartFaculty;
-function updateChart(id,obj,inst){
-  const labels=Object.keys(obj),data=Object.values(obj),ctx=document.getElementById(id).getContext('2d');
-  if(inst){inst.data.labels=labels;inst.data.datasets[0].data=data;inst.update();return inst;}
-  return new Chart(ctx,{type:'bar',data:{labels,datasets:[{data,backgroundColor:'rgba(37,99,235,0.7)'}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});
+let chartRooms, chartEquipment, chartFaculty;
+function updateChart(canvasId, obj, instance){
+  const labels = Object.keys(obj);
+  const data = Object.values(obj);
+  const ctx = document.getElementById(canvasId).getContext('2d');
+  if (instance){ instance.data.labels = labels; instance.data.datasets[0].data = data; instance.update(); return instance; }
+  return new Chart(ctx, { type:'bar', data:{ labels, datasets:[{ data, backgroundColor: labels.map(()=> 'rgba(37,99,235,0.75)') }] }, options:{ plugins:{ legend:{ display:false } }, scales:{ y:{ beginAtZero:true } } } });
 }
 
 function updateReports(){
-  document.getElementById('reportDatePretty').textContent=new Date().toLocaleString();
-  const c=computeCounts();
-  populateList(listRooms,c.rooms);
-  populateList(listEquipment,c.equip);
-  populateList(listFaculty,c.faculty);
-  chartRooms=updateChart('chartRooms',c.rooms,chartRooms);
-  chartEquipment=updateChart('chartEquipment',c.equip,chartEquipment);
-  chartFaculty=updateChart('chartFaculty',c.faculty,chartFaculty);
+  document.getElementById('reportDatePretty').textContent = new Date().toLocaleString();
+  document.getElementById('reportDatePrint').textContent = new Date().toLocaleString();
+  const counts = computeCounts();
+  populateList(document.getElementById('listRooms'), counts.rooms);
+  populateList(document.getElementById('listEquipment'), counts.equipment);
+  populateList(document.getElementById('listFaculty'), counts.faculty);
+  populateList(document.getElementById('printListRooms'), counts.rooms);
+  populateList(document.getElementById('printListEquipment'), counts.equipment);
+  populateList(document.getElementById('printListFaculty'), counts.faculty);
+  chartRooms = updateChart('chartRooms', counts.rooms, chartRooms);
+  chartEquipment = updateChart('chartEquipment', counts.equipment, chartEquipment);
+  chartFaculty = updateChart('chartFaculty', counts.faculty, chartFaculty);
 }
 
+// init
+setDateTimeNowToForm();
 renderTable();
+window.addEventListener('focus', ()=> { if (chartRooms) chartRooms.resize(); if (chartEquipment) chartEquipment.resize(); if (chartFaculty) chartFaculty.resize(); });
 </script>
 </body>
 </html>

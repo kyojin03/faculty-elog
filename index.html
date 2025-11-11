@@ -253,11 +253,7 @@ function renderTable(){
       <td>${escapeHtml(item.time_out)}</td>
       <td>${escapeHtml(item.purpose)}</td>
       <td>${escapeHtml(item.remarks)}</td>
-      <td class="actions">
-  <button class="edit-btn" onclick="editLog(${log.log_id})">Edit</button>
-  <button class="del-btn" onclick="deleteLog(${log.log_id})">Delete</button>
-</td>
-
+      <td><button class="secondary" onclick="deleteLog('${item._id}')">Delete</button></td>
     `;
     tableBody.appendChild(tr);
   });
@@ -335,21 +331,11 @@ document.getElementById('clearFormBtn').addEventListener('click', ()=>{
   setDateTimeNowToForm();
 });
 
-window.deleteLog = function(id) {
-  if (!confirm('Are you sure you want to delete this entry?')) return;
-
-  // Remove from array
-  logs = logs.filter(l => l.log_id !== id);
-
-  // Save back to local storage
-  localStorage.setItem('facultyLogs', JSON.stringify(logs));
-
-  // Re-render table
+window.deleteLog = function(id){
+  if (!confirm('Delete this entry?')) return;
+  logs = logs.filter(x=> x._id !== id);
   renderTable();
-
-  showToast('🗑️ Entry deleted');
 };
-
 
 // export CSV
 exportCsvBtn.addEventListener('click', ()=>{
@@ -433,4 +419,3 @@ window.addEventListener('focus', ()=> { if (chartRooms) chartRooms.resize(); if 
 </script>
 </body>
 </html>
-

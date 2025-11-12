@@ -6,6 +6,7 @@
 <title>Faculty Laboratory Usage System</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
+  
   :root{--gsc-blue:#1e3a8a;--gsc-accent:#2563eb;--gsc-bg:#f1f5f9}
   body{font-family:Segoe UI,Arial,sans-serif;margin:0;background:var(--gsc-bg);color:#222}
   header{background:white;color:var(--gsc-blue);padding:15px 20px;box-shadow:0 4px 10px rgba(0,0,0,.08);border-bottom:4px solid var(--gsc-blue)}
@@ -44,6 +45,14 @@
     .reports-print{ display:block !important; }
     .print-footer { position: fixed; bottom: 0; left:0; right:0; text-align:center; font-size:11px; }
   }
+  label {
+  display: block;
+  font-weight: 600;
+  color: #1e3a8a; /* GSC blue */
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
 </style>
 </head>
 <body>
@@ -428,5 +437,6 @@ window.addEventListener('focus', ()=> { if (chartRooms) chartRooms.resize(); if 
 </script>
 </body>
 </html>
+
 
 

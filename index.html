@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Laboratory eLog — Good Samaritan Colleges</title>
+<title>Faculty Laboratory eLog — Good Samaritan Colleges</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
   :root{--gsc-blue:#1e3a8a;--gsc-accent:#2563eb;--gsc-bg:#f1f5f9}
@@ -52,7 +52,7 @@
       <img src="gs.jfif" class="gsc-logo" alt="GSC logo">
       <div class="header-text">
         <h1>Good Samaritan Colleges</h1>
-        <p>Laboratory Usage System</p>
+        <p>Faculty Laboratory eLog System</p>
       </div>
     </div>
   </header>
@@ -67,7 +67,7 @@
     <section id="view-logbook">
       <div class="card">
         <form id="elogForm">
-          <h2>Log In Form</h2>
+          <h2>Add Faculty Log</h2>
 
           <div class="row">
             <div class="col"><input id="faculty_name" placeholder="Faculty Name" required></div>
@@ -80,7 +80,7 @@
           </div>
 
           <div class="row">
-            <div class="col"><input id="equipment" placeholder="Major Equipment W/ Quantity (Ex. Microsope-1)"></div>
+            <div class="col"><input id="equipment" placeholder="Special / Major Equipment Used (optional)"></div>
             <div class="col"><input type="date" id="date" readonly></div>
           </div>
 
@@ -189,75 +189,58 @@
   </main>
 
   <footer>
-    © 2025 Good Samaritan Colleges | Laboratory Usage System<br>
+    © 2025 Good Samaritan Colleges | Faculty Laboratory eLog System<br>
     Prepared by Piolo L. Bernardino — Laboratory Custodian
   </footer>
 
   <div id="toast" class="toast"></div>
+
 <script>
-/* ----- Google Form Config ----- */
-const GOOGLE_FORM_ACTION =
-  "https://docs.google.com/forms/d/e/1FAIpQLSdPZLGabjI36s4iFdU-grRUK0ouLvoYrkV391MLxPrRWdZiHQ/formResponse";
+/* ----- Google Form config (from your prefilled link) ----- */
+const GOOGLE_FORM_ACTION = "https://docs.google.com/forms/d/e/1FAIpQLSdPZLGabjI36s4iFdU-grRUK0ouLvoYrkV391MLxPrRWdZiHQ/formResponse";
 const FORM_ENTRY = {
-  faculty_name: "entry.694323400",
-  department: "entry.1656788187",
-  room_name: "entry.1132289973",
-  room_number: "entry.19898501",
-  equipment: "entry.743283452",
-  date: "entry.1998901142",
-  time_in: "entry.736543893",
-  time_out: "entry.1466121044",
-  purpose: "entry.589165766",
-  remarks: "entry.1595227859",
+  faculty_name:  "entry.694323400",
+  department:    "entry.1656788187",
+  room_name:     "entry.1132289973",
+  room_number:   "entry.19898501",
+  equipment:     "entry.743283452",
+  date:          "entry.1998901142",
+  time_in:       "entry.736543893",
+  time_out:      "entry.1466121044",
+  purpose:       "entry.589165766",
+  remarks:       "entry.1595227859"
 };
-
-/* ----- Public Google Sheet (live reports) ----- */
-const GOOGLE_SHEET_CSV =
-  "https://docs.google.com/spreadsheets/d/1BFmqX4hjDp73GpYzFZFTwx22l-l5WtbU4UPh2ncr4hs/gviz/tq?tqx=out:csv";
-
 /* ----------------------------------------------------- */
-const form = document.getElementById("elogForm");
-const tableBody = document.querySelector("#elogTable tbody");
-const exportCsvBtn = document.getElementById("exportCsvBtn");
-const printLogsBtn = document.getElementById("printLogsBtn");
-const printReportsBtn = document.getElementById("printReportsBtn");
-const toastEl = document.getElementById("toast");
 
-const tabLog = document.getElementById("tab-logbook");
-const tabReports = document.getElementById("tab-reports");
-const viewLog = document.getElementById("view-logbook");
-const viewReports = document.getElementById("view-reports");
+const form = document.getElementById('elogForm');
+const tableBody = document.querySelector('#elogTable tbody');
+const exportCsvBtn = document.getElementById('exportCsvBtn');
+const printLogsBtn = document.getElementById('printLogsBtn');
+const printReportsBtn = document.getElementById('printReportsBtn');
+const toastEl = document.getElementById('toast');
 
-let logs = JSON.parse(localStorage.getItem("facultyLogs")) || [];
+const tabLog = document.getElementById('tab-logbook');
+const tabReports = document.getElementById('tab-reports');
+const viewLog = document.getElementById('view-logbook');
+const viewReports = document.getElementById('view-reports');
 
-/* ========== UTILITIES ========== */
-function makeId() {
-  return Date.now() + Math.floor(Math.random() * 1000);
-}
-function showToast(msg, duration = 2500) {
+let logs = JSON.parse(localStorage.getItem('facultyLogs')) || [];
+
+// use timestamp as unique id for delete/edit
+function makeId(){ return Date.now() + Math.floor(Math.random()*1000); }
+
+function showToast(msg, duration=2500){
   toastEl.textContent = msg;
-  toastEl.style.display = "block";
-  setTimeout(() => (toastEl.style.display = "none"), duration);
-}
-function escapeHtml(s) {
-  if (!s) return "";
-  return String(s).replace(/[&<>"']/g, (c) =>
-    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])
-  );
-}
-function setDateTimeNowToForm() {
-  const now = new Date();
-  document.getElementById("date").value = now.toISOString().split("T")[0];
-  const hh = String(now.getHours()).padStart(2, "0"),
-    mm = String(now.getMinutes()).padStart(2, "0");
-  document.getElementById("time_in").value = `${hh}:${mm}`;
+  toastEl.style.display='block';
+  setTimeout(()=> toastEl.style.display='none', duration);
 }
 
-/* ========== TABLE RENDER ========== */
-function renderTable() {
-  tableBody.innerHTML = "";
-  logs.forEach((item) => {
-    const tr = document.createElement("tr");
+function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function renderTable(){
+  tableBody.innerHTML = '';
+  logs.forEach(item=>{
+    const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${new Date(item.created_at).toLocaleString()}</td>
       <td>${escapeHtml(item.faculty_name)}</td>
@@ -270,168 +253,171 @@ function renderTable() {
       <td>${escapeHtml(item.time_out)}</td>
       <td>${escapeHtml(item.purpose)}</td>
       <td>${escapeHtml(item.remarks)}</td>
-      <td><button class="secondary" onclick="deleteLog('${item._id}')">Delete</button></td>
+      <td><button class="secondary" onclick="deleteLog(${item._id})">Delete</button></td>
     `;
     tableBody.appendChild(tr);
   });
-  localStorage.setItem("facultyLogs", JSON.stringify(logs));
+  localStorage.setItem('facultyLogs', JSON.stringify(logs));
   updateReports();
 }
 
-/* ========== FORM SUBMIT ========== */
-form.addEventListener("submit", async (e) => {
+function setDateTimeNowToForm(){
+  const now = new Date();
+  document.getElementById('date').value = now.toISOString().split('T')[0];
+  // default time_in to now (HH:MM)
+  const hh = String(now.getHours()).padStart(2,'0'), mm = String(now.getMinutes()).padStart(2,'0');
+  document.getElementById('time_in').value = `${hh}:${mm}`;
+}
+
+async function uploadToGoogleForm(obj){
+  if (!GOOGLE_FORM_ACTION || GOOGLE_FORM_ACTION.includes('YOUR_FORM_ID')) return;
+  try {
+    const fd = new FormData();
+    for (const k in FORM_ENTRY){
+      const eid = FORM_ENTRY[k];
+      if (!eid) continue;
+      fd.append(eid, obj[k] || '');
+    }
+    // no-cors POST to Google Forms
+    await fetch(GOOGLE_FORM_ACTION, { method:'POST', mode:'no-cors', body: fd });
+    showToast('✅ Synced to Google Sheets (via Form)');
+  } catch(err){
+    console.error('Form upload error', err);
+    showToast('⚠️ Saved locally — form sync failed');
+  }
+}
+
+form.addEventListener('submit', async (e)=>{
   e.preventDefault();
+  const now = Date.now();
   const newItem = {
     _id: makeId(),
-    created_at: Date.now(),
-    faculty_name: document.getElementById("faculty_name").value.trim(),
-    department: document.getElementById("department").value.trim(),
-    room_name: document.getElementById("room_name").value.trim(),
-    room_number: document.getElementById("room_number").value.trim(),
-    equipment: document.getElementById("equipment").value.trim(),
-    date: document.getElementById("date").value,
-    time_in: document.getElementById("time_in").value,
-    time_out: document.getElementById("time_out").value,
-    purpose: document.getElementById("purpose").value.trim(),
-    remarks: document.getElementById("remarks").value.trim(),
+    created_at: now,
+    faculty_name: document.getElementById('faculty_name').value.trim(),
+    department: document.getElementById('department').value.trim(),
+    room_name: document.getElementById('room_name').value.trim(),
+    room_number: document.getElementById('room_number').value.trim(),
+    equipment: document.getElementById('equipment').value.trim(),
+    date: document.getElementById('date').value,
+    time_in: document.getElementById('time_in').value,
+    time_out: document.getElementById('time_out').value,
+    purpose: document.getElementById('purpose').value.trim(),
+    remarks: document.getElementById('remarks').value.trim()
   };
+
+  // save locally and render
   logs.push(newItem);
   renderTable();
   form.reset();
   setDateTimeNowToForm();
-  uploadToGoogleForm(newItem);
+
+  // submit to Google Form (no-cors)
+  uploadToGoogleForm({
+    faculty_name: newItem.faculty_name,
+    department: newItem.department,
+    room_name: newItem.room_name,
+    room_number: newItem.room_number,
+    equipment: newItem.equipment,
+    date: newItem.date,
+    time_in: newItem.time_in,
+    time_out: newItem.time_out,
+    purpose: newItem.purpose,
+    remarks: newItem.remarks
+  });
 });
 
-async function uploadToGoogleForm(obj) {
-  try {
-    const fd = new FormData();
-    for (const k in FORM_ENTRY) fd.append(FORM_ENTRY[k], obj[k] || "");
-    await fetch(GOOGLE_FORM_ACTION, { method: "POST", mode: "no-cors", body: fd });
-    showToast("✅ Synced to Google Sheets (via Form)");
-  } catch {
-    showToast("⚠️ Saved locally — form sync failed");
-  }
-}
+document.getElementById('clearFormBtn').addEventListener('click', ()=>{
+  form.reset();
+  setDateTimeNowToForm();
+});
 
-/* ========== DELETE + EXPORT ========== */
-window.deleteLog = function (id) {
-  if (!confirm("Delete this entry?")) return;
-  logs = logs.filter((x) => x._id !== id);
+window.deleteLog = function(id){
+  if (!confirm('Delete this entry?')) return;
+  logs = logs.filter(x => Number(x._id) !== Number(id));
+  localStorage.setItem('facultyLogs', JSON.stringify(logs));
   renderTable();
+  showToast('🗑️ Entry deleted successfully');
 };
-exportCsvBtn.addEventListener("click", () => {
-  if (!logs.length) return showToast("⚠️ No logs to export");
-  const headers = [
-    "Timestamp",
-    "Faculty Name",
-    "Department",
-    "Room Name",
-    "Room #",
-    "Equipment Used",
-    "Date",
-    "Time In",
-    "Time Out",
-    "Purpose",
-    "Remarks",
-  ];
-  const rows = logs.map((r) => [
-    new Date(r.created_at).toLocaleString(),
-    r.faculty_name,
-    r.department,
-    r.room_name,
-    r.room_number,
-    r.equipment,
-    r.date,
-    r.time_in,
-    r.time_out,
-    r.purpose,
-    r.remarks,
+
+// export CSV
+exportCsvBtn.addEventListener('click', ()=>{
+  if (!logs.length){ showToast('⚠️ No logs to export'); return; }
+  const headers = ['Timestamp','Faculty Name','Department','Room Name','Room #','Equipment Used','Date','Time In','Time Out','Purpose','Remarks'];
+  const rows = logs.map(r => [
+    new Date(r.created_at).toLocaleString(), r.faculty_name, r.department, r.room_name, r.room_number,
+    r.equipment, r.date, r.time_in, r.time_out, r.purpose, r.remarks
   ]);
-  const csv = [headers]
-    .concat(rows)
-    .map((r) =>
-      r.map((c) => `"${String(c || "").replace(/"/g, '""')}"`).join(",")
-    )
-    .join("\n");
-  const blob = new Blob([csv], { type: "text/csv" });
+  const csv = [headers].concat(rows).map(r => r.map(c=>`"${String(c||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], { type:'text/csv' });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "faculty_elog_export.csv";
-  a.click();
+  const a = document.createElement('a'); a.href=url; a.download=`faculty_elog_export_${(new Date()).toISOString().slice(0,10)}.csv`; a.click();
   URL.revokeObjectURL(url);
+  showToast('✅ Logs exported as CSV');
 });
 
-/* ========== REPORTS + LIVE SHEET ========== */
-function updateReports() {
-  document.getElementById("reportDatePretty").textContent = new Date().toLocaleString();
-  document.getElementById("reportDatePrint").textContent = new Date().toLocaleString();
-  // Update local charts
-  const counts = computeCounts();
-  populateList(document.getElementById("listRooms"), counts.rooms);
-  populateList(document.getElementById("listEquipment"), counts.equipment);
-  populateList(document.getElementById("listFaculty"), counts.faculty);
-  updateChart("chartRooms", counts.rooms);
-  updateChart("chartEquipment", counts.equipment);
-  updateChart("chartFaculty", counts.faculty);
+// print logs (table view)
+printLogsBtn.addEventListener('click', ()=> window.print());
 
-  // Embed live sheet (everyone can view)
-  const liveDiv = document.getElementById("liveSheetView");
-  if (liveDiv && !liveDiv.innerHTML.trim()) {
-    liveDiv.innerHTML = `
-      <h3 style="color:#1e3a8a;margin-top:16px;">📊 Live Google Sheet Report</h3>
-      <iframe src="https://docs.google.com/spreadsheets/d/1BFmqX4hjDp73GpYzFZFTwx22l-l5WtbU4UPh2ncr4hs/preview"
-              width="100%" height="600" style="border:1px solid #ccc;border-radius:8px;">
-      </iframe>`;
-  }
-}
+// print reports (report view)
+printReportsBtn.addEventListener('click', ()=>{
+  tabReports.click();
+  // show print container and footer
+  document.querySelectorAll('.reports-print').forEach(el=> el.style.display='block');
+  setTimeout(()=> { window.print(); setTimeout(()=> { document.querySelectorAll('.reports-print').forEach(el=> el.style.display='none'); }, 400); }, 300);
+});
 
-/* ========== CHARTS ========== */
-function computeCounts() {
-  const rooms = {}, equipment = {}, faculty = {};
-  logs.forEach((l) => {
-    rooms[l.room_name || "(No room)"] = (rooms[l.room_name] || 0) + 1;
-    equipment[l.equipment || "(No equipment)"] = (equipment[l.equipment] || 0) + 1;
-    faculty[l.faculty_name || "(No name)"] = (faculty[l.faculty_name] || 0) + 1;
+// tabs
+tabLog.addEventListener('click', ()=>{ tabLog.classList.add('active'); tabReports.classList.remove('active'); viewLog.style.display=''; viewReports.style.display='none'; });
+tabReports.addEventListener('click', ()=>{ tabReports.classList.add('active'); tabLog.classList.remove('active'); viewReports.style.display=''; viewLog.style.display='none'; updateReports(); });
+
+// Reports & Charts
+function computeCounts(){
+  const rooms={}, equipment={}, faculty={};
+  logs.forEach(l=>{
+    const rn = (l.room_name||'(No room)').trim(); rooms[rn] = (rooms[rn]||0) + 1;
+    const eq = (l.equipment||'(No equipment)').trim(); equipment[eq] = (equipment[eq]||0) + 1;
+    const f = (l.faculty_name||'(No name)').trim(); faculty[f] = (faculty[f]||0) + 1;
   });
   return { rooms, equipment, faculty };
 }
-function populateList(container, obj) {
-  container.innerHTML = "";
-  Object.entries(obj)
-    .sort((a, b) => b[1] - a[1])
-    .forEach(([k, v]) => {
-      const div = document.createElement("div");
-      div.className = "list-item";
-      div.innerHTML = `<div>${k}</div><div>${v}</div>`;
-      container.appendChild(div);
-    });
-}
-function updateChart(id, obj) {
-  const ctx = document.getElementById(id).getContext("2d");
-  const labels = Object.keys(obj);
-  const data = Object.values(obj);
-  new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels,
-      datasets: [
-        { data, backgroundColor: labels.map(() => "rgba(37,99,235,0.75)") },
-      ],
-    },
-    options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } },
+
+function populateList(container, obj){
+  container.innerHTML = '';
+  const items = Object.entries(obj).sort((a,b)=>b[1]-a[1]);
+  if (!items.length){ container.innerHTML = '<div style="color:#666;padding:6px">No entries</div>'; return; }
+  items.forEach(([k,v])=>{
+    const div = document.createElement('div'); div.className = 'list-item'; div.innerHTML = `<div>${k}</div><div>${v}</div>`; container.appendChild(div);
   });
 }
 
-/* ========== INIT ========== */
+let chartRooms, chartEquipment, chartFaculty;
+function updateChart(canvasId, obj, instance){
+  const labels = Object.keys(obj);
+  const data = Object.values(obj);
+  const ctx = document.getElementById(canvasId).getContext('2d');
+  if (instance){ instance.data.labels = labels; instance.data.datasets[0].data = data; instance.update(); return instance; }
+  return new Chart(ctx, { type:'bar', data:{ labels, datasets:[{ data, backgroundColor: labels.map(()=> 'rgba(37,99,235,0.75)') }] }, options:{ plugins:{ legend:{ display:false } }, scales:{ y:{ beginAtZero:true } } } });
+}
+
+function updateReports(){
+  document.getElementById('reportDatePretty').textContent = new Date().toLocaleString();
+  document.getElementById('reportDatePrint').textContent = new Date().toLocaleString();
+  const counts = computeCounts();
+  populateList(document.getElementById('listRooms'), counts.rooms);
+  populateList(document.getElementById('listEquipment'), counts.equipment);
+  populateList(document.getElementById('listFaculty'), counts.faculty);
+  populateList(document.getElementById('printListRooms'), counts.rooms);
+  populateList(document.getElementById('printListEquipment'), counts.equipment);
+  populateList(document.getElementById('printListFaculty'), counts.faculty);
+  chartRooms = updateChart('chartRooms', counts.rooms, chartRooms);
+  chartEquipment = updateChart('chartEquipment', counts.equipment, chartEquipment);
+  chartFaculty = updateChart('chartFaculty', counts.faculty, chartFaculty);
+}
+
+// init
 setDateTimeNowToForm();
 renderTable();
+window.addEventListener('focus', ()=> { if (chartRooms) chartRooms.resize(); if (chartEquipment) chartEquipment.resize(); if (chartFaculty) chartFaculty.resize(); });
 </script>
-
-
 </body>
 </html>
-
-
-
-

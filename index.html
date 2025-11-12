@@ -6,7 +6,6 @@
 <title>Faculty Laboratory Usage System</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
-  
   :root{--gsc-blue:#1e3a8a;--gsc-accent:#2563eb;--gsc-bg:#f1f5f9}
   body{font-family:Segoe UI,Arial,sans-serif;margin:0;background:var(--gsc-bg);color:#222}
   header{background:white;color:var(--gsc-blue);padding:15px 20px;box-shadow:0 4px 10px rgba(0,0,0,.08);border-bottom:4px solid var(--gsc-blue)}
@@ -45,14 +44,6 @@
     .reports-print{ display:block !important; }
     .print-footer { position: fixed; bottom: 0; left:0; right:0; text-align:center; font-size:11px; }
   }
-  label {
-  display: block;
-  font-weight: 600;
-  color: #1e3a8a; /* GSC blue */
-  font-size: 13px;
-  margin-bottom: 4px;
-}
-
 </style>
 </head>
 <body>
@@ -89,22 +80,9 @@
           </div>
 
           <div class="row">
-  <div class="row">
-  <div class="col">
-    <div style="display:flex;flex-direction:column;">
-      <label for="time_in" style="font-weight:600;font-size:13px;color:#1e3a8a;margin-bottom:4px;">Time In</label>
-      <input type="time" id="time_in" required>
-    </div>
-  </div>
-  <div class="col">
-    <div style="display:flex;flex-direction:column;">
-      <label for="time_out" style="font-weight:600;font-size:13px;color:#1e3a8a;margin-bottom:4px;">Time Out</label>
-      <input type="time" id="time_out" required>
-    </div>
-  </div>
-</div>
-
-
+            <div class="col"><input id="equipment" placeholder="Major Equipment w/ quantity (Ex. Microscope 1)"></div>
+            <div class="col"><input type="date" id="date" readonly></div>
+          </div>
 
           <div class="row">
             <div class="col"><input type="time" id="time_in" required></div>
@@ -443,7 +421,5 @@ window.addEventListener('focus', ()=> { if (chartRooms) chartRooms.resize(); if 
 </script>
 </body>
 </html>
-
-
 
 

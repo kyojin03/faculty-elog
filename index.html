@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Faculty Laboratory eLog — Good Samaritan Colleges</title>
+<title>Faculty Laboratory Usage System</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
   :root{--gsc-blue:#1e3a8a;--gsc-accent:#2563eb;--gsc-bg:#f1f5f9}
@@ -52,7 +52,7 @@
       <img src="gs.jfif" class="gsc-logo" alt="GSC logo">
       <div class="header-text">
         <h1>Good Samaritan Colleges</h1>
-        <p>Faculty Laboratory eLog System</p>
+        <p>Laboratory Usage System</p>
       </div>
     </div>
   </header>
@@ -67,7 +67,7 @@
     <section id="view-logbook">
       <div class="card">
         <form id="elogForm">
-          <h2>Add Faculty Log</h2>
+          <h2>Log in Form</h2>
 
           <div class="row">
             <div class="col"><input id="faculty_name" placeholder="Faculty Name" required></div>
@@ -80,7 +80,7 @@
           </div>
 
           <div class="row">
-            <div class="col"><input id="equipment" placeholder="Special / Major Equipment Used (optional)"></div>
+            <div class="col"><input id="equipment" placeholder="Major Equipment w/ quantity (Ex. Microscope 1)"></div>
             <div class="col"><input type="date" id="date" readonly></div>
           </div>
 
@@ -421,3 +421,4 @@ window.addEventListener('focus', ()=> { if (chartRooms) chartRooms.resize(); if 
 </script>
 </body>
 </html>
+

@@ -89,15 +89,21 @@
           </div>
 
           <div class="row">
+  <div class="row">
   <div class="col">
-    <label for="time_in">Time In</label>
-    <input type="time" id="time_in" required>
+    <div style="display:flex;flex-direction:column;">
+      <label for="time_in" style="font-weight:600;font-size:13px;color:#1e3a8a;margin-bottom:4px;">Time In</label>
+      <input type="time" id="time_in" required>
+    </div>
   </div>
   <div class="col">
-    <label for="time_out">Time Out</label>
-    <input type="time" id="time_out" required>
+    <div style="display:flex;flex-direction:column;">
+      <label for="time_out" style="font-weight:600;font-size:13px;color:#1e3a8a;margin-bottom:4px;">Time Out</label>
+      <input type="time" id="time_out" required>
+    </div>
   </div>
 </div>
+
 
 
           <div class="row">
@@ -437,6 +443,7 @@ window.addEventListener('focus', ()=> { if (chartRooms) chartRooms.resize(); if 
 </script>
 </body>
 </html>
+
 
 
 

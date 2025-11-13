@@ -46,6 +46,11 @@ label {
   .card table{display:block;width:100%;overflow-x:auto}
   #elogTable{table-layout:auto}
   @media print { nav, .controls, form, footer, .toast { display:none !important; } .reports-print{ display:block !important; } }
+  /* Make "Log in Form" title blue only */
+form h2 {
+  color: var(--gsc-blue) !important;
+}
+
 </style>
 </head>
 <body>
@@ -288,6 +293,7 @@ renderTable();
 </script>
 </body>
 </html>
+
 
 
 

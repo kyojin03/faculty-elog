@@ -67,50 +67,74 @@
     <section id="view-logbook">
       <div class="card">
         <form id="elogForm">
-          <h2>Log in Form</h2>
+  <h2>Log in Form</h2>
 
-          <div class="row">
-            <div class="col"><input id="faculty_name" placeholder="Faculty Name" required></div>
-            <div class="col"><input id="department" placeholder="Department" required></div>
-          </div>
-
-          <div class="row">
-            <div class="col"><input id="room_name" placeholder="Laboratory Room Name" required></div>
-            <div class="col"><input id="room_number" placeholder="Room Number (required)"></div>
-          </div>
-
-         <div class="row">
-  <div class="col">
-    <label for="equipment" style="font-weight:600;font-size:13px;color:#1e3a8a;">Major Equipment Used</label>
-    <input id="equipment" placeholder="(Ex. Microscope 1)">
+  <!-- Faculty and Department -->
+  <div class="row">
+    <div class="col">
+      <label for="faculty_name" style="font-weight:600;font-size:13px;color:#1e3a8a;">Faculty Name</label>
+      <input id="faculty_name" placeholder="Faculty Name" required>
+    </div>
+    <div class="col">
+      <label for="department" style="font-weight:600;font-size:13px;color:#1e3a8a;">Department</label>
+      <input id="department" placeholder="Department" required>
+    </div>
   </div>
-  <div class="col">
-    <label for="date" style="font-weight:600;font-size:13px;color:#1e3a8a;">Date Requested</label>
-    <input type="date" id="date" readonly>
+
+  <!-- Room details -->
+  <div class="row">
+    <div class="col">
+      <label for="room_name" style="font-weight:600;font-size:13px;color:#1e3a8a;">Laboratory Room Name</label>
+      <input id="room_name" placeholder="Laboratory Room Name" required>
+    </div>
+    <div class="col">
+      <label for="room_number" style="font-weight:600;font-size:13px;color:#1e3a8a;">Room Number (optional)</label>
+      <input id="room_number" placeholder="Room Number (optional)">
+    </div>
   </div>
-</div>
 
-
-          <div class="row">
-              <div class="col">
-                <label for="time_in" style="font-weight:600;font-size:13px;color:#1e3a8a;">Time In</label>
-                <input type="time" id="time_in" required>
-            </div>
-  <div class="col">
-    <label for="time_out" style="font-weight:600;font-size:13px;color:#1e3a8a;">Time Out</label>
-    <input type="time" id="time_out" required>
+  <!-- Equipment and Date -->
+  <div class="row">
+    <div class="col">
+      <label for="equipment" style="font-weight:600;font-size:13px;color:#1e3a8a;">Major Equipment Used</label>
+      <input id="equipment" placeholder="Ex. Microscope 1">
+    </div>
+    <div class="col">
+      <label for="date" style="font-weight:600;font-size:13px;color:#1e3a8a;">Date Requested</label>
+      <input type="date" id="date" readonly>
+    </div>
   </div>
-</div>
 
+  <!-- Time In / Out -->
+  <div class="row">
+    <div class="col">
+      <label for="time_in" style="font-weight:600;font-size:13px;color:#1e3a8a;">Time In</label>
+      <input type="time" id="time_in" required>
+    </div>
+    <div class="col">
+      <label for="time_out" style="font-weight:600;font-size:13px;color:#1e3a8a;">Time Out</label>
+      <input type="time" id="time_out" required>
+    </div>
+  </div>
 
-          <input id="purpose" placeholder="Purpose / Activity" required>
-          <textarea id="remarks" rows="2" placeholder="Remarks (optional)"></textarea>
+  <!-- Purpose and Remarks -->
+  <div>
+    <label for="purpose" style="font-weight:600;font-size:13px;color:#1e3a8a;">Purpose / Activity</label>
+    <input id="purpose" placeholder="Purpose / Activity" required>
+  </div>
 
-          <div style="display:flex;gap:10px;justify-content:center;">
-            <button class="primary" type="submit">Add Log</button>
-            <button class="secondary" id="clearFormBtn" type="button">Clear</button>
-          </div>
-        </form>
+  <div>
+    <label for="remarks" style="font-weight:600;font-size:13px;color:#1e3a8a;">Remarks (optional)</label>
+    <textarea id="remarks" rows="2" placeholder="Remarks (optional)"></textarea>
+  </div>
+
+  <!-- Buttons -->
+  <div style="display:flex;gap:10px;justify-content:center;">
+    <button class="primary" type="submit">Add Log</button>
+    <button class="secondary" id="clearFormBtn" type="button">Clear</button>
+  </div>
+</form>
+
       </div>
 
       <div class="card">
@@ -435,6 +459,7 @@ window.addEventListener('focus', ()=> { if (chartRooms) chartRooms.resize(); if 
 </script>
 </body>
 </html>
+
 
 
 

@@ -326,7 +326,6 @@ table {
           <table id="elogTable">
             <thead>
               <tr>
-                <th>Timestamp</th>
                 <th>Faculty</th>
                 <th>Dept</th>
                 <th>Room</th>
@@ -568,7 +567,7 @@ function populateDeptFilter(){
 // ========== EXPORT & PRINT ===========
 exportCsvBtn.onclick = ()=>{
   if(!logs.length) return showToast('⚠️ No logs');
-  const h = ['Timestamp','Faculty','Dept','Room','Room#','Equip','Date','In','Out','Purpose','Remarks'];
+  const h = [,'Faculty','Dept','Room','Room#','Equip','Date','In','Out','Purpose','Remarks'];
   const rows = logs.map(r=>[new Date(r.created_at).toLocaleString(), r.faculty_name, r.department, r.room_name, r.room_number, r.equipment, r.date, r.time_in, r.time_out, r.purpose, r.remarks]);
   const csv = [h, ...rows].map(r=>r.map(c=>`"${String(c||'').replace(/"/g,'""')}"`).join(',')).join('\n');
   const blob = new Blob([csv], {type:'text/csv'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'faculty_logs.csv'; a.click();
@@ -643,5 +642,6 @@ window.addEventListener('beforeunload', e=>{ if(faculty_name.value||purpose.valu
 </script>
 </body>
 </html>
+
 
 

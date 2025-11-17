@@ -7,8 +7,6 @@
 <link rel="icon" type="image/png" href="gs.jfif">
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<!-- jsQR for QR scanning -->
-<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 <style>
   :root{--gsc-blue:#0f172a;--gsc-accent:#2563eb;--gsc-bg:#f8fafc;--muted:#64748b}
   *{box-sizing:border-box}
@@ -46,10 +44,6 @@
   .modal{width:100%;max-width:760px;background:white;border-radius:12px;padding:16px}
   .modal .row{margin-top:8px}
   .small{font-size:12px;color:var(--muted)}
-  /* signature pad */
-  #sigCanvas{width:100%;height:220px;border:1px dashed #cbd5e1;border-radius:8px;background:#fff}
-  /* QR video */
-  #videoPreview{width:100%;height:320px;background:#000;border-radius:8px}
   .chip{display:inline-block;padding:6px 8px;border-radius:999px;border:1px solid #eef2ff;background:white}
   @media (min-width:900px){ .reports-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px} }
   @media print { nav, .controls, form, footer, .toast, .modal-backdrop { display:none !important; } }
@@ -210,14 +204,6 @@ table {
 }
 
 /* ------------------------------
-   QR READER FIX
--------------------------------*/
-#scanner-preview {
-  width: 100% !important;
-  height: auto !important;
-}
-
-/* ------------------------------
    RESPONSIVE (KEEP DESIGN)
 -------------------------------*/
 @media (max-width: 768px) {
@@ -361,7 +347,7 @@ table {
 <script>
 // ========== CONFIG =============
 const GOOGLE_FORM_ACTION = "https://docs.google.com/forms/d/e/1FAIpQLSdPZLGabjI36s4iFdU-grRUK0ouLvoYrkV391MLxPrRWdZiHQ/formResponse";
-const FORM_ENTRY = {faculty_name:"entry.694323400",department:"entry.1656788187",room_name:"entry.1132289973",room_number:"entry.19898501",equipment:"entry.743283452",date:"entry.1998901142",time_in:"entry.736543893",time_out:"entry.1466121044",purpose:"entry.589165766",remarks:"entry.1595227859",signature:"entry.999999999"};
+const FORM_ENTRY = {faculty_name:"entry.694323400",department:"entry.1656788187",room_name:"entry.1132289973",room_number:"entry.19898501",equipment:"entry.743283452",date:"entry.1998901142",time_in:"entry.736543893",time_out:"entry.1466121044",purpose:"entry.589165766",remarks:"entry.1595227859"};
 const SHEET_ID = "1BFmqX4hjDp73GpYzFZFTwx22l-l5WtbU4UPh2ncr4hs";
 const SHEET_NAME = "Form Responses 1";
 // ========== ELEMENTS ===========
@@ -381,8 +367,6 @@ const filterDateStart = document.getElementById('filterDateStart');
 const filterDateEnd = document.getElementById('filterDateEnd');
 const clearFilters = document.getElementById('clearFilters');
 const loadSheetBtn = document.getElementById('loadSheetBtn');
-
-
 
 // charts
 let chartRooms, chartEquipment, chartFaculty;
@@ -427,7 +411,7 @@ form.addEventListener('submit', async e =>{
   logs.push(newItem);
   localStorage.setItem('facultyLogs_v2', JSON.stringify(logs));
   renderTable();
-  form.reset(); sigDataUrl=''; setDefaultDateTime(); populateDeptFilter();
+  form.reset(); setDefaultDateTime(); populateDeptFilter();
   showToast('✅ Log added locally');
   // attempt to sync
   enqueueSync(newItem);
@@ -444,10 +428,6 @@ async function enqueueSync(item){
 async function uploadToGoogleForm(obj){
   const fd = new FormData();
   for(const k in FORM_ENTRY) fd.append(FORM_ENTRY[k], obj[k] || '');
-  // signature: convert dataURL to blob if present
-  if(obj.signature){
-    fd.set(FORM_ENTRY['signature'], obj.signature);
-  }
   const res = await fetch(GOOGLE_FORM_ACTION, {method:'POST', mode:'no-cors', body: fd});
   return res;
 }
@@ -537,61 +517,4 @@ async function fetchFromSheet(){
     const text = await res.text();
     const rows = text.trim().split('\n').map(r=>r.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/));
     rows.shift();
-    logs = rows.map(r=>({_id: makeId(), created_at: Date.now(), faculty_name: r[1]||'', department: r[2]||'', room_name: r[3]||'', room_number: r[4]||'', equipment: r[5]||'', date: r[6]||'', time_in: r[7]||'', time_out: r[8]||'', purpose: r[9]||'', remarks: r[10]||'', signature: ''}));
-    localStorage.setItem('facultyLogs_v2', JSON.stringify(logs)); renderTable(); showToast('📊 Live data loaded from Google Sheets');
-  }catch(err){ console.error(err); showToast('⚠️ Could not load live data'); }
-}
-
-// auto-refresh while reports visible
-setInterval(()=>{ if(viewReports.style.display !== 'none') fetchFromSheet(); }, 60000);
-
-// ========== REPORTS (charts) ===========
-function computeCounts(){ const rooms={}, eq={}, fac={}; logs.forEach(l=>{ rooms[l.room_name]=(rooms[l.room_name]||0)+1; eq[l.equipment]=(eq[l.equipment]||0)+1; fac[l.faculty_name]=(fac[l.faculty_name]||0)+1; }); return {rooms: eqEmpty(rooms), equipment: eqEmpty(eq), faculty: eqEmpty(fac)} }
-function eqEmpty(o){ return Object.keys(o).length? o : {'No data':0}; }
-function populateList(c,o){ c.innerHTML=''; Object.entries(o).sort((a,b)=>b[1]-a[1]).forEach(([k,v])=>{ c.innerHTML += `<div style="display:flex;justify-content:space-between;padding:6px 4px;border-bottom:1px dashed #f1f6ff;font-size:13px"><div>${escapeHtml(k)}</div><div>${v}</div></div>` }); }
-function updateChart(id,obj,inst){ const ctx = document.getElementById(id).getContext('2d'); const l = Object.keys(obj), d = Object.values(obj); if(inst){ inst.data.labels = l; inst.data.datasets[0].data = d; inst.update(); return inst; } return new Chart(ctx,{type:'bar',data:{labels:l,datasets:[{data:d}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}}); }
-function updateReports(){ document.getElementById('reportDatePretty').textContent = new Date().toLocaleString(); const c = computeCounts(); populateList(document.getElementById('listRooms'), c.rooms); populateList(document.getElementById('listEquipment'), c.equipment); populateList(document.getElementById('listFaculty'), c.faculty); chartRooms = updateChart('chartRooms', c.rooms, chartRooms); chartEquipment = updateChart('chartEquipment', c.equipment, chartEquipment); chartFaculty = updateChart('chartFaculty', c.faculty, chartFaculty); }
-
-// ========== SIGNATURE PAD ===========
-function fitCanvas(){ const r = sigCanvas.getBoundingClientRect(); sigCanvas.width = Math.floor(r.width); sigCanvas.height = Math.floor(r.height); sigCtx.lineWidth = 2; sigCtx.lineJoin = 'round'; sigCtx.lineCap = 'round'; sigCtx.strokeStyle = '#111827'; }
-window.addEventListener('resize', fitCanvas);
-
-sigCanvas.addEventListener('pointerdown', (e)=>{ drawing=true; const p = getPos(e); lastPos = p; });
-sigCanvas.addEventListener('pointermove', (e)=>{ if(!drawing) return; const p = getPos(e); sigCtx.beginPath(); sigCtx.moveTo(lastPos.x,lastPos.y); sigCtx.lineTo(p.x,p.y); sigCtx.stroke(); lastPos = p; });
-window.addEventListener('pointerup', ()=>{ drawing=false; });
-function getPos(e){ const r = sigCanvas.getBoundingClientRect(); return {x: e.clientX - r.left, y: e.clientY - r.top}; }
-
-document.getElementById('sigBtn').addEventListener('click', ()=>{ modalSig.style.display='flex'; fitCanvas(); sigCtx.fillStyle='#fff'; sigCtx.fillRect(0,0,sigCanvas.width,sigCanvas.height); });
-
-document.getElementById('clearSig').addEventListener('click', ()=>{ sigCtx.clearRect(0,0,sigCanvas.width,sigCanvas.height); sigDataUrl=''; });
-
-document.getElementById('saveSig').addEventListener('click', ()=>{ sigDataUrl = sigCanvas.toDataURL('image/png'); modalSig.style.display='none'; showToast('✍️ Signature saved'); });
-
-// ========== QR SCANNER ===========
-document.getElementById('scanQrBtn').addEventListener('click', startQrScan);
-document.getElementById('stopScan').addEventListener('click', stopQrScan);
-
-async function startQrScan(){ modalQr.style.display='flex'; try{ videoStream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}}); videoPreview.srcObject = videoStream; qrScanActive = true; requestAnimationFrame(tickQr); }catch(err){ console.error(err); showToast('⚠️ Camera access denied'); modalQr.style.display='none'; } }
-
-function stopQrScan(){ qrScanActive = false; modalQr.style.display='none'; if(videoStream){ videoStream.getTracks().forEach(t=>t.stop()); videoStream = null; } }
-
-function tickQr(){ if(!qrScanActive) return; const video = videoPreview; if(video.readyState === video.HAVE_ENOUGH_DATA){ const canvas = document.createElement('canvas'); canvas.width = video.videoWidth; canvas.height = video.videoHeight; const ctx = canvas.getContext('2d'); ctx.drawImage(video,0,0,canvas.width,canvas.height); const imageData = ctx.getImageData(0,0,canvas.width,canvas.height); const code = jsQR(imageData.data, canvas.width, canvas.height); if(code){ handleQrPayload(code.data); stopQrScan(); return; } }
-  requestAnimationFrame(tickQr);
-}
-
-function handleQrPayload(payload){ // expected simple key:value pairs separated by ; e.g. faculty:Juan;dept:CNAM;room:Chem
-  try{ const pairs = payload.split(';'); pairs.forEach(p=>{ const [k,v] = p.split(':'); if(!k) return; const key = k.trim().toLowerCase(); const val = v? v.trim():''; if(key.startsWith('faculty')) faculty_name.value = val; if(key.startsWith('dept')||key.startsWith('department')) department.value = val; if(key.startsWith('room')) room_name.value = val; if(key.startsWith('equip')) equipment.value = val; }); showToast('✅ QR loaded'); }
-  catch(err){ console.warn('qr parse', err); showToast('⚠️ QR content not recognized'); }
-}
-
-// ========== TABS ===========
-tabLog.onclick = ()=>{ tabLog.classList.add('active'); tabReports.classList.remove('active'); viewLog.style.display=''; viewReports.style.display='none'; };
-tabReports.onclick = ()=>{ tabReports.classList.add('active'); tabLog.classList.remove('active'); viewReports.style.display=''; viewLog.style.display='none'; updateReports(); };
-
-// Warn before refresh
-window.addEventListener('beforeunload', e=>{ if(faculty_name.value||purpose.value){ e.preventDefault(); e.returnValue=''; } });
-
-</script>
-</body>
-</html>
-
+    logs = rows.map(r=>({_id: makeId(_

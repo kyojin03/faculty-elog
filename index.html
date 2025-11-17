@@ -264,11 +264,11 @@ table {
           <div class="row">
             <div class="col"><label>Faculty Name</label><input id="faculty_name" placeholder="Ex. Juan Dela Cruz" required></div>
             <div class="col"><label>Department</label><input id="department" placeholder="Ex. CNAM" required></div>
-            <div class="col"><label>Room</label><input id="room_name" placeholder="Chemistry" required></div>
+            <div class="col"><label>Room</label><input id="room_name" placeholder="Ex. Chemistry" required></div>
           </div>
           <div class="row">
-            <div class="col"><label>Room #</label><input id="room_number" placeholder="301"></div>
-            <div class="col"><label>Equipment</label><input id="equipment" placeholder="Microscope-1"></div>
+            <div class="col"><label>Room #</label><input id="room_number" placeholder="Ex. 301"></div>
+            <div class="col"><label>Major Equipment W/ Quantity</label><input id="equipment" placeholder="Ex. Microscope-1"></div>
             <div class="col"><label>Date</label><input type="date" id="date" required></div>
           </div>
           <div class="row">
@@ -276,8 +276,8 @@ table {
             <div class="col"><label>Time Out</label><input type="time" id="time_out" required></div>
             <div class="col"><label>Purpose</label><input id="purpose" placeholder="Experiment on solutions" required></div>
           </div>
-          <label>Remarks (optional)</label>
-          <textarea id="remarks" rows="2" placeholder="Remarks"></textarea>
+          <label>Remarks</label>
+          <textarea id="remarks" rows="2" placeholder="Optional"></textarea>
 
           <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px">
             <button class="primary" type="submit">Add Log</button>
@@ -551,3 +551,4 @@ window.addEventListener('beforeunload', e=>{ if(faculty_name.value||purpose.valu
 </script>
 </body>
 </html>
+

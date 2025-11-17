@@ -3,93 +3,56 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Laboratory Usage System</title>
+<title>Laboratory Usage System — Improved</title>
 <link rel="icon" type="image/png" href="gs.jfif">
+<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<!-- jsQR for QR scanning -->
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 <style>
-  :root{
-    --gsc-blue:#1e3a8a;
-    --gsc-accent:#2563eb;
-    --gsc-bg:#f1f5f9;
-    --text:#222;
-    --card-bg:#ffffff;
-  }
-  body{font-family:Segoe UI,Arial,sans-serif;margin:0;background:var(--gsc-bg);color:var(--text)}
-  header{background:var(--card-bg);color:var(--gsc-blue);padding:15px 20px;box-shadow:0 4px 10px rgba(0,0,0,.08);border-bottom:4px solid var(--gsc-blue)}
-  .header-container{display:flex;align-items:center;gap:18px;max-width:1100px;margin:0 auto;width:100%}
-  .gsc-logo{width:100px;height:auto}
-  .header-text h1{margin:0;font-size:22px;color:var(--gsc-blue)}
-  .header-text p{margin:4px 0 0;font-size:14px;color:var(--gsc-accent);font-weight:500}
-  nav{max-width:1100px;margin:16px auto 0;padding:0 20px;display:flex;gap:10px}
-  .tab{background:var(--card-bg);padding:10px 16px;border-radius:8px;border:1px solid #e6eefc;cursor:pointer;font-weight:600;color:var(--gsc-blue)}
-  .tab.active{background:linear-gradient(90deg,var(--gsc-blue),var(--gsc-accent));color:white;border-color:transparent}
-  main{max-width:1100px;margin:18px auto;padding:0 20px 40px}
-  .card{background:var(--card-bg);border-radius:12px;padding:18px;box-shadow:0 6px 16px rgba(15,23,42,.04);margin-bottom:18px}
-  input,textarea,select,button{width:100%;padding:10px;margin-bottom:10px;border:1px solid #ced4da;border-radius:6px;font-size:14px}
-  label{font-weight:600;font-size:13px;color:var(--gsc-blue);display:block;margin-bottom:4px;}
-  button.primary{background:var(--gsc-accent);color:white;border:none;cursor:pointer;font-weight:700}
-  button.secondary{background:#fff;border:1px solid #ddd;color:#333;cursor:pointer}
-  .row{display:flex;gap:10px;flex-wrap:wrap}
-  .row .col{flex:1;min-width:150px}
-  .controls{display:flex;gap:10px;justify-content:flex-end;margin-bottom:12px;flex-wrap:wrap}
-  table{width:100%;border-collapse:collapse;background:var(--card-bg);border-radius:8px;overflow:hidden;box-shadow:0 6px 16px rgba(15,23,42,.04)}
-  th,td{padding:10px;border:1px solid #e6eefc;text-align:left;font-size:13px;white-space:nowrap}
-  th{background:var(--gsc-blue);color:white;font-weight:700}
+  :root{--gsc-blue:#0f172a;--gsc-accent:#2563eb;--gsc-bg:#f8fafc;--muted:#64748b}
+  *{box-sizing:border-box}
+  body{font-family:Inter,Segoe UI,Arial,sans-serif;margin:0;background:var(--gsc-bg);color:var(--gsc-blue);-webkit-font-smoothing:antialiased}
+  header{background:white;color:var(--gsc-blue);padding:14px 20px;box-shadow:0 6px 18px rgba(15,23,42,.06);border-bottom:4px solid rgba(37,99,235,.06)}
+  .header-container{display:flex;align-items:center;gap:14px;max-width:1200px;margin:0 auto}
+  .gsc-logo{width:72px;height:auto;border-radius:8px}
+  .header-text h1{margin:0;font-size:18px}
+  .header-text p{margin:2px 0 0;font-size:13px;color:var(--muted)}
+  nav{max-width:1200px;margin:12px auto;padding:0 20px;display:flex;gap:10px}
+  .tab{background:white;padding:9px 14px;border-radius:10px;border:1px solid #eef2ff;cursor:pointer;font-weight:700;color:var(--gsc-blue)}
+  .tab.active{background:linear-gradient(90deg,var(--gsc-accent),#1e40af);color:white;border-color:transparent}
+  main{max-width:1200px;margin:18px auto;padding:0 20px 40px}
+  .card{background:white;border-radius:12px;padding:18px;box-shadow:0 10px 30px rgba(15,23,42,.04);margin-bottom:18px}
+  label{font-weight:700;font-size:13px;color:var(--gsc-blue);display:block;margin-bottom:6px}
+  input,textarea,select,button{font-size:14px}
+  input,textarea,select{width:100%;padding:10px;border:1px solid #e6eefc;border-radius:8px}
+  .row{display:flex;gap:12px;flex-wrap:wrap}
+  .row .col{flex:1;min-width:160px}
+  button.primary{background:var(--gsc-accent);color:white;border:none;cursor:pointer;padding:10px 12px;border-radius:8px;font-weight:800}
+  button.secondary{background:#fff;border:1px solid #e6eefc;color:var(--gsc-blue);cursor:pointer;padding:9px 12px;border-radius:8px;font-weight:700}
+  .controls{display:flex;gap:10px;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+  .table-wrap{overflow:auto;border-radius:10px;border:1px solid #eef2ff}
+  table{width:100%;border-collapse:collapse;background:transparent}
+  th,td{padding:10px;border-bottom:1px solid #f1f5f9;text-align:left;font-size:13px}
+  th{background:#0f172a;color:white;position:sticky;top:0}
   tr:nth-child(even) td{background:#fbfdff}
-  .list-area{width:260px;max-height:220px;overflow:auto;padding:6px 8px;border-left:1px solid #eef4ff}
-  .list-item{display:flex;justify-content:space-between;padding:6px 4px;border-bottom:1px dashed #f1f6ff;font-size:13px}
-  footer{max-width:1100px;margin:22px auto;padding:18px 20px;color:#555;font-size:13px;text-align:center}
+  .list-area{width:100%;max-height:220px;overflow:auto;padding:6px 8px;border-left:1px solid #eef4ff}
+  footer{max-width:1200px;margin:22px auto;padding:18px 20px;color:#555;font-size:13px;text-align:center}
   .toast{position:fixed;right:18px;bottom:18px;background:rgba(37,99,235,.95);color:white;padding:10px 14px;border-radius:8px;box-shadow:0 6px 18px rgba(15,23,42,.2);z-index:9999;font-weight:600;display:none}
-  @media (min-width:900px){ .reports-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px} }
-  @media (min-width:1200px){ .reports-grid{grid-template-columns:1fr 1fr 1fr} }
-  .card table{display:block;width:100%;overflow-x:auto}
-  #elogTable{table-layout:auto}
-  @media print { nav, .controls, form, footer, .toast { display:none !important; } .reports-print{ display:block !important; } }
-  form h2{color:var(--gsc-blue)!important;text-align:center;margin-top:0;}
-
-  /* Loading box */
-  #loading {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: var(--card-bg);
-    color: var(--gsc-blue);
-    padding: 8px 12px;
-    border-radius: 6px;
-    box-shadow: 0 6px 18px rgba(15,23,42,.12);
-    display: none;
-    z-index: 99999;
-    font-weight:700;
-  }
-
-  /* Dark mode */
-  body.dark {
-    --gsc-bg: #0b1220;
-    --gsc-blue: #7fb5ff;
-    --gsc-accent: #4aa3ff;
-    --card-bg: #071227;
-    --text: #e6eef8;
-  }
-  body.dark header { border-bottom-color: var(--gsc-blue); }
-  body.dark th { background: #08345a; color: white; }
-
-  /* top controls area */
-  .top-controls {
-    display:flex;
-    gap:10px;
-    align-items:center;
-    justify-content:space-between;
-    flex-wrap:wrap;
-    margin-bottom:12px;
-  }
-  .left-controls { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-  .right-controls { display:flex; gap:8px; align-items:center; }
-
-  /* search */
-  #searchBox { width:260px; max-width:40vw; }
-
-  /* log count */
-  #logCount { font-weight:700; color:var(--gsc-blue); margin:6px 0; }
+  .flex-right{display:flex;gap:8px;align-items:center}
+  .search-input{min-width:220px}
+  /* modals */
+  .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,.5);display:none;align-items:center;justify-content:center;z-index:9998}
+  .modal{width:100%;max-width:760px;background:white;border-radius:12px;padding:16px}
+  .modal .row{margin-top:8px}
+  .small{font-size:12px;color:var(--muted)}
+  /* signature pad */
+  #sigCanvas{width:100%;height:220px;border:1px dashed #cbd5e1;border-radius:8px;background:#fff}
+  /* QR video */
+  #videoPreview{width:100%;height:320px;background:#000;border-radius:8px}
+  .chip{display:inline-block;padding:6px 8px;border-radius:999px;border:1px solid #eef2ff;background:white}
+  @media (min-width:900px){ .reports-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px} }
+  @media print { nav, .controls, form, footer, .toast, .modal-backdrop { display:none !important; } }
 </style>
 </head>
 <body>
@@ -98,13 +61,7 @@
       <img src="gs.jfif" class="gsc-logo" alt="GSC logo">
       <div class="header-text">
         <h1>Good Samaritan Colleges</h1>
-        <p>Laboratory Usage System</p>
-      </div>
-
-      <!-- right side header controls -->
-      <div style="margin-left:auto; display:flex; gap:8px; align-items:center;">
-        <button id="darkToggle" title="Toggle dark mode" style="background:transparent;border:1px solid var(--gsc-blue);color:var(--gsc-blue);padding:8px 10px;border-radius:6px;cursor:pointer;font-weight:700;">Dark</button>
-        <a id="githubLink" href="#" style="text-decoration:none;color:var(--gsc-blue);font-weight:600;display:none;">View on GitHub</a>
+        <p>Faculty Laboratory eLog — Improved</p>
       </div>
     </div>
   </header>
@@ -119,59 +76,57 @@
     <section id="view-logbook">
       <div class="card">
         <form id="elogForm">
-          <h2>Log in Form</h2>
-
+          <h2 style="margin:0 0 10px;color:var(--gsc-blue)">Quick Log</h2>
           <div class="row">
-            <div class="col"><label for="faculty_name">Faculty Name</label><input id="faculty_name" placeholder="Ex. Juan Dela Cruz" required></div>
-            <div class="col"><label for="department">Department</label><input id="department" placeholder="Ex. CNAM" required></div>
+            <div class="col"><label>Faculty Name</label><input id="faculty_name" placeholder="Ex. Juan Dela Cruz" required></div>
+            <div class="col"><label>Department</label><input id="department" placeholder="Ex. CNAM" required></div>
+            <div class="col"><label>Room</label><input id="room_name" placeholder="Chemistry" required></div>
           </div>
-
           <div class="row">
-            <div class="col"><label for="room_name">Laboratory Room Name</label><input id="room_name" placeholder="Ex. Chemistry Room" required></div>
-            <div class="col"><label for="room_number">Room Number (Required)</label><input id="room_number" placeholder="Ex. 301"></div>
+            <div class="col"><label>Room #</label><input id="room_number" placeholder="301"></div>
+            <div class="col"><label>Equipment</label><input id="equipment" placeholder="Microscope-1"></div>
+            <div class="col"><label>Date</label><input type="date" id="date" required></div>
           </div>
-
           <div class="row">
-            <div class="col"><label for="equipment">Major Equipment Used</label><input id="equipment" placeholder="Ex. Microscope-1"></div>
-            <div class="col"><label for="date">Date Requested</label><input type="date" id="date" readonly></div>
+            <div class="col"><label>Time In</label><input type="time" id="time_in" required></div>
+            <div class="col"><label>Time Out</label><input type="time" id="time_out" required></div>
+            <div class="col"><label>Purpose</label><input id="purpose" placeholder="Experiment on solutions" required></div>
           </div>
+          <label>Remarks (optional)</label>
+          <textarea id="remarks" rows="2" placeholder="Remarks"></textarea>
 
-          <div class="row">
-            <div class="col"><label for="time_in">Time-In</label><input type="time" id="time_in" required></div>
-            <div class="col"><label for="time_out">Time-Out</label><input type="time" id="time_out" required></div>
-          </div>
-
-          <label for="purpose">Purpose / Activity</label><input id="purpose" placeholder="Ex. Experiment on solutions" required>
-          <label for="remarks">Remarks (Optional)</label><textarea id="remarks" rows="2" placeholder="Remarks"></textarea>
-
-          <div style="display:flex;gap:10px;justify-content:center;">
+          <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px">
+            <button class="secondary" type="button" id="scanQrBtn">Scan QR</button>
+            <button class="secondary" type="button" id="sigBtn">Add Signature</button>
             <button class="primary" type="submit">Add Log</button>
-            <button class="secondary" id="clearFormBtn" type="button">Clear</button>
           </div>
         </form>
       </div>
 
       <div class="card">
-        <div class="top-controls">
-          <div class="left-controls">
-            <div id="logCount">Total Logs: 0</div>
-            <input id="searchBox" placeholder="Search logs..." />
+        <div class="controls">
+          <div style="display:flex;gap:8px;align-items:center">
+            <input id="searchInput" class="search-input" placeholder="Search faculty / room / equipment" />
+            <select id="filterDept"><option value="">All Departments</option></select>
+            <input type="date" id="filterDateStart" class="chip small" title="Start date" />
+            <input type="date" id="filterDateEnd" class="chip small" title="End date" />
+            <button id="clearFilters" class="secondary">Clear</button>
           </div>
-          <div class="right-controls controls">
-            <button id="exportCsvBtn" class="secondary">Export Logs (CSV)</button>
-            <button id="printLogsBtn" class="secondary">Print Logs</button>
+          <div class="flex-right">
+            <button id="exportCsvBtn" class="secondary">Export CSV</button>
+            <button id="printLogsBtn" class="secondary">Print</button>
+            <button id="loadSheetBtn" class="secondary">Load Live Sheet</button>
           </div>
         </div>
 
-        <table id="elogTable">
-          <thead>
-            <tr>
-              <th>Timestamp</th><th>Faculty Name</th><th>Department</th><th>Room Name</th><th>Room #</th>
-              <th>Equipment</th><th>Date</th><th>Time In</th><th>Time Out</th><th>Purpose</th><th>Remarks</th><th>Actions</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
+        <div class="table-wrap card" style="padding:0">
+          <table id="elogTable">
+            <thead>
+              <tr><th>Timestamp</th><th>Faculty</th><th>Dept</th><th>Room</th><th>Room #</th><th>Equip</th><th>Date</th><th>In</th><th>Out</th><th>Purpose</th><th>Remarks</th><th>Sig</th><th>Actions</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
       </div>
     </section>
 
@@ -179,10 +134,12 @@
     <section id="view-reports" style="display:none;">
       <div class="card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;">
         <div>
-          <h2 style="margin:0;color:var(--gsc-blue)">Faculty Laboratory Usage Report</h2>
+          <h2 style="margin:0;color:var(--gsc-blue)">Usage Reports</h2>
           <div style="margin-top:6px;color:#444">Generated: <span id="reportDatePretty"></span></div>
         </div>
-        <button id="printReportsBtn" class="primary">Print Reports</button>
+        <div style="display:flex;gap:10px;align-items:center">
+          <button id="printReportsBtn" class="primary">Print Reports</button>
+        </div>
       </div>
 
       <div class="reports-grid" style="margin-top:12px">
@@ -190,94 +147,152 @@
         <div class="report-card card"><canvas id="chartEquipment"></canvas><div class="list-area"><strong>Equipment</strong><div id="listEquipment"></div></div></div>
         <div class="report-card card"><canvas id="chartFaculty"></canvas><div class="list-area"><strong>Faculty</strong><div id="listFaculty"></div></div></div>
       </div>
-
-      <!-- printable lists -->
-      <div class="reports-print" style="display:none; margin-top:18px;" id="reportsPrintContainer">
-        <header style="text-align:center;margin-bottom:8px;">
-          <img src="gs.jfif" alt="logo" style="width:80px">
-          <div style="font-weight:700;font-size:18px;margin-top:6px;">Faculty Laboratory Usage Report — Good Samaritan Colleges</div>
-          <div style="font-size:12px;margin-top:4px;" id="reportDatePrint"></div>
-        </header>
-
-        <div style="margin-top:10px;">
-          <div style="margin-bottom:16px;">
-            <strong>Rooms (counts)</strong>
-            <div id="printListRooms"></div>
-          </div>
-
-          <div style="margin-bottom:16px;">
-            <strong>Equipment (counts)</strong>
-            <div id="printListEquipment"></div>
-          </div>
-
-          <div style="margin-bottom:16px;">
-            <strong>Faculty (counts)</strong>
-            <div id="printListFaculty"></div>
-          </div>
-        </div>
-
-        <div class="print-footer" style="margin-top:20px;text-align:center;">
-          <div style="font-weight:700;color:#234;">Good Samaritan Colleges</div>
-          <div style="font-size:12px;color:#234;">Prepared by: Piolo L. Bernardino — Laboratory Custodian</div>
-        </div>
-      </div>
     </section>
   </main>
 
   <footer>
-    © 2025 Good Samaritan Colleges | Faculty Laboratory eLog System<br>
+    © 2025 Good Samaritan Colleges | Faculty Laboratory eLog System — Improved<br>
     Prepared by Piolo L. Bernardino — Laboratory Custodian
   </footer>
 
   <div id="toast" class="toast"></div>
-  <div id="loading">Loading…</div>
+
+  <!-- Modal: Signature -->
+  <div id="modalSig" class="modal-backdrop">
+    <div class="modal">
+      <h3>Signature</h3>
+      <p class="small">Draw your signature below. Click Save when done.</p>
+      <canvas id="sigCanvas"></canvas>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px">
+        <button id="clearSig" class="secondary">Clear</button>
+        <button id="saveSig" class="primary">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: QR Scanner -->
+  <div id="modalQr" class="modal-backdrop">
+    <div class="modal">
+      <h3>QR Scanner</h3>
+      <p class="small">Scan a QR that contains faculty_name OR prefilled values (format: faculty:Name;dept:CNAM;room:Chem)</p>
+      <video id="videoPreview" autoplay muted playsinline></video>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px">
+        <button id="stopScan" class="secondary">Stop</button>
+      </div>
+    </div>
+  </div>
 
 <script>
-/* ---------- CONFIG ---------- */
-const GOOGLE_FORM_ACTION="https://docs.google.com/forms/d/e/1FAIpQLSdPZLGabjI36s4iFdU-grRUK0ouLvoYrkV391MLxPrRWdZiHQ/formResponse";
-const FORM_ENTRY={
-  faculty_name:"entry.694323400",
-  department:"entry.1656788187",
-  room_name:"entry.1132289973",
-  room_number:"entry.19898501",
-  equipment:"entry.743283452",
-  date:"entry.1998901142",
-  time_in:"entry.736543893",
-  time_out:"entry.1466121044",
-  purpose:"entry.589165766",
-  remarks:"entry.1595227859"
-};
-const SHEET_ID="1BFmqX4hjDp73GpYzFZFTwx22l-l5WtbU4UPh2ncr4hs";
-const SHEET_NAME="Form Responses 1";
-
-/* ---------- DOM ---------- */
+// ========== CONFIG =============
+const GOOGLE_FORM_ACTION = "https://docs.google.com/forms/d/e/1FAIpQLSdPZLGabjI36s4iFdU-grRUK0ouLvoYrkV391MLxPrRWdZiHQ/formResponse";
+const FORM_ENTRY = {faculty_name:"entry.694323400",department:"entry.1656788187",room_name:"entry.1132289973",room_number:"entry.19898501",equipment:"entry.743283452",date:"entry.1998901142",time_in:"entry.736543893",time_out:"entry.1466121044",purpose:"entry.589165766",remarks:"entry.1595227859",signature:"entry.999999999"};
+const SHEET_ID = "1BFmqX4hjDp73GpYzFZFTwx22l-l5WtbU4UPh2ncr4hs";
+const SHEET_NAME = "Form Responses 1";
+// ========== ELEMENTS ===========
 const form = document.getElementById('elogForm');
 const tableBody = document.querySelector('#elogTable tbody');
 const exportCsvBtn = document.getElementById('exportCsvBtn');
 const printLogsBtn = document.getElementById('printLogsBtn');
 const printReportsBtn = document.getElementById('printReportsBtn');
 const toastEl = document.getElementById('toast');
-const loadingEl = document.getElementById('loading');
 const tabLog = document.getElementById('tab-logbook');
 const tabReports = document.getElementById('tab-reports');
 const viewLog = document.getElementById('view-logbook');
 const viewReports = document.getElementById('view-reports');
-const logCountEl = document.getElementById('logCount');
-const searchBox = document.getElementById('searchBox');
-const darkToggle = document.getElementById('darkToggle');
+const searchInput = document.getElementById('searchInput');
+const filterDept = document.getElementById('filterDept');
+const filterDateStart = document.getElementById('filterDateStart');
+const filterDateEnd = document.getElementById('filterDateEnd');
+const clearFilters = document.getElementById('clearFilters');
+const loadSheetBtn = document.getElementById('loadSheetBtn');
 
-let logs = JSON.parse(localStorage.getItem('facultyLogs')) || [];
+// Signature
+const modalSig = document.getElementById('modalSig');
+const sigCanvas = document.getElementById('sigCanvas');
+const sigCtx = sigCanvas.getContext('2d');
+let drawing=false;let lastPos={x:0,y:0};let sigDataUrl='';
+
+// QR Scanner
+const modalQr = document.getElementById('modalQr');
+const videoPreview = document.getElementById('videoPreview');
+let videoStream=null;let qrScanActive=false;
+
+// charts
 let chartRooms, chartEquipment, chartFaculty;
 
-/* ---------- HELPERS ---------- */
-function makeId(){return Date.now()+Math.floor(Math.random()*1000);}
-function showToast(msg, duration=3000){ toastEl.textContent = msg; toastEl.style.display = 'block'; setTimeout(()=> toastEl.style.display = 'none', duration); }
-function escapeHtml(s){ return s? String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])) : ''; }
+// state
+let logs = JSON.parse(localStorage.getItem('facultyLogs_v2')) || [];
+let unsynced = JSON.parse(localStorage.getItem('unsyncedLogs_v2')) || [];
 
-/* ---------- RENDER ---------- */
+// Utilities
+function makeId(){return Date.now()+Math.floor(Math.random()*1000);} 
+function showToast(msg, duration=2500){toastEl.textContent=msg; toastEl.style.display='block'; setTimeout(()=>toastEl.style.display='none', duration);}
+function escapeHtml(s){ if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+
+// ========== INIT DEFAULTS ===========
+(function init(){
+  // set current date and time defaults
+  const now = new Date();
+  document.getElementById('date').value = now.toISOString().split('T')[0];
+  const hh = String(now.getHours()).padStart(2,'0'), mm = String(now.getMinutes()).padStart(2,'0');
+  document.getElementById('time_in').value = `${hh}:${mm}`;
+  renderTable();
+  populateDeptFilter();
+  updateReports();
+})();
+
+// ========== FORM SUBMIT & SYNC ===========
+form.addEventListener('submit', async e =>{
+  e.preventDefault();
+  // validation: time_out >= time_in
+  const ti = document.getElementById('time_in').value;
+  const to = document.getElementById('time_out').value;
+  if(!ti || !to){ return showToast('Please provide time in and time out'); }
+  if(to < ti){ return showToast('Time-out cannot be earlier than Time-in'); }
+
+  const newItem = {
+    _id: makeId(), created_at: Date.now(),
+    faculty_name: faculty_name.value.trim(), department: department.value.trim(),
+    room_name: room_name.value.trim(), room_number: room_number.value.trim(),
+    equipment: equipment.value.trim(), date: date.value, time_in: ti, time_out: to,
+    purpose: purpose.value.trim(), remarks: remarks.value.trim(), signature: sigDataUrl || ''
+  };
+  logs.push(newItem);
+  localStorage.setItem('facultyLogs_v2', JSON.stringify(logs));
+  renderTable();
+  form.reset(); sigDataUrl=''; setDefaultDateTime(); populateDeptFilter();
+  showToast('✅ Log added locally');
+  // attempt to sync
+  enqueueSync(newItem);
+});
+
+function setDefaultDateTime(){ const now=new Date(); document.getElementById('date').value=now.toISOString().split('T')[0]; document.getElementById('time_in').value = String(now.getHours()).padStart(2,'0')+ ':' + String(now.getMinutes()).padStart(2,'0'); document.getElementById('time_out').value = '' }
+
+async function enqueueSync(item){
+  unsynced.push(item); localStorage.setItem('unsyncedLogs_v2', JSON.stringify(unsynced));
+  try{ await uploadToGoogleForm(item); unsynced = unsynced.filter(x=>x._id!==item._id); localStorage.setItem('unsyncedLogs_v2', JSON.stringify(unsynced)); showToast('✅ Synced to Google Sheets'); }
+  catch(err){ console.warn('sync failed',err); showToast('⚠️ Saved locally — will retry'); }
+}
+
+async function uploadToGoogleForm(obj){
+  const fd = new FormData();
+  for(const k in FORM_ENTRY) fd.append(FORM_ENTRY[k], obj[k] || '');
+  // signature: convert dataURL to blob if present
+  if(obj.signature){
+    fd.set(FORM_ENTRY['signature'], obj.signature);
+  }
+  const res = await fetch(GOOGLE_FORM_ACTION, {method:'POST', mode:'no-cors', body: fd});
+  return res;
+}
+
+// retry unsynced on startup/network
+window.addEventListener('online', ()=>{ if(unsynced.length) unsynced.slice().forEach(i=>enqueueSync(i)); });
+
+// ========== RENDER TABLE & CRUD ===========
 function renderTable(){
   tableBody.innerHTML = '';
-  logs.forEach(item=>{
+  const filtered = applyFilters(logs);
+  filtered.forEach(item =>{
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${new Date(item.created_at).toLocaleString()}</td>
@@ -291,269 +306,125 @@ function renderTable(){
       <td>${escapeHtml(item.time_out)}</td>
       <td>${escapeHtml(item.purpose)}</td>
       <td>${escapeHtml(item.remarks)}</td>
-      <td><button class="secondary" onclick="deleteLog(${item._id})">Delete</button></td>
-    `;
+      <td>${item.signature?'<a href="'+item.signature+'" target="_blank">View</a>':''}</td>
+      <td>
+        <button class="secondary" onclick="editLog(${item._id})">Edit</button>
+        <button class="secondary" onclick="deleteLog(${item._id})">Delete</button>
+      </td>`;
     tableBody.appendChild(tr);
   });
-  localStorage.setItem('facultyLogs', JSON.stringify(logs));
-  logCountEl.textContent = 'Total Logs: ' + logs.length;
+  localStorage.setItem('facultyLogs_v2', JSON.stringify(logs));
   updateReports();
-  applySearchFilter(); // keep filter after render
 }
 
-/* ---------- FORM DEFAULTS ---------- */
-function setDateTimeNowToForm(){
-  const now = new Date();
-  const isoDate = now.toISOString().split('T')[0];
-  const hh = String(now.getHours()).padStart(2,'0'), mm = String(now.getMinutes()).padStart(2,'0');
-  const dateEl = document.getElementById('date');
-  dateEl.value = isoDate;
-  // ensure date cannot be earlier than today (disable past)
-  dateEl.setAttribute('min', isoDate);
-  // default time_in to now
-  document.getElementById('time_in').value = `${hh}:${mm}`;
+window.deleteLog = id => { if(confirm('Delete this entry?')){ logs = logs.filter(x=>x._id!==id); localStorage.setItem('facultyLogs_v2', JSON.stringify(logs)); renderTable(); showToast('🗑️ Entry deleted'); }};
+
+// simple edit flow (inline prompt for speed)
+window.editLog = id => {
+  const item = logs.find(x=>x._id===id); if(!item) return showToast('Entry not found');
+  const newName = prompt('Faculty name', item.faculty_name); if(newName===null) return; item.faculty_name = newName.trim() || item.faculty_name;
+  const newDept = prompt('Department', item.department); if(newDept!==null) item.department = newDept.trim();
+  localStorage.setItem('facultyLogs_v2', JSON.stringify(logs)); renderTable(); showToast('✏️ Entry updated');
 }
 
-/* ---------- GOOGLE FORM SYNC (no-cors) ---------- */
-async function uploadToGoogleForm(obj){
-  if (!GOOGLE_FORM_ACTION || GOOGLE_FORM_ACTION.includes('YOUR_FORM_ID')) return;
-  try {
-    const fd = new FormData();
-    for (const k in FORM_ENTRY){
-      fd.append(FORM_ENTRY[k], obj[k] || '');
-    }
-    await fetch(GOOGLE_FORM_ACTION, { method:'POST', mode:'no-cors', body: fd });
-    showToast('✅ Log added & synced to Google Sheets');
-  } catch(err){
-    console.error('Form upload error', err);
-    showToast('⚠️ Saved locally — sync failed');
-  }
+// ========== SEARCH & FILTERS ===========
+function applyFilters(list){
+  const q = (searchInput.value||'').toLowerCase().trim();
+  const d = filterDept.value; const ds = filterDateStart.value; const de = filterDateEnd.value;
+  return list.filter(l=>{
+    if(d && l.department !== d) return false;
+    if(ds && l.date < ds) return false;
+    if(de && l.date > de) return false;
+    if(!q) return true;
+    return [l.faculty_name, l.room_name, l.equipment, l.department, l.purpose].some(f => String(f||'').toLowerCase().includes(q));
+  });
+}
+searchInput.addEventListener('input', ()=>renderTable());
+filterDept.addEventListener('change', ()=>renderTable());
+filterDateStart.addEventListener('change', ()=>renderTable());
+filterDateEnd.addEventListener('change', ()=>renderTable());
+clearFilters.addEventListener('click', ()=>{ searchInput.value=''; filterDept.value=''; filterDateStart.value=''; filterDateEnd.value=''; renderTable(); });
+
+function populateDeptFilter(){
+  const depts = Array.from(new Set(logs.map(l=>l.department).filter(Boolean))).sort();
+  filterDept.innerHTML = '<option value="">All Departments</option>' + depts.map(d=>`<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join('');
 }
 
-/* ---------- SUBMIT ---------- */
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const newItem = {
-    _id: makeId(),
-    created_at: Date.now(),
-    faculty_name: document.getElementById('faculty_name').value.trim(),
-    department: document.getElementById('department').value.trim(),
-    room_name: document.getElementById('room_name').value.trim(),
-    room_number: document.getElementById('room_number').value.trim(),
-    equipment: document.getElementById('equipment').value.trim(),
-    date: document.getElementById('date').value,
-    time_in: document.getElementById('time_in').value,
-    time_out: document.getElementById('time_out').value,
-    purpose: document.getElementById('purpose').value.trim(),
-    remarks: document.getElementById('remarks').value.trim()
-  };
-
-  logs.push(newItem);
-  renderTable();
-  form.reset();
-  setDateTimeNowToForm();
-  showToast('✅ Log added successfully!');
-  uploadToGoogleForm(newItem);
-});
-
-/* ---------- CLEAR ---------- */
-document.getElementById('clearFormBtn').addEventListener('click', ()=>{
-  form.reset();
-  setDateTimeNowToForm();
-});
-
-/* ---------- DELETE ---------- */
-window.deleteLog = function(id){
-  if (!confirm('Delete this entry?')) return;
-  logs = logs.filter(x => Number(x._id) !== Number(id));
-  renderTable();
-  showToast('🗑️ Entry deleted successfully');
+// ========== EXPORT & PRINT ===========
+exportCsvBtn.onclick = ()=>{
+  if(!logs.length) return showToast('⚠️ No logs');
+  const h = ['Timestamp','Faculty','Dept','Room','Room#','Equip','Date','In','Out','Purpose','Remarks'];
+  const rows = logs.map(r=>[new Date(r.created_at).toLocaleString(), r.faculty_name, r.department, r.room_name, r.room_number, r.equipment, r.date, r.time_in, r.time_out, r.purpose, r.remarks]);
+  const csv = [h, ...rows].map(r=>r.map(c=>`"${String(c||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'faculty_logs.csv'; a.click();
 };
+printLogsBtn.onclick = ()=> window.print();
+printReportsBtn.onclick = ()=> { tabReports.click(); setTimeout(()=>window.print(), 300); };
 
-/* ---------- EXPORT CSV ---------- */
-exportCsvBtn.addEventListener('click', ()=>{
-  if (!logs.length){ showToast('⚠️ No logs to export'); return; }
-  const headers = ['Timestamp','Faculty Name','Department','Room Name','Room #','Equipment Used','Date','Time In','Time Out','Purpose','Remarks'];
-  const rows = logs.map(r => [
-    new Date(r.created_at).toLocaleString(), r.faculty_name, r.department, r.room_name, r.room_number,
-    r.equipment, r.date, r.time_in, r.time_out, r.purpose, r.remarks
-  ]);
-  const csv = [headers].concat(rows).map(r => r.map(c=>`"${String(c||'').replace(/"/g,'""')}"`).join(',')).join('\n');
-  const blob = new Blob([csv], { type:'text/csv' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = `faculty_elog_export_${(new Date()).toISOString().slice(0,10)}.csv`; a.click();
-  URL.revokeObjectURL(url);
-  showToast('✅ Logs exported as CSV');
-});
-
-/* ---------- PRINT ---------- */
-printLogsBtn.addEventListener('click', ()=> window.print());
-printReportsBtn.addEventListener('click', ()=> {
-  tabReports.click();
-  // show printable section then print
-  document.querySelectorAll('.reports-print').forEach(el=> el.style.display='block');
-  setTimeout(()=> { window.print(); setTimeout(()=> document.querySelectorAll('.reports-print').forEach(el=> el.style.display='none'), 300); }, 300);
-});
-
-/* ---------- TABS ---------- */
-tabLog.addEventListener('click', () => {
-  tabLog.classList.add('active'); tabReports.classList.remove('active');
-  viewLog.style.display = ''; viewReports.style.display = 'none';
-});
-tabReports.addEventListener('click', () => {
-  tabReports.classList.add('active'); tabLog.classList.remove('active');
-  viewReports.style.display = ''; viewLog.style.display = 'none';
-  fetchFromSheet(); // load live data when opening reports
-});
-
-/* ---------- REPORTS & CHARTS ---------- */
-function computeCounts(){
-  const rooms = {}, equipment = {}, faculty = {};
-  logs.forEach(l => {
-    const rn = (l.room_name||'(No room)').trim();
-    const eq = (l.equipment||'(No equipment)').trim();
-    const fac = (l.faculty_name||'(No name)').trim();
-    rooms[rn] = (rooms[rn]||0) + 1;
-    equipment[eq] = (equipment[eq]||0) + 1;
-    faculty[fac] = (faculty[fac]||0) + 1;
-  });
-  return { rooms, equipment, faculty };
-}
-
-function populateList(container, obj){
-  container.innerHTML = '';
-  const items = Object.entries(obj).sort((a,b)=>b[1]-a[1]);
-  if (!items.length){ container.innerHTML = '<div style="color:#666;padding:6px">No entries</div>'; return; }
-  items.forEach(([k,v])=>{
-    const div = document.createElement('div'); div.className = 'list-item';
-    div.innerHTML = `<div>${k}</div><div>${v}</div>`;
-    container.appendChild(div);
-  });
-}
-
-function updateChart(canvasId, obj, instance){
-  const ctx = document.getElementById(canvasId).getContext('2d');
-  const labels = Object.keys(obj);
-  const data = Object.values(obj);
-  if (instance){
-    instance.data.labels = labels;
-    instance.data.datasets[0].data = data;
-    instance.update();
-    return instance;
-  }
-  return new Chart(ctx, {
-    type: 'bar',
-    data: { labels, datasets: [{ label: '# of uses', data, backgroundColor: labels.map(()=> 'rgba(37,99,235,0.75)') }] },
-    options: { maintainAspectRatio:false, plugins:{ legend:{display:false} }, scales:{ y:{ beginAtZero:true, precision:0 } } }
-  });
-}
-
-function updateReports(){
-  document.getElementById('reportDatePretty').textContent = new Date().toLocaleString();
-  document.getElementById('reportDatePrint').textContent = new Date().toLocaleString();
-  const counts = computeCounts();
-  populateList(document.getElementById('listRooms'), counts.rooms);
-  populateList(document.getElementById('listEquipment'), counts.equipment);
-  populateList(document.getElementById('listFaculty'), counts.faculty);
-  populateList(document.getElementById('printListRooms'), counts.rooms || {});
-  populateList(document.getElementById('printListEquipment'), counts.equipment || {});
-  populateList(document.getElementById('printListFaculty'), counts.faculty || {});
-  chartRooms = updateChart('chartRooms', counts.rooms, chartRooms);
-  chartEquipment = updateChart('chartEquipment', counts.equipment, chartEquipment);
-  chartFaculty = updateChart('chartFaculty', counts.faculty, chartFaculty);
-}
-
-/* ---------- LIVE REPORT FETCH ---------- */
+// ========== LIVE SHEET FETCH ===========
+loadSheetBtn.onclick = fetchFromSheet;
 async function fetchFromSheet(){
-  loadingEl.style.display = 'block';
   try{
     const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
     const res = await fetch(url);
-    if (!res.ok) throw new Error('Fetch failed');
+    if(!res.ok) throw new Error('Fetch failed');
     const text = await res.text();
-    // parse CSV gently (commas inside values will split; Google output usually simple)
-    const rows = text.trim().split("\n").map(r => {
-      // remove leading/trailing double quotes and split on "," occurrences
-      const cols = [];
-      let cur = '', inQuotes = false;
-      for (let i=0;i<r.length;i++){
-        const ch = r[i];
-        if (ch === '"' ) { inQuotes = !inQuotes; continue; }
-        if (ch === ',' && !inQuotes) { cols.push(cur); cur=''; continue; }
-        cur += ch;
-      }
-      cols.push(cur);
-      return cols;
-    });
-    // first row is headers -> skip
-    if (rows.length <= 1) { loadingEl.style.display = 'none'; showToast('⚠️ No live rows found'); return; }
+    const rows = text.trim().split('\n').map(r=>r.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/));
     rows.shift();
-    // map to logs
-    logs = rows.map(r => ({
-      _id: makeId(),
-      created_at: Date.now(),
-      faculty_name: r[1] || '',
-      department: r[2] || '',
-      room_name: r[3] || '',
-      room_number: r[4] || '',
-      equipment: r[5] || '',
-      date: r[6] || '',
-      time_in: r[7] || '',
-      time_out: r[8] || '',
-      purpose: r[9] || '',
-      remarks: r[10] || ''
-    }));
-    renderTable();
-    showToast('📊 Live data loaded from Google Sheets');
-  } catch(err){
-    console.error(err);
-    showToast('⚠️ Could not load live data (CORS / access may block this).');
-  } finally {
-    loadingEl.style.display = 'none';
-  }
+    logs = rows.map(r=>({_id: makeId(), created_at: Date.now(), faculty_name: r[1]||'', department: r[2]||'', room_name: r[3]||'', room_number: r[4]||'', equipment: r[5]||'', date: r[6]||'', time_in: r[7]||'', time_out: r[8]||'', purpose: r[9]||'', remarks: r[10]||'', signature: ''}));
+    localStorage.setItem('facultyLogs_v2', JSON.stringify(logs)); renderTable(); showToast('📊 Live data loaded from Google Sheets');
+  }catch(err){ console.error(err); showToast('⚠️ Could not load live data'); }
 }
 
-/* ---------- AUTO-REFRESH while on Reports tab ---------- */
-setInterval(()=> {
-  if (viewReports.style.display !== 'none') fetchFromSheet();
-}, 60000);
+// auto-refresh while reports visible
+setInterval(()=>{ if(viewReports.style.display !== 'none') fetchFromSheet(); }, 60000);
 
-/* ---------- SEARCH FILTER ---------- */
-function applySearchFilter(){
-  const term = (searchBox.value || '').toLowerCase().trim();
-  [...tableBody.querySelectorAll('tr')].forEach(row=>{
-    if (!term) { row.style.display = ''; return; }
-    row.style.display = row.innerText.toLowerCase().includes(term) ? '' : 'none';
-  });
+// ========== REPORTS (charts) ===========
+function computeCounts(){ const rooms={}, eq={}, fac={}; logs.forEach(l=>{ rooms[l.room_name]=(rooms[l.room_name]||0)+1; eq[l.equipment]=(eq[l.equipment]||0)+1; fac[l.faculty_name]=(fac[l.faculty_name]||0)+1; }); return {rooms: eqEmpty(rooms), equipment: eqEmpty(eq), faculty: eqEmpty(fac)} }
+function eqEmpty(o){ return Object.keys(o).length? o : {'No data':0}; }
+function populateList(c,o){ c.innerHTML=''; Object.entries(o).sort((a,b)=>b[1]-a[1]).forEach(([k,v])=>{ c.innerHTML += `<div style="display:flex;justify-content:space-between;padding:6px 4px;border-bottom:1px dashed #f1f6ff;font-size:13px"><div>${escapeHtml(k)}</div><div>${v}</div></div>` }); }
+function updateChart(id,obj,inst){ const ctx = document.getElementById(id).getContext('2d'); const l = Object.keys(obj), d = Object.values(obj); if(inst){ inst.data.labels = l; inst.data.datasets[0].data = d; inst.update(); return inst; } return new Chart(ctx,{type:'bar',data:{labels:l,datasets:[{data:d}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}}); }
+function updateReports(){ document.getElementById('reportDatePretty').textContent = new Date().toLocaleString(); const c = computeCounts(); populateList(document.getElementById('listRooms'), c.rooms); populateList(document.getElementById('listEquipment'), c.equipment); populateList(document.getElementById('listFaculty'), c.faculty); chartRooms = updateChart('chartRooms', c.rooms, chartRooms); chartEquipment = updateChart('chartEquipment', c.equipment, chartEquipment); chartFaculty = updateChart('chartFaculty', c.faculty, chartFaculty); }
+
+// ========== SIGNATURE PAD ===========
+function fitCanvas(){ const r = sigCanvas.getBoundingClientRect(); sigCanvas.width = Math.floor(r.width); sigCanvas.height = Math.floor(r.height); sigCtx.lineWidth = 2; sigCtx.lineJoin = 'round'; sigCtx.lineCap = 'round'; sigCtx.strokeStyle = '#111827'; }
+window.addEventListener('resize', fitCanvas);
+
+sigCanvas.addEventListener('pointerdown', (e)=>{ drawing=true; const p = getPos(e); lastPos = p; });
+sigCanvas.addEventListener('pointermove', (e)=>{ if(!drawing) return; const p = getPos(e); sigCtx.beginPath(); sigCtx.moveTo(lastPos.x,lastPos.y); sigCtx.lineTo(p.x,p.y); sigCtx.stroke(); lastPos = p; });
+window.addEventListener('pointerup', ()=>{ drawing=false; });
+function getPos(e){ const r = sigCanvas.getBoundingClientRect(); return {x: e.clientX - r.left, y: e.clientY - r.top}; }
+
+document.getElementById('sigBtn').addEventListener('click', ()=>{ modalSig.style.display='flex'; fitCanvas(); sigCtx.fillStyle='#fff'; sigCtx.fillRect(0,0,sigCanvas.width,sigCanvas.height); });
+
+document.getElementById('clearSig').addEventListener('click', ()=>{ sigCtx.clearRect(0,0,sigCanvas.width,sigCanvas.height); sigDataUrl=''; });
+
+document.getElementById('saveSig').addEventListener('click', ()=>{ sigDataUrl = sigCanvas.toDataURL('image/png'); modalSig.style.display='none'; showToast('✍️ Signature saved'); });
+
+// ========== QR SCANNER ===========
+document.getElementById('scanQrBtn').addEventListener('click', startQrScan);
+document.getElementById('stopScan').addEventListener('click', stopQrScan);
+
+async function startQrScan(){ modalQr.style.display='flex'; try{ videoStream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}}); videoPreview.srcObject = videoStream; qrScanActive = true; requestAnimationFrame(tickQr); }catch(err){ console.error(err); showToast('⚠️ Camera access denied'); modalQr.style.display='none'; } }
+
+function stopQrScan(){ qrScanActive = false; modalQr.style.display='none'; if(videoStream){ videoStream.getTracks().forEach(t=>t.stop()); videoStream = null; } }
+
+function tickQr(){ if(!qrScanActive) return; const video = videoPreview; if(video.readyState === video.HAVE_ENOUGH_DATA){ const canvas = document.createElement('canvas'); canvas.width = video.videoWidth; canvas.height = video.videoHeight; const ctx = canvas.getContext('2d'); ctx.drawImage(video,0,0,canvas.width,canvas.height); const imageData = ctx.getImageData(0,0,canvas.width,canvas.height); const code = jsQR(imageData.data, canvas.width, canvas.height); if(code){ handleQrPayload(code.data); stopQrScan(); return; } }
+  requestAnimationFrame(tickQr);
 }
-searchBox.addEventListener('input', applySearchFilter);
 
-/* ---------- DARK MODE ---------- */
-darkToggle.addEventListener('click', ()=>{
-  document.body.classList.toggle('dark');
-  const isDark = document.body.classList.contains('dark');
-  darkToggle.textContent = isDark ? 'Light' : 'Dark';
-  localStorage.setItem('elog_dark', isDark ? '1' : '0');
-});
-if (localStorage.getItem('elog_dark') === '1') {
-  document.body.classList.add('dark');
-  darkToggle.textContent = 'Light';
+function handleQrPayload(payload){ // expected simple key:value pairs separated by ; e.g. faculty:Juan;dept:CNAM;room:Chem
+  try{ const pairs = payload.split(';'); pairs.forEach(p=>{ const [k,v] = p.split(':'); if(!k) return; const key = k.trim().toLowerCase(); const val = v? v.trim():''; if(key.startsWith('faculty')) faculty_name.value = val; if(key.startsWith('dept')||key.startsWith('department')) department.value = val; if(key.startsWith('room')) room_name.value = val; if(key.startsWith('equip')) equipment.value = val; }); showToast('✅ QR loaded'); }
+  catch(err){ console.warn('qr parse', err); showToast('⚠️ QR content not recognized'); }
 }
 
-/* ---------- PREVENT NAV AWAY WHEN FORM TYPED ---------- */
-window.addEventListener('beforeunload', e => {
-  if (document.getElementById('faculty_name').value || document.getElementById('purpose').value) {
-    e.preventDefault();
-    e.returnValue = '';
-  }
-});
+// ========== TABS ===========
+tabLog.onclick = ()=>{ tabLog.classList.add('active'); tabReports.classList.remove('active'); viewLog.style.display=''; viewReports.style.display='none'; };
+tabReports.onclick = ()=>{ tabReports.classList.add('active'); tabLog.classList.remove('active'); viewReports.style.display=''; viewLog.style.display='none'; updateReports(); };
 
-/* ---------- INIT ---------- */
-setDateTimeNowToForm();
-renderTable();
+// Warn before refresh
+window.addEventListener('beforeunload', e=>{ if(faculty_name.value||purpose.value){ e.preventDefault(); e.returnValue=''; } });
 
-// expose fetchFromSheet to console if needed
-window.fetchFromSheet = fetchFromSheet;
 </script>
 </body>
 </html>

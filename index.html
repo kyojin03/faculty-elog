@@ -498,7 +498,7 @@ function renderTable(){
   filtered.forEach(item =>{
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td>${new Date(item.created_at).toLocaleString()}</td>
+     <td>${new Date(item.created_at).toLocaleString()}</td>
 <td>${escapeHtml(item.faculty_name)}</td>
 <td>${escapeHtml(item.department)}</td>
 <td>${escapeHtml(item.room_name)}</td>
@@ -512,8 +512,7 @@ function renderTable(){
 <td>
   <button class="secondary" onclick="editLog(${item._id})">Edit</button>
   <button class="secondary" onclick="deleteLog(${item._id})">Delete</button>
-</td>
-
+      </td>`;
     tableBody.appendChild(tr);
   });
   localStorage.setItem('facultyLogs_v2', JSON.stringify(logs));
@@ -631,5 +630,4 @@ window.addEventListener('beforeunload', e=>{ if(faculty_name.value||purpose.valu
 </script>
 </body>
 </html>
-
 

@@ -400,31 +400,49 @@ function escapeHtml(s){ if(!s) return ''; return String(s).replace(/&/g,'&amp;')
 })();
 
 // ========== FORM SUBMIT & SYNC ===========
-form.addEventListener('submit', async e =>{
+form.addEventListener('submit', async e => {
   e.preventDefault();
-  // validation: time_out >= time_in
+
+  const dateVal = document.getElementById('date').value;     // save before reset
   const ti = document.getElementById('time_in').value;
   const to = document.getElementById('time_out').value;
-  if(!ti || !to){ return showToast('Please provide time in and time out'); }
-  if(to < ti){ return showToast('Time-out cannot be earlier than Time-in'); }
+
+  if(!dateVal) return showToast("Please select a date");
+
+  if(!ti || !to){
+    return showToast('Please provide time in and time out');
+  }
+  if(to < ti){
+    return showToast('Time-out cannot be earlier than Time-in');
+  }
 
   const newItem = {
-    _id: makeId(), created_at: Date.now(),
-    faculty_name: faculty_name.value.trim(), department: department.value.trim(),
-    room_name: room_name.value.trim(), room_number: room_number.value.trim(),
-    equipment: equipment.value.trim(), date: date.value, time_in: ti, time_out: to,
-    purpose: purpose.value.trim(), remarks: remarks.value.trim()
+    _id: makeId(),
+    created_at: Date.now(),
+    faculty_name: faculty_name.value.trim(),
+    department: department.value.trim(),
+    room_name: room_name.value.trim(),
+    room_number: room_number.value.trim(),
+    equipment: equipment.value.trim(),
+    date: dateVal,            // ← FIXED
+    time_in: ti,
+    time_out: to,
+    purpose: purpose.value.trim(),
+    remarks: remarks.value.trim() || ""  // never undefined
   };
+
   logs.push(newItem);
   localStorage.setItem('facultyLogs_v2', JSON.stringify(logs));
+
   renderTable();
   form.reset();
   setDefaultDateTime();
   populateDeptFilter();
   showToast('✅ Log added locally');
-  // attempt to sync
+
   enqueueSync(newItem);
 });
+
 
 function setDefaultDateTime(){ const now=new Date(); document.getElementById('date').value=now.toISOString().split('T')[0]; document.getElementById('time_in').value = String(now.getHours()).padStart(2,'0')+ ':' + String(now.getMinutes()).padStart(2,'0'); document.getElementById('time_out').value = '' }
 
@@ -551,4 +569,5 @@ window.addEventListener('beforeunload', e=>{ if(faculty_name.value||purpose.valu
 </script>
 </body>
 </html>
+
 

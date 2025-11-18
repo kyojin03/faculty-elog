@@ -547,8 +547,19 @@ tabReports.onclick = ()=>{ tabReports.classList.add('active'); tabLog.classList.
 
 // Warn before refresh
 window.addEventListener('beforeunload', e=>{ if(faculty_name.value||purpose.value){ e.preventDefault(); e.returnValue=''; } });
+  
+  // ========== AUTO-UPPERCASE FOR ALL TEXT FIELDS ==========
+document.addEventListener("input", function(e) {
+  if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") {
+    if (e.target.type !== "date" && e.target.type !== "time") {
+      e.target.value = e.target.value.toUpperCase();
+    }
+  }
+});
+
 
 </script>
 </body>
 </html>
+
 

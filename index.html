@@ -451,21 +451,21 @@ function renderTable(){
   filtered.forEach(item =>{
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td>${new Date(item.created_at).toLocaleString()}</td>
-      <td>${escapeHtml(item.faculty_name)}</td>
-      <td>${escapeHtml(item.department)}</td>
-      <td>${escapeHtml(item.room_name)}</td>
-      <td>${escapeHtml(item.room_number)}</td>
-      <td>${escapeHtml(item.equipment)}</td>
-      <td>${escapeHtml(item.date)}</td>
-      <td>${escapeHtml(item.time_in)}</td>
-      <td>${escapeHtml(item.time_out)}</td>
-      <td>${escapeHtml(item.purpose)}</td>
-      <td>${escapeHtml(item.remarks)}</td>
-      <td>
-        <button class="secondary" onclick="editLog(${item._id})">Edit</button>
-        <button class="secondary" onclick="deleteLog(${item._id})">Delete</button>
-      </td>`;
+  <td>${new Date(item.created_at).toLocaleString()}</td>
+  <td>${escapeHtml(item.faculty_name)}</td>
+  <td>${escapeHtml(item.department)}</td>
+  <td>${escapeHtml(item.room_name)}</td>
+  <td>${escapeHtml(item.room_number)}</td>
+  <td>${escapeHtml(item.equipment)}</td>
+  <td>${escapeHtml(item.date)}</td>
+  <td>${escapeHtml(item.time_in)}</td>
+  <td>${escapeHtml(item.time_out)}</td>
+  <td>${escapeHtml(item.purpose)}</td>
+  <td>${item.remarks ? escapeHtml(item.remarks) : '&nbsp;'}</td>
+  <td>
+    <button class="secondary" onclick="editLog(${item._id})">Edit</button>
+    <button class="secondary" onclick="deleteLog(${item._id})">Delete</button>
+  </td>`;
     tableBody.appendChild(tr);
   });
   localStorage.setItem('facultyLogs_v2', JSON.stringify(logs));
@@ -551,5 +551,6 @@ window.addEventListener('beforeunload', e=>{ if(faculty_name.value||purpose.valu
 </script>
 </body>
 </html>
+
 
 

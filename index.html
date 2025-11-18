@@ -400,49 +400,31 @@ function escapeHtml(s){ if(!s) return ''; return String(s).replace(/&/g,'&amp;')
 })();
 
 // ========== FORM SUBMIT & SYNC ===========
-form.addEventListener('submit', async e => {
+form.addEventListener('submit', async e =>{
   e.preventDefault();
-
-  const dateVal = document.getElementById('date').value;     // save before reset
+  // validation: time_out >= time_in
   const ti = document.getElementById('time_in').value;
   const to = document.getElementById('time_out').value;
-
-  if(!dateVal) return showToast("Please select a date");
-
-  if(!ti || !to){
-    return showToast('Please provide time in and time out');
-  }
-  if(to < ti){
-    return showToast('Time-out cannot be earlier than Time-in');
-  }
+  if(!ti || !to){ return showToast('Please provide time in and time out'); }
+  if(to < ti){ return showToast('Time-out cannot be earlier than Time-in'); }
 
   const newItem = {
-    _id: makeId(),
-    created_at: Date.now(),
-    faculty_name: faculty_name.value.trim(),
-    department: department.value.trim(),
-    room_name: room_name.value.trim(),
-    room_number: room_number.value.trim(),
-    equipment: equipment.value.trim(),
-    date: dateVal,            // ← FIXED
-    time_in: ti,
-    time_out: to,
-    purpose: purpose.value.trim(),
-    remarks: remarks.value.trim() || ""  // never undefined
+    _id: makeId(), created_at: Date.now(),
+    faculty_name: faculty_name.value.trim(), department: department.value.trim(),
+    room_name: room_name.value.trim(), room_number: room_number.value.trim(),
+    equipment: equipment.value.trim(), date: date.value, time_in: ti, time_out: to,
+    purpose: purpose.value.trim(), remarks: remarks.value.trim()
   };
-
   logs.push(newItem);
   localStorage.setItem('facultyLogs_v2', JSON.stringify(logs));
-
   renderTable();
   form.reset();
   setDefaultDateTime();
   populateDeptFilter();
   showToast('✅ Log added locally');
-
+  // attempt to sync
   enqueueSync(newItem);
 });
-
 
 function setDefaultDateTime(){ const now=new Date(); document.getElementById('date').value=now.toISOString().split('T')[0]; document.getElementById('time_in').value = String(now.getHours()).padStart(2,'0')+ ':' + String(now.getMinutes()).padStart(2,'0'); document.getElementById('time_out').value = '' }
 
@@ -535,179 +517,19 @@ printLogsBtn.onclick = ()=> window.print();
 printReportsBtn.onclick = ()=> { tabReports.click(); setTimeout(()=>window.print(), 300); };
 
 // ========== LIVE SHEET FETCH ===========
-  // Normalize a date value from Google Sheets/Forms into "YYYY-MM-DD" or return '' if empty.
-// Handles:
-//  - Excel/Sheets serial numbers (e.g. 44205 or 44205.5)
-//  - ISO date strings (2025-11-17)
-//  - common human formats (MM/DD/YYYY, MM/DD/YYYY HH:MM, etc.)
-function fixSheetDate(value) {
-  if (value === null || value === undefined) return '';
-  let v = String(value).trim();
-  if (!v) return '';
-
-  // remove surrounding quotes from CSV fields
-  v = v.replace(/^"|"$/g, '').trim();
-
-  // If it's a pure number (Excel/Sheets serial date)
-  if (/^\d+(\.\d+)?$/.test(v)) {
-    const n = Number(v);
-    // Excel/Sheets: days since 1899-12-30 (25569) -> ms
-    const date = new Date((n - 25569) * 86400 * 1000);
-    if (!isNaN(date.getTime())) return date.toISOString().split('T')[0];
-  }
-
-  // Try native Date parsing (handles ISO and many browser-recognized formats)
-  const parsed = Date.parse(v);
-  if (!isNaN(parsed)) return new Date(parsed).toISOString().split('T')[0];
-
-  // Try common MM/DD/YYYY or M/D/YYYY with optional time (US format)
-  const m = v.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})(?:\s+(\d{1,2}):(\d{2}))?/);
-  if (m) {
-    let mm = m[1].padStart(2, '0');
-    let dd = m[2].padStart(2, '0');
-    let yyyy = m[3].length === 2 ? ('20' + m[3]) : m[3];
-    return `${yyyy}-${mm}-${dd}`;
-  }
-
-  // Fallback: return trimmed value (so it's never undefined)
-  return v;
-}
-
 loadSheetBtn.onclick = fetchFromSheet;
-// ========== LIVE SHEET FETCH ===========
-
-// Normalize a date value from Google Sheets/Forms into "YYYY-MM-DD"
-function fixSheetDate(value) {
-  if (value === null || value === undefined) return '';
-  let v = String(value).trim();
-  if (!v) return '';
-
-  v = v.replace(/^"|"$/g, '').trim();
-
-  // Excel/Sheets serial number
-  if (/^\d+(\.\d+)?$/.test(v)) {
-    const n = Number(v);
-    const date = new Date((n - 25569) * 86400 * 1000);
-    if (!isNaN(date.getTime())) return date.toISOString().split('T')[0];
-  }
-
-  // Native JS parse
-  const parsed = Date.parse(v);
-  if (!isNaN(parsed)) return new Date(parsed).toISOString().split('T')[0];
-
-  // MM/DD/YYYY
-  const m = v.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
-  if (m) {
-    let mm = m[1].padStart(2, '0');
-    let dd = m[2].padStart(2, '0');
-    let yyyy = m[3].length === 2 ? ('20' + m[3]) : m[3];
-    return `${yyyy}-${mm}-${dd}`;
-  }
-
-  return v;
-}
-
-loadSheetBtn.onclick = fetchFromSheet;
-
-// ========== LIVE SHEET FETCH ===========
-
-// Normalize a date value from Google Sheets/Forms into "YYYY-MM-DD"
-function fixSheetDate(value) {
-  if (value === null || value === undefined) return '';
-  let v = String(value).trim();
-  if (!v) return '';
-
-  v = v.replace(/^"|"$/g, '').trim();
-
-  // Excel/Sheets serial number
-  if (/^\d+(\.\d+)?$/.test(v)) {
-    const n = Number(v);
-    const date = new Date((n - 25569) * 86400 * 1000);
-    if (!isNaN(date.getTime())) return date.toISOString().split('T')[0];
-  }
-
-  // Native JS parse
-  const parsed = Date.parse(v);
-  if (!isNaN(parsed)) return new Date(parsed).toISOString().split('T')[0];
-
-  // MM/DD/YYYY
-  const m = v.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
-  if (m) {
-    let mm = m[1].padStart(2, '0');
-    let dd = m[2].padStart(2, '0');
-    let yyyy = m[3].length === 2 ? ('20' + m[3]) : m[3];
-    return `${yyyy}-${mm}-${dd}`;
-  }
-
-  return v;
-}
-
-loadSheetBtn.onclick = fetchFromSheet;
-
-async function fetchFromSheet() {
-  try {
+async function fetchFromSheet(){
+  try{
     const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
     const res = await fetch(url);
-    if (!res.ok) throw new Error('Fetch failed');
-
+    if(!res.ok) throw new Error('Fetch failed');
     const text = await res.text();
-
-    // Split rows safely by CSV rules
-    const rows = text
-      .trim()
-      .split('\n')
-      .map(r => r.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/));
-
-    // Remove header
-    if (rows.length > 0) rows.shift();
-
-    // Helper
-    const cell = (arr, idx) =>
-      (arr[idx] || '').replace(/^"|"$/g, '').trim();
-
-    // 🔥 FIXED EXACTLY FOR YOUR SHEET STRUCTURE:
-    // 0 = Room name
-    // 1 = Room Number
-    // 2 = Equipment Used
-    // 3 = Column 6 (ignored)
-    // 4 = Date
-    // 5 = Time In
-    // 6 = Time Out
-    // 7 = Purpose
-    // 8 = Remarks
-
-    logs = rows.map(r => ({
-      _id: makeId(),
-      created_at: Date.now(),
-
-      // Your sheet does NOT contain Faculty or Department
-      faculty_name: "",
-      department: "",
-
-      room_name: cell(r, 0),
-      room_number: cell(r, 1),
-      equipment: cell(r, 2),
-
-      date: fixSheetDate(cell(r, 4)),
-      time_in: cell(r, 5),
-      time_out: cell(r, 6),
-      purpose: cell(r, 7),
-      remarks: cell(r, 8)
-    }));
-
-    localStorage.setItem('facultyLogs_v2', JSON.stringify(logs));
-    renderTable();
-    showToast('📊 Live data loaded from Google Sheets');
-  } catch (err) {
-    console.error(err);
-    showToast('⚠️ Could not load live data');
-  }
+    const rows = text.trim().split('\n').map(r=>r.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/));
+    rows.shift();
+    logs = rows.map(r=>({_id: makeId(), created_at: Date.now(), faculty_name: r[1]||'', department: r[2]||'', room_name: r[3]||'', room_number: r[4]||'', equipment: r[5]||'', date: r[6]||'', time_in: r[7]||'', time_out: r[8]||'', purpose: r[9]||'', remarks: r[10]||''}));
+    localStorage.setItem('facultyLogs_v2', JSON.stringify(logs)); renderTable(); showToast('📊 Live data loaded from Google Sheets');
+  }catch(err){ console.error(err); showToast('⚠️ Could not load live data'); }
 }
-
-}
-
-}
-
 
 // auto-refresh while reports visible
 setInterval(()=>{ if(viewReports.style.display !== 'none') fetchFromSheet(); }, 60000);
@@ -729,7 +551,4 @@ window.addEventListener('beforeunload', e=>{ if(faculty_name.value||purpose.valu
 </script>
 </body>
 </html>
-
-
-
 

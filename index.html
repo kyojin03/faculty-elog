@@ -257,6 +257,8 @@ table {
   <nav>
     <div id="tab-logbook" class="tab active">Logbook</div>
     <div id="tab-reports" class="tab">Reports</div>
+    <div id="tab-chemicals" class="tab">Chemicals</div>
+
   </nav>
 
   <main>
@@ -315,6 +317,30 @@ table {
         </div>
       </div>
     </section>
+
+    <!-- CHEMICALS -->
+<section id="view-chemicals" style="display:none;">
+  <div class="card">
+    <div class="controls">
+      <input id="chemSearch" class="search-input" placeholder="Search chemical name / formula" />
+      <button id="loadChemSheet" class="secondary">Load Chemicals</button>
+    </div>
+    <div class="table-wrap card" style="padding:0">
+      <table id="chemTable">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Formula</th>
+            <th>Quantity</th>
+            <th>Location</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
 
     <!-- REPORTS -->
     <section id="view-reports" style="display:none;">
@@ -560,10 +586,78 @@ document.addEventListener("input", function(e) {
     }
   }
 });
+  // Elements
+const tabChem = document.getElementById('tab-chemicals');
+const viewChem = document.getElementById('view-chemicals');
+const chemTableBody = document.querySelector('#chemTable tbody');
+const chemSearch = document.getElementById('chemSearch');
+const loadChemSheetBtn = document.getElementById('loadChemSheet');
+
+// State
+let chemicals = [];
+
+// Tab click
+tabChem.onclick = () => {
+  tabChem.classList.add('active');
+  tabLog.classList.remove('active');
+  tabReports.classList.remove('active');
+  viewChem.style.display = '';
+  viewLog.style.display = 'none';
+  viewReports.style.display = 'none';
+  renderChemTable();
+};
+
+// Fetch chemicals
+const CHEM_SHEET_ID = "YOUR_CHEM_SHEET_ID";
+const CHEM_SHEET_NAME = "Sheet1"; // change if needed
+
+async function fetchChemicals() {
+  try {
+    const url = `https://docs.google.com/spreadsheets/d/${CHEM_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(CHEM_SHEET_NAME)}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Fetch failed');
+    const text = await res.text();
+    const rows = text.trim().split('\n').map(r=>r.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/));
+    rows.shift(); // remove header
+    chemicals = rows.map(r => ({
+      name: r[0]||'',
+      formula: r[1]||'',
+      quantity: r[2]||'',
+      location: r[3]||''
+    }));
+    renderChemTable();
+    showToast('📊 Chemicals loaded');
+  } catch(err) {
+    console.error(err);
+    showToast('⚠️ Could not load chemicals');
+  }
+}
+
+loadChemSheetBtn.onclick = fetchChemicals;
+
+// Render table
+function renderChemTable() {
+  const q = (chemSearch.value||'').toLowerCase();
+  chemTableBody.innerHTML = '';
+  chemicals.filter(c => 
+    c.name.toLowerCase().includes(q) ||
+    c.formula.toLowerCase().includes(q) ||
+    c.location.toLowerCase().includes(q)
+  ).forEach(c => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${escapeHtml(c.name)}</td><td>${escapeHtml(c.formula)}</td><td>${escapeHtml(c.quantity)}</td><td>${escapeHtml(c.location)}</td>`;
+    chemTableBody.appendChild(tr);
+  });
+}
+
+// Search
+chemSearch.addEventListener('input', renderChemTable);
+
 
 
 </script>
 </body>
 </html>
+
 
 

@@ -316,8 +316,27 @@ table {
           </table>
         </div>
       </div>
-    </section>
+    </section> 
 
+
+    <!-- REPORTS -->
+    <section id="view-reports" style="display:none;">
+      <div class="card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;">
+        <div>
+          <h2 style="margin:0;color:var(--gsc-blue)">Usage Reports</h2>
+          <div style="margin-top:6px;color:#444">Generated: <span id="reportDatePretty"></span></div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <button id="printReportsBtn" class="primary">Print Reports</button>
+        </div>
+      </div>
+
+      <div class="reports-grid" style="margin-top:12px">
+        <div class="report-card card"><canvas id="chartRooms"></canvas><div class="list-area"><strong>Rooms</strong><div id="listRooms"></div></div></div>
+        <div class="report-card card"><canvas id="chartEquipment"></canvas><div class="list-area"><strong>Equipment</strong><div id="listEquipment"></div></div></div>
+        <div class="report-card card"><canvas id="chartFaculty"></canvas><div class="list-area"><strong>Faculty</strong><div id="listFaculty"></div></div></div>
+      </div>
+    </section>
     <!-- CHEMICALS -->
 <section id="view-chemicals" style="display:none;">
   <div class="card">
@@ -340,27 +359,7 @@ table {
     </div>
   </div>
 </section>
-
-
-    <!-- REPORTS -->
-    <section id="view-reports" style="display:none;">
-      <div class="card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;">
-        <div>
-          <h2 style="margin:0;color:var(--gsc-blue)">Usage Reports</h2>
-          <div style="margin-top:6px;color:#444">Generated: <span id="reportDatePretty"></span></div>
-        </div>
-        <div style="display:flex;gap:10px;align-items:center">
-          <button id="printReportsBtn" class="primary">Print Reports</button>
-        </div>
-      </div>
-
-      <div class="reports-grid" style="margin-top:12px">
-        <div class="report-card card"><canvas id="chartRooms"></canvas><div class="list-area"><strong>Rooms</strong><div id="listRooms"></div></div></div>
-        <div class="report-card card"><canvas id="chartEquipment"></canvas><div class="list-area"><strong>Equipment</strong><div id="listEquipment"></div></div></div>
-        <div class="report-card card"><canvas id="chartFaculty"></canvas><div class="list-area"><strong>Faculty</strong><div id="listFaculty"></div></div></div>
-      </div>
-    </section>
-  </main>
+  </main
 
   <footer>
     © 2025 Good Samaritan Colleges | Faculty Laboratory eLog System — Improved<br>
@@ -658,6 +657,7 @@ chemSearch.addEventListener('input', renderChemTable);
 </script>
 </body>
 </html>
+
 
 
 

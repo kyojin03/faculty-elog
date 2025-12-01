@@ -603,21 +603,19 @@ tabChem.onclick = async () => {
 
 async function fetchChemicals() {
   try {
-    const sheetId = "11ktnDlnAgnaasZe9tfAkV6_zNG2oHCm_3EGZIVotQ7Y";
-    const sheetName = "Sheet1"; // Replace with your sheet tab name
+    const sheetId = "1542H4h5X4Pn0XuO0XUEwesq3PXW_QO_WH_d5mf5pkQw"; // NEW sheet
+    const sheetName = "Sheet1"; // Replace if your tab name is different
     const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
     
     const res = await fetch(url);
     const text = await res.text();
     const json = JSON.parse(text.replace(/^[^\(]*\(/, "").slice(0, -2));
 
-    // Extract rows
     const rows = json.table.rows.map(r => [
       r.c[0] ? r.c[0].v : "", // Chemical Name
       r.c[1] ? r.c[1].v : ""  // Availability
     ]);
 
-    // Render rows
     const tbody = chemTable.querySelector('tbody');
     tbody.innerHTML = "";
     rows.forEach(r => {
@@ -645,6 +643,7 @@ async function fetchChemicals() {
   }
 }
 
+
 // Warn before refresh
 window.addEventListener('beforeunload', e=>{ if(faculty_name.value||purpose.value){ e.preventDefault(); e.returnValue=''; } });
   
@@ -661,6 +660,7 @@ document.addEventListener("input", function(e) {
 </script>
 </body>
 </html>
+
 
 
 

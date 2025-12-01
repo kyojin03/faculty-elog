@@ -603,10 +603,10 @@ tabChem.onclick = async () => {
 
 async function fetchChemicals() {
   try {
-    const sheetId = "1542H4h5X4Pn0XuO0XUEwesq3PXW_QO_WH_d5mf5pkQw"; // NEW sheet
-    const sheetName = "Sheet1"; // Replace if your tab name is different
+    const sheetId = "16Paf9dtIPQ39vYsRB3QiQk970o6RdpoP7f6EHm-hvc8"; // NEW sheet ID
+    const sheetName = "Sheet1"; // Change if your tab name is different
     const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
-    
+
     const res = await fetch(url);
     const text = await res.text();
     const json = JSON.parse(text.replace(/^[^\(]*\(/, "").slice(0, -2));
@@ -660,6 +660,7 @@ document.addEventListener("input", function(e) {
 </script>
 </body>
 </html>
+
 
 
 

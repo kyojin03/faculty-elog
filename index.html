@@ -257,6 +257,8 @@ table {
   <nav>
     <div id="tab-logbook" class="tab active">Logbook</div>
     <div id="tab-reports" class="tab">Reports</div>
+    <div id="tab-chemicals" class="tab">Chemicals</div>
+
   </nav>
 
   <main>
@@ -334,6 +336,24 @@ table {
         <div class="report-card card"><canvas id="chartFaculty"></canvas><div class="list-area"><strong>Faculty</strong><div id="listFaculty"></div></div></div>
       </div>
     </section>
+
+
+    <!-- CHEMICALS LIVE SHEET VIEW -->
+<section id="view-chemicals" style="display:none;">
+  <div class="card">
+    <h2 style="margin:0 0 10px;color:var(--gsc-blue)">Chemicals Inventory</h2>
+    <div class="table-wrap" style="overflow:auto; border-radius:10px; border:1px solid #eef2ff; margin-top:12px; padding:0;">
+      <table id="chemTable">
+        <thead></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div style="margin-top:12px;">
+      <input id="searchChemInput" placeholder="Search chemicals..." style="padding:8px; width:100%; border:1px solid #e6eefc; border-radius:6px;" />
+    </div>
+  </div>
+</section>
+
   </main>
 
   <footer>
@@ -549,6 +569,79 @@ function updateReports(){ document.getElementById('reportDatePretty').textConten
 tabLog.onclick = ()=>{ tabLog.classList.add('active'); tabReports.classList.remove('active'); viewLog.style.display=''; viewReports.style.display='none'; };
 tabReports.onclick = ()=>{ tabReports.classList.add('active'); tabLog.classList.remove('active'); viewReports.style.display=''; viewLog.style.display='none'; updateReports(); };
 
+  // --- Chemicals tab & view elements ---
+const tabChem = document.getElementById('tab-chemicals');
+const viewChem = document.getElementById('view-chemicals');
+const searchChemInput = document.getElementById('searchChemInput');
+const chemTable = document.getElementById('chemTable');
+
+// Tab switch handler
+tabChem.onclick = async () => {
+  // deactivate other tabs
+  tabLog.classList.remove('active');
+  tabReports.classList.remove('active');
+  tabChem.classList.add('active');
+  // hide other views
+  viewLog.style.display = 'none';
+  viewReports.style.display = 'none';
+  viewChem.style.display = '';
+  // load chemicals sheet
+  await fetchChemicals();
+};
+
+// function to fetch and render the chemicals sheet
+async function fetchChemicals() {
+  try {
+    const sheetId = "11ktnDlnAgnaasZe9tfAkV6_zNG2oHCm_3EGZIVotQ7Y";
+    const sheetName = "Sheet1"; // <-- replace this with your actual sheet's name
+    const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
+    const res = await fetch(url);
+    const text = await res.text();
+    // parse gviz JSONP wrapper
+    const json = JSON.parse(text.replace(/^[^\(]*\(/, "").slice(0, -2));
+    const cols = json.table.cols.map(c => c.label || "");
+    const rows = json.table.rows.map(r => r.c.map(c => c ? c.v : ""));
+
+    // build header
+    const thead = chemTable.querySelector('thead');
+    thead.innerHTML = "";
+    const trh = document.createElement('tr');
+    cols.forEach(h => {
+      const th = document.createElement('th');
+      th.textContent = h;
+      trh.appendChild(th);
+    });
+    thead.appendChild(trh);
+
+    // build rows
+    const tbody = chemTable.querySelector('tbody');
+    tbody.innerHTML = "";
+    rows.forEach(r => {
+      const tr = document.createElement('tr');
+      r.forEach(cell => {
+        const td = document.createElement('td');
+        td.textContent = cell;
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+
+    // optionally: attach search
+    searchChemInput.oninput = () => {
+      const q = searchChemInput.value.trim().toLowerCase();
+      Array.from(tbody.rows).forEach(row => {
+        const rowText = row.textContent.toLowerCase();
+        row.style.display = rowText.includes(q) ? "" : "none";
+      });
+    };
+
+    showToast('🧪 Chemicals sheet loaded');
+  } catch (err) {
+    console.error(err);
+    showToast('⚠️ Could not load chemicals sheet');
+  }
+}
+
 // Warn before refresh
 window.addEventListener('beforeunload', e=>{ if(faculty_name.value||purpose.value){ e.preventDefault(); e.returnValue=''; } });
   
@@ -565,5 +658,6 @@ document.addEventListener("input", function(e) {
 </script>
 </body>
 </html>
+
 
 

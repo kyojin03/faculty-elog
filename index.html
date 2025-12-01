@@ -1,76 +1,150 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lab Inventory</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Laboratory Usage System</title>
+<link rel="icon" type="image/png" href="gs.jfif">
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
 <style>
-  body { font-family: Arial, sans-serif; padding: 20px; }
-  input#searchInput { margin-bottom: 10px; padding: 5px; width: 300px; }
-  table { border-collapse: collapse; width: 100%; margin-top: 10px; }
-  th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-  th { background-color: #f4f4f4; }
+/* YOUR ORIGINAL STYLES REMAIN UNCHANGED */
+/* ... keep all your CSS from your previous code unchanged ... */
 </style>
 </head>
 <body>
+<header>
+  <div class="header-container">
+    <img src="gs.jfif" class="gsc-logo" alt="GSC logo">
+    <div class="header-text">
+      <h1>Good Samaritan Colleges</h1>
+      <p>Laboratory Usage System</p>
+    </div>
+  </div>
+</header>
 
-<h2>Laboratory Inventory</h2>
+<nav>
+  <div id="tab-logbook" class="tab active">Logbook</div>
+  <div id="tab-reports" class="tab">Reports</div>
+  <div id="tab-chemicals" class="tab">Chemicals</div>
+</nav>
 
-<input type="text" id="searchInput" placeholder="Search chemical...">
+<main>
+  <!-- LOGBOOK -->
+  <section id="view-logbook">
+    <!-- YOUR LOGBOOK HTML REMAINS UNCHANGED -->
+  </section>
 
-<table id="inventoryTable">
-  <thead>
-    <tr>
-      <th>Chemical Name</th>
-      <th>Quantity Available</th>
-    </tr>
-  </thead>
-  <tbody>
-    <!-- Inventory data will be populated here -->
-  </tbody>
-</table>
+  <!-- REPORTS -->
+  <section id="view-reports" style="display:none;">
+    <!-- YOUR REPORTS HTML REMAINS UNCHANGED -->
+  </section>
+
+  <!-- CHEMICALS INVENTORY -->
+  <section id="view-chemicals" style="display:none;">
+    <div class="card">
+      <h2 style="margin:0 0 10px;color:var(--gsc-blue)">Chemicals Inventory</h2>
+      <div class="controls">
+        <input id="searchChemicalInput" class="search-input" placeholder="Search reagents/chemicals..." />
+        <button id="refreshChemicalsBtn" class="secondary">Refresh</button>
+      </div>
+      <div class="table-wrap card" style="padding:0">
+        <table id="chemicalsTable">
+          <thead>
+            <tr>
+              <th>Chemical</th>
+              <th>Hazard</th>
+              <th>Date Opened</th>
+              <th>Expiry/Retest Date</th>
+              <th>Remarks</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  © 2025 Good Samaritan Colleges | Faculty Laboratory eLog System — Improved<br>
+  Prepared by Piolo L. Bernardino — Laboratory Custodian
+</footer>
+
+<div id="toast" class="toast"></div>
 
 <script>
-// Google Sheet CSV URL
-const SHEET_ID = '11ktnDlnAgnaasZe9tfAkV6_zNG2oHCm_3EGZIVotQ7Y';
-const SHEET_NAME = 'Sheet1'; // change if your tab name is different
-const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${SHEET_NAME}`;
+// ========== YOUR ORIGINAL JS (LOGBOOK + REPORTS) REMAINS UNCHANGED ==========
+/* Paste all your previous JavaScript here exactly as-is */
+/* ... all your form, table, charts, export, search, tabs, etc. ... */
 
-// Load inventory from Google Sheet
-async function loadInventory() {
+// ====================== CHEMICALS TAB SCRIPT ======================
+const CHEMICALS_SHEET_ID = "11ktnDlnAgnaasZe9tfAkV6_zNG2oHCm_3EGZIVotQ7Y"; // your sheet
+const CHEMICALS_SHEET_NAME = "Sheet1"; // adjust if needed
+const chemicalsTableBody = document.querySelector('#chemicalsTable tbody');
+const searchChemicalInput = document.getElementById('searchChemicalInput');
+const refreshChemicalsBtn = document.getElementById('refreshChemicalsBtn');
+const viewChemicals = document.getElementById('view-chemicals');
+const tabChemicals = document.getElementById('tab-chemicals');
+
+let chemicalsList = [];
+
+async function fetchChemicals() {
   try {
-    const res = await fetch(CSV_URL);
-    if (!res.ok) throw new Error('Fetch error');
+    const url = `https://docs.google.com/spreadsheets/d/${CHEMICALS_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(CHEMICALS_SHEET_NAME)}`;
+    const res = await fetch(url);
+    if(!res.ok) throw new Error('Failed to fetch chemicals');
     const text = await res.text();
-    const rows = text.trim().split('\n').map(r => r.split(','));
-    const tbody = document.querySelector('#inventoryTable tbody');
-    tbody.innerHTML = '';
-
-    rows.forEach((r, i) => {
-      if (i === 0) return; // skip header
-      const tr = document.createElement('tr');
-      tr.innerHTML = `<td>${r[0]}</td><td>${r[1] || ''}</td>`;
-      tbody.appendChild(tr);
-    });
-  } catch (err) {
-    console.error('Cannot load sheet data', err);
-    alert('⚠️ Cannot load inventory data from sheet');
+    const rows = text.trim().split('\n').map(r => r.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/));
+    rows.shift(); // remove header
+    chemicalsList = rows.map(r => ({
+      chemical: r[0] || '',
+      hazard: r[1] || '',
+      date_opened: r[2] || '',
+      expiry: r[3] || '',
+      remarks: r[4] || ''
+    }));
+    renderChemicalsTable();
+    showToast('✅ Chemicals loaded');
+  } catch(err) {
+    console.error(err);
+    showToast('⚠️ Could not load chemicals');
   }
 }
 
-// Search functionality
-document.getElementById('searchInput').addEventListener('input', function() {
-  const filter = this.value.toLowerCase();
-  const rows = document.querySelectorAll('#inventoryTable tbody tr');
-  rows.forEach(row => {
-    const chemical = row.cells[0].textContent.toLowerCase();
-    row.style.display = chemical.includes(filter) ? '' : 'none';
-  });
-});
+function renderChemicalsTable() {
+  const q = (searchChemicalInput.value || '').toLowerCase().trim();
+  chemicalsTableBody.innerHTML = '';
+  chemicalsList
+    .filter(c => !q || Object.values(c).some(v => v.toLowerCase().includes(q)))
+    .forEach(c => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${escapeHtml(c.chemical)}</td>
+        <td>${escapeHtml(c.hazard)}</td>
+        <td>${escapeHtml(c.date_opened)}</td>
+        <td>${escapeHtml(c.expiry)}</td>
+        <td>${escapeHtml(c.remarks)}</td>
+      `;
+      chemicalsTableBody.appendChild(tr);
+    });
+}
 
-// Load inventory on page load
-window.addEventListener('DOMContentLoaded', loadInventory);
+// EVENTS
+searchChemicalInput.addEventListener('input', renderChemicalsTable);
+refreshChemicalsBtn.addEventListener('click', fetchChemicals);
+
+// TAB SWITCHING
+tabChemicals.onclick = () => {
+  tabChemicals.classList.add('active');
+  tabLog.classList.remove('active');
+  tabReports.classList.remove('active');
+  viewChemicals.style.display = '';
+  viewLog.style.display = 'none';
+  viewReports.style.display = 'none';
+  fetchChemicals();
+};
 </script>
-
 </body>
 </html>

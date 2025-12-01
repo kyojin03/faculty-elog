@@ -344,7 +344,12 @@ table {
     <h2 style="margin:0 0 10px;color:var(--gsc-blue)">Chemicals Inventory</h2>
     <div class="table-wrap" style="overflow:auto; border-radius:10px; border:1px solid #eef2ff; margin-top:12px; padding:0;">
       <table id="chemTable">
-        <thead></thead>
+        <thead>
+          <tr>
+            <th>Chemical Name</th>
+            <th>Availability</th>
+          </tr>
+        </thead>
         <tbody></tbody>
       </table>
     </div>
@@ -353,6 +358,7 @@ table {
     </div>
   </div>
 </section>
+
 
   </main>
 
@@ -570,50 +576,44 @@ tabLog.onclick = ()=>{ tabLog.classList.add('active'); tabReports.classList.remo
 tabReports.onclick = ()=>{ tabReports.classList.add('active'); tabLog.classList.remove('active'); viewReports.style.display=''; viewLog.style.display='none'; updateReports(); };
 
   // --- Chemicals tab & view elements ---
+// ========== CHEMICALS TAB ===========
 const tabChem = document.getElementById('tab-chemicals');
 const viewChem = document.getElementById('view-chemicals');
 const searchChemInput = document.getElementById('searchChemInput');
 const chemTable = document.getElementById('chemTable');
 
-// Tab switch handler
 tabChem.onclick = async () => {
-  // deactivate other tabs
-  tabLog.classList.remove('active');
-  tabReports.classList.remove('active');
-  tabChem.classList.add('active');
-  // hide other views
+  // Hide other sections
   viewLog.style.display = 'none';
   viewReports.style.display = 'none';
   viewChem.style.display = '';
-  // load chemicals sheet
+  
+  // Update active tab
+  tabLog.classList.remove('active');
+  tabReports.classList.remove('active');
+  tabChem.classList.add('active');
+
+  // Fetch and render chemicals
   await fetchChemicals();
 };
 
-// function to fetch and render the chemicals sheet
 async function fetchChemicals() {
   try {
     const sheetId = "11ktnDlnAgnaasZe9tfAkV6_zNG2oHCm_3EGZIVotQ7Y";
-    const sheetName = "Sheet1"; // <-- replace this with your actual sheet's name
+    const sheetName = "Sheet1"; // Replace with your sheet tab name
     const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
+    
     const res = await fetch(url);
     const text = await res.text();
-    // parse gviz JSONP wrapper
     const json = JSON.parse(text.replace(/^[^\(]*\(/, "").slice(0, -2));
-    const cols = json.table.cols.map(c => c.label || "");
-    const rows = json.table.rows.map(r => r.c.map(c => c ? c.v : ""));
 
-    // build header
-    const thead = chemTable.querySelector('thead');
-    thead.innerHTML = "";
-    const trh = document.createElement('tr');
-    cols.forEach(h => {
-      const th = document.createElement('th');
-      th.textContent = h;
-      trh.appendChild(th);
-    });
-    thead.appendChild(trh);
+    // Extract rows
+    const rows = json.table.rows.map(r => [
+      r.c[0] ? r.c[0].v : "", // Chemical Name
+      r.c[1] ? r.c[1].v : ""  // Availability
+    ]);
 
-    // build rows
+    // Render rows
     const tbody = chemTable.querySelector('tbody');
     tbody.innerHTML = "";
     rows.forEach(r => {
@@ -626,17 +626,16 @@ async function fetchChemicals() {
       tbody.appendChild(tr);
     });
 
-    // optionally: attach search
+    // Search/filter
     searchChemInput.oninput = () => {
-      const q = searchChemInput.value.trim().toLowerCase();
+      const q = searchChemInput.value.toLowerCase();
       Array.from(tbody.rows).forEach(row => {
-        const rowText = row.textContent.toLowerCase();
-        row.style.display = rowText.includes(q) ? "" : "none";
+        row.style.display = row.textContent.toLowerCase().includes(q) ? "" : "none";
       });
     };
 
     showToast('🧪 Chemicals sheet loaded');
-  } catch (err) {
+  } catch(err) {
     console.error(err);
     showToast('⚠️ Could not load chemicals sheet');
   }
@@ -658,6 +657,7 @@ document.addEventListener("input", function(e) {
 </script>
 </body>
 </html>
+
 
 
 

@@ -603,18 +603,18 @@ tabChem.onclick = async () => {
 
 async function fetchChemicals() {
   try {
-    const sheetId = "16Paf9dtIPQ39vYsRB3QiQk970o6RdpoP7f6EHm-hvc8"; // NEW sheet ID
-    const sheetName = "Sheet1"; // Change if your tab name is different
-    const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
+    const sheetId = "16Paf9dtIPQ39vYsRB3QiQk970o6RdpoP7f6EHm-hvc8";
+    const sheetName = "Sheet1"; // replace if different
+    const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
 
     const res = await fetch(url);
-    const text = await res.text();
-    const json = JSON.parse(text.replace(/^[^\(]*\(/, "").slice(0, -2));
+    if (!res.ok) throw new Error("Fetch failed");
 
-    const rows = json.table.rows.map(r => [
-      r.c[0] ? r.c[0].v : "", // Chemical Name
-      r.c[1] ? r.c[1].v : ""  // Availability
-    ]);
+    const text = await res.text();
+    const rows = text.trim().split("\n").map(r => r.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/));
+
+    // remove header
+    rows.shift();
 
     const tbody = chemTable.querySelector('tbody');
     tbody.innerHTML = "";
@@ -628,7 +628,6 @@ async function fetchChemicals() {
       tbody.appendChild(tr);
     });
 
-    // Search/filter
     searchChemInput.oninput = () => {
       const q = searchChemInput.value.toLowerCase();
       Array.from(tbody.rows).forEach(row => {
@@ -637,12 +636,11 @@ async function fetchChemicals() {
     };
 
     showToast('🧪 Chemicals sheet loaded');
-  } catch(err) {
+  } catch (err) {
     console.error(err);
     showToast('⚠️ Could not load chemicals sheet');
   }
 }
-
 
 // Warn before refresh
 window.addEventListener('beforeunload', e=>{ if(faculty_name.value||purpose.value){ e.preventDefault(); e.returnValue=''; } });
@@ -660,6 +658,7 @@ document.addEventListener("input", function(e) {
 </script>
 </body>
 </html>
+
 
 
 

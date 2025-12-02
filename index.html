@@ -561,9 +561,6 @@ function populateList(c,o){ c.innerHTML=''; Object.entries(o).sort((a,b)=>b[1]-a
 function updateChart(id,obj,inst){ const ctx = document.getElementById(id).getContext('2d'); const l = Object.keys(obj), d = Object.values(obj); if(inst){ inst.data.labels = l; inst.data.datasets[0].data = d; inst.update(); return inst; } return new Chart(ctx,{type:'bar',data:{labels:l,datasets:[{data:d}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}}); }
 function updateReports(){ document.getElementById('reportDatePretty').textContent = new Date().toLocaleString(); const c = computeCounts(); populateList(document.getElementById('listRooms'), c.rooms); populateList(document.getElementById('listEquipment'), c.equipment); populateList(document.getElementById('listFaculty'), c.faculty); chartRooms = updateChart('chartRooms', c.rooms, chartRooms); chartEquipment = updateChart('chartEquipment', c.equipment, chartEquipment); chartFaculty = updateChart('chartFaculty', c.faculty, chartFaculty); }
 
-// ========== TABS ===========
-tabLog.onclick = ()=>{ tabLog.classList.add('active'); tabReports.classList.remove('active'); viewLog.style.display=''; viewReports.style.display='none'; };
-tabReports.onclick = ()=>{ tabReports.classList.add('active'); tabLog.classList.remove('active'); viewReports.style.display=''; viewLog.style.display='none'; updateReports(); };
 
 // Warn before refresh
 window.addEventListener('beforeunload', e=>{ if(faculty_name.value||purpose.value){ e.preventDefault(); e.returnValue=''; } });
@@ -576,18 +573,33 @@ document.addEventListener("input", function(e) {
     }
   }
 });
-// TAB SWITCH
-const tabChem = document.getElementById('tab-chemicals');
-const viewChem = document.getElementById('view-chemicals');
-tabChem.onclick = () => {
-  tabChem.classList.add('active');
-  tabLog.classList.remove('active');
-  tabReports.classList.remove('active');
-  viewChem.style.display = '';
-  viewLog.style.display = 'none';
-  viewReports.style.display = 'none';
-  loadChemicals();
-};
+  
+  const tabs = [
+  { tabEl: tabLog, viewEl: viewLog },
+  { tabEl: tabReports, viewEl: viewReports },
+  { tabEl: tabChem, viewEl: viewChem }
+];
+
+function switchTab(activeTab) {
+  tabs.forEach(({ tabEl, viewEl }) => {
+    if (tabEl === activeTab) {
+      tabEl.classList.add('active');
+      viewEl.style.display = 'block';
+    } else {
+      tabEl.classList.remove('active');
+      viewEl.style.display = 'none';
+    }
+  });
+
+  // Load data only when necessary
+  if (activeTab === tabChem) loadChemicals();
+  if (activeTab === tabReports) updateReports();
+}
+
+// Assign click handlers
+tabs.forEach(({ tabEl }) => {
+  tabEl.addEventListener('click', () => switchTab(tabEl));
+});
 
 // FETCH & RENDER CHEMICALS
 // =======================
@@ -665,6 +677,7 @@ searchChemInput.addEventListener('input', () => {
 </script>
 </body>
 </html>
+
 
 
 

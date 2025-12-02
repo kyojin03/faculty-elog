@@ -590,48 +590,62 @@ tabChem.onclick = () => {
 };
 
 // FETCH & RENDER CHEMICALS
-const CHEM_SHEET_ID = '16Paf9dtIPQ39vYsRB3QiQk970o6RdpoP7f6EHm-hvc8';
-const CHEM_SHEET_NAME = 'Chem'; // adjust your tab name
-const chemTableBody = document.querySelector('#chemTable tbody');
-let chemicals = [];
+// =======================
+// LOAD CHEMICALS SHEET
+// =======================
+const CHEM_SHEET_ID = '16Paf9dtIPQ39vYsRB3QiQk970o6RdpoP7f6EHm-hvc8'; // your sheet ID
+const CHEM_SHEET_NAME = 'chem'; // your tab name
 
-async function loadChemicals(){
+let chemicals = []; // store chemicals
+
+async function loadChemicals() {
   try {
     const url = `https://docs.google.com/spreadsheets/d/${CHEM_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(CHEM_SHEET_NAME)}`;
     const res = await fetch(url);
-    if(!res.ok) throw new Error('Fetch failed');
+    if (!res.ok) throw new Error('Fetch failed');
+
     const text = await res.text();
     const rows = text.trim().split('\n').map(r => r.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/));
-    rows.shift(); // remove header
+
+    // remove header row
+    rows.shift();
+
     chemicals = rows.map(r => ({
-      name: r[0] || '',
-      availability: r[1] || ''
+      name: r[0] ? r[0].replace(/"/g,'') : '',           // chemical name (always shown)
+      availability: r[1] ? r[1].replace(/"/g,'') : ''   // availability (can be blank)
     }));
+
     renderChemicals();
-  } catch(err){
+    showToast('📊 Chemicals loaded successfully');
+  } catch(err) {
     console.error(err);
     showToast('⚠️ Could not load chemicals');
   }
 }
 
-function renderChemicals(){
-  const query = (document.getElementById('searchChem').value || '').toLowerCase();
-  chemTableBody.innerHTML = '';
-  chemicals
-    .filter(c => c.name.toLowerCase().includes(query) || c.availability.toLowerCase().includes(query))
-    .forEach(c => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `<td>${escapeHtml(c.name)}</td><td>${escapeHtml(c.availability)}</td>`;
-      chemTableBody.appendChild(tr);
-    });
-}
+// =======================
+// RENDER CHEMICALS TABLE
+// =======================
+function renderChemicals() {
+  const tableBody = document.querySelector('#chemTable tbody');
+  if(!tableBody) return;
+  tableBody.innerHTML = '';
 
-document.getElementById('searchChem').addEventListener('input', renderChemicals);
+  chemicals.forEach(chem => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${escapeHtml(chem.name)}</td>
+      <td>${escapeHtml(chem.availability)}</td>
+    `;
+    tableBody.appendChild(tr);
+  });
+}
 
 
 </script>
 </body>
 </html>
+
 
 
 

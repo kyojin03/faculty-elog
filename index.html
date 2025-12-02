@@ -582,60 +582,150 @@ document.addEventListener("input", function(e) {
 });
 
 // ========== CHEMICALS TAB ==========
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Laboratory Usage System</title>
+<link rel="icon" type="image/png" href="gs.jfif">
+<style>
+  :root{--gsc-blue:#0f172a;--gsc-accent:#2563eb;--gsc-bg:#f8fafc;--muted:#64748b}
+  *{box-sizing:border-box}
+  body{font-family:Inter,Segoe UI,Arial,sans-serif;margin:0;background:var(--gsc-bg);color:var(--gsc-blue);}
+  header{background:white;color:var(--gsc-blue);padding:14px 20px;box-shadow:0 6px 18px rgba(15,23,42,.06);border-bottom:4px solid rgba(37,99,235,.06)}
+  .header-container{display:flex;align-items:center;gap:14px;max-width:1200px;margin:0 auto}
+  .gsc-logo{width:72px;height:auto;border-radius:8px}
+  .header-text h1{margin:0;font-size:18px}
+  .header-text p{margin:2px 0 0;font-size:13px;color:var(--muted)}
+  nav{max-width:1200px;margin:12px auto;padding:0 20px;display:flex;gap:10px}
+  .tab{background:white;padding:9px 14px;border-radius:10px;border:1px solid #eef2ff;cursor:pointer;font-weight:700;color:var(--gsc-blue)}
+  .tab.active{background:linear-gradient(90deg,var(--gsc-accent),#1e40af);color:white;border-color:transparent}
+  main{max-width:1200px;margin:18px auto;padding:0 20px 40px}
+  .card{background:white;border-radius:12px;padding:18px;box-shadow:0 10px 30px rgba(15,23,42,.04);margin-bottom:18px}
+  label{font-weight:700;font-size:13px;color:var(--gsc-blue);display:block;margin-bottom:6px}
+  input,textarea,select,button{font-size:14px}
+  input,textarea,select{width:100%;padding:10px;border:1px solid #e6eefc;border-radius:8px}
+  .row{display:flex;gap:12px;flex-wrap:wrap}
+  .row .col{flex:1;min-width:160px}
+  button.primary{background:var(--gsc-accent);color:white;border:none;cursor:pointer;padding:10px 12px;border-radius:8px;font-weight:800}
+  button.secondary{background:#fff;border:1px solid #e6eefc;color:var(--gsc-blue);cursor:pointer;padding:9px 12px;border-radius:8px;font-weight:700}
+  .controls{display:flex;gap:10px;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+  .table-wrap{overflow:auto;border-radius:10px;border:1px solid #eef2ff}
+  table{width:100%;border-collapse:collapse;background:transparent}
+  th,td{padding:10px;border-bottom:1px solid #f1f5f9;text-align:left;font-size:13px}
+  th{background:#0f172a;color:white;position:sticky;top:0}
+  tr:nth-child(even) td{background:#fbfdff}
+  .search-input{min-width:220px;margin-bottom:8px}
+  footer{max-width:1200px;margin:22px auto;padding:18px 20px;color:#555;font-size:13px;text-align:center}
+</style>
+</head>
+<body>
+  <header>
+    <div class="header-container">
+      <img src="gs.jfif" class="gsc-logo" alt="GSC logo">
+      <div class="header-text">
+        <h1>Good Samaritan Colleges</h1>
+        <p>Laboratory Usage System</p>
+      </div>
+    </div>
+  </header>
+
+  <nav>
+    <div id="tab-logbook" class="tab active">Logbook</div>
+    <div id="tab-reports" class="tab">Reports</div>
+    <div id="tab-chemicals" class="tab">Chemicals</div>
+  </nav>
+
+  <main>
+    <!-- LOGBOOK -->
+    <section id="view-logbook">
+      <div class="card">
+        <h2>Logbook Section</h2>
+        <p>Existing logbook form and table...</p>
+      </div>
+    </section>
+
+    <!-- REPORTS -->
+    <section id="view-reports" style="display:none;">
+      <div class="card">
+        <h2>Reports Section</h2>
+        <p>Existing reports content...</p>
+      </div>
+    </section>
+
+    <!-- CHEMICALS -->
+    <section id="view-chemicals" style="display:none;">
+      <div class="card">
+        <h2>Chemical Inventory</h2>
+        <div class="controls">
+          <input id="chemSearch" class="search-input" placeholder="Search chemical..." />
+        </div>
+        <div class="table-wrap">
+          <table id="chemTable">
+            <thead>
+              <tr><th>Chemical Name</th><th>Availability</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    © 2025 Good Samaritan Colleges | Faculty Laboratory eLog System — Prepared by Piolo L. Bernardino
+  </footer>
+
+<script>
+const tabLog = document.getElementById('tab-logbook');
+const tabReports = document.getElementById('tab-reports');
 const tabChem = document.getElementById('tab-chemicals');
+const viewLog = document.getElementById('view-logbook');
+const viewReports = document.getElementById('view-reports');
 const viewChem = document.getElementById('view-chemicals');
-const searchChemical = document.getElementById('searchChemical');
-const chemicalTableBody = document.querySelector('#chemicalTable tbody');
 
-const CHEM_SHEET_ID = '16Paf9dtIPQ39vYsRB3QiQk970o6RdpoP7f6EHm-hvc8';
-const CHEM_SHEET_NAME = 'Sheet2'; // adjust if your sheet has another name
+// TAB SWITCH
+tabLog.onclick = ()=>{ tabLog.classList.add('active'); tabReports.classList.remove('active'); tabChem.classList.remove('active'); viewLog.style.display=''; viewReports.style.display='none'; viewChem.style.display='none'; };
+tabReports.onclick = ()=>{ tabReports.classList.add('active'); tabLog.classList.remove('active'); tabChem.classList.remove('active'); viewReports.style.display=''; viewLog.style.display='none'; viewChem.style.display='none'; };
+tabChem.onclick = ()=>{ tabChem.classList.add('active'); tabLog.classList.remove('active'); tabReports.classList.remove('active'); viewChem.style.display=''; viewLog.style.display='none'; viewReports.style.display='none'; loadChemicals(); };
 
-let chemicals = [];
+// CHEMICAL INVENTORY
+const SHEET_ID = '16Paf9dtIPQ39vYsRB3QiQk970o6RdpoP7f6EHm-hvc8';
+const SHEET_NAME = 'Sheet2'; // Change if your sheet tab has another name
 
-async function fetchChemicals() {
-  try {
-    const url = `https://docs.google.com/spreadsheets/d/${CHEM_SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(CHEM_SHEET_NAME)}`;
+async function loadChemicals(){
+  const tbody = document.querySelector('#chemTable tbody');
+  tbody.innerHTML = '';
+  try{
+    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
     const res = await fetch(url);
+    if(!res.ok) throw new Error('Fetch failed');
     const text = await res.text();
-
-    // Strip Google wrapper and parse JSON
-    const json = JSON.parse(text.match(/(?<=google\.visualization\.Query\.setResponse\().*(?=\);)/s)[0]);
-    const rows = json.table.rows;
-
-    chemicals = rows.map(r => ({
-      name: r.c[0]?.v || '',
-      availability: r.c[1]?.v || ''
-    }));
-
-    renderChemicals();
-  } catch (err) {
+    const rows = text.trim().split('\n').map(r=>r.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/));
+    // skip header row
+    rows.forEach((r,i)=>{
+      if(i===0) return;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${r[0]||''}</td><td>${r[1]||''}</td>`;
+      tbody.appendChild(tr);
+    });
+  }catch(err){
     console.error(err);
-    showToast('⚠️ Could not load chemicals');
+    tbody.innerHTML = '<tr><td colspan="2">⚠️ Could not load chemicals</td></tr>';
   }
 }
 
-function renderChemicals() {
-  const q = (searchChemical.value || '').toLowerCase().trim();
-  chemicalTableBody.innerHTML = '';
-  chemicals.filter(c => c.name.toLowerCase().includes(q)).forEach(c => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${escapeHtml(c.name)}</td><td>${escapeHtml(c.availability)}</td>`;
-    chemicalTableBody.appendChild(tr);
+// SEARCH
+document.getElementById('chemSearch').addEventListener('input', e=>{
+  const q = e.target.value.toLowerCase();
+  document.querySelectorAll('#chemTable tbody tr').forEach(tr=>{
+    tr.style.display = Array.from(tr.cells).some(td=>td.textContent.toLowerCase().includes(q)) ? '' : 'none';
   });
-}
-
-// ========== TAB SWITCH ==========
-tabChem.onclick = () => {
-  tabChem.classList.add('active');
-  tabLog.classList.remove('active');
-  tabReports.classList.remove('active');
-
-  viewChem.style.display = '';
-  viewLog.style.display = 'none';
-  viewReports.style.display = 'none';
-
-  fetchChemicals();
-};
+});
+</script>
+</body>
+</html>
 
 // ========== SEARCH ==========
 searchChemical.addEventListener('input', renderChemicals);
@@ -645,6 +735,7 @@ searchChemical.addEventListener('input', renderChemicals);
 </script>
 </body>
 </html>
+
 
 
 

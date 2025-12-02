@@ -257,6 +257,7 @@ table {
   <nav>
     <div id="tab-logbook" class="tab active">Logbook</div>
     <div id="tab-reports" class="tab">Reports</div>
+    <div id="tab-chemicals" class="tab">Chemicals</div>
   </nav>
 
   <main>
@@ -334,6 +335,21 @@ table {
         <div class="report-card card"><canvas id="chartFaculty"></canvas><div class="list-area"><strong>Faculty</strong><div id="listFaculty"></div></div></div>
       </div>
     </section>
+
+    <section id="view-chemicals" style="display:none;">
+  <div class="card">
+    <h2 style="margin:0 0 10px;color:var(--gsc-blue)">Chemicals Inventory</h2>
+    <input id="searchChem" class="search-input" placeholder="Search chemical name / availability" style="margin-bottom:10px"/>
+    <div class="table-wrap">
+      <table id="chemTable">
+        <thead>
+          <tr><th>Chemical Name</th><th>Availability</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</section>
   </main>
 
   <footer>
@@ -560,10 +576,62 @@ document.addEventListener("input", function(e) {
     }
   }
 });
+// TAB SWITCH
+const tabChem = document.getElementById('tab-chemicals');
+const viewChem = document.getElementById('view-chemicals');
+tabChem.onclick = () => {
+  tabChem.classList.add('active');
+  tabLog.classList.remove('active');
+  tabReports.classList.remove('active');
+  viewChem.style.display = '';
+  viewLog.style.display = 'none';
+  viewReports.style.display = 'none';
+  loadChemicals();
+};
+
+// FETCH & RENDER CHEMICALS
+const CHEM_SHEET_ID = '16Paf9dtIPQ39vYsRB3QiQk970o6RdpoP7f6EHm-hvc8';
+const CHEM_SHEET_NAME = 'Chemicals'; // adjust your tab name
+const chemTableBody = document.querySelector('#chemTable tbody');
+let chemicals = [];
+
+async function loadChemicals(){
+  try {
+    const url = `https://docs.google.com/spreadsheets/d/${CHEM_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(CHEM_SHEET_NAME)}`;
+    const res = await fetch(url);
+    if(!res.ok) throw new Error('Fetch failed');
+    const text = await res.text();
+    const rows = text.trim().split('\n').map(r => r.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/));
+    rows.shift(); // remove header
+    chemicals = rows.map(r => ({
+      name: r[0] || '',
+      availability: r[1] || ''
+    }));
+    renderChemicals();
+  } catch(err){
+    console.error(err);
+    showToast('⚠️ Could not load chemicals');
+  }
+}
+
+function renderChemicals(){
+  const query = (document.getElementById('searchChem').value || '').toLowerCase();
+  chemTableBody.innerHTML = '';
+  chemicals
+    .filter(c => c.name.toLowerCase().includes(query) || c.availability.toLowerCase().includes(query))
+    .forEach(c => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${escapeHtml(c.name)}</td><td>${escapeHtml(c.availability)}</td>`;
+      chemTableBody.appendChild(tr);
+    });
+}
+
+document.getElementById('searchChem').addEventListener('input', renderChemicals);
 
 
 </script>
 </body>
 </html>
+
 
 

@@ -257,7 +257,7 @@ table {
   <nav>
     <div id="tab-logbook" class="tab active">Logbook</div>
     <div id="tab-reports" class="tab">Reports</div>
-    <div id="tab-chemicals" class="tab">Chemicals/Consumables</div>
+    <div id="tab-chemicals" class="tab">Chemicals</div>
 
   </nav>
 
@@ -336,27 +336,25 @@ table {
         <div class="report-card card"><canvas id="chartFaculty"></canvas><div class="list-area"><strong>Faculty</strong><div id="listFaculty"></div></div></div>
       </div>
     </section>
-
-
-    <!-- CHEMICAL INVENTORY -->
-    <section id="view-chemical" style="display:none;">
-      <div class="card">
-        <div class="controls" style="margin-bottom: 12px;">
-          <input id="chemSearchInput" class="search-input" placeholder="Search chemical name..." />
-          <button id="chemReloadBtn" class="secondary">Reload</button>
-        </div>
-        <div class="table-wrap card" style="padding:0">
-          <table id="chemTable">
-            <thead>
-              <tr><th>Chemical Name</th><th>Availability</th></tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-
+    
+    <!-- CHEMICALS -->
+<section id="view-chemicals" style="display:none;">
+  <div class="card">
+    <h2 style="margin:0 0 10px;color:var(--gsc-blue)">Chemical Inventory</h2>
+    <div class="controls">
+      <input id="searchChem" class="search-input" placeholder="Search chemicals" />
+      <button id="loadChemBtn" class="secondary">Load Chemicals</button>
+    </div>
+    <div class="table-wrap card" style="padding:0;margin-top:10px;">
+      <table id="chemTable">
+        <thead>
+          <tr><th>Chemical Name</th><th>Availability</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</section>
 
   </main>
 
@@ -572,81 +570,6 @@ function updateReports(){ document.getElementById('reportDatePretty').textConten
 // ========== TABS ===========
 tabLog.onclick = ()=>{ tabLog.classList.add('active'); tabReports.classList.remove('active'); viewLog.style.display=''; viewReports.style.display='none'; };
 tabReports.onclick = ()=>{ tabReports.classList.add('active'); tabLog.classList.remove('active'); viewReports.style.display=''; viewLog.style.display='none'; updateReports(); };
-// ----- CHEMICAL INVENTORY PAGE -----
-const CHEM_SHEET_ID = "16Paf9dtIPQ39vYsRB3QiQk970o6RdpoP7f6EHm-hvc8";
-const chemSection = document.getElementById('view-chemical');
-const chemTabBtn = document.getElementById('tab-chem');
-const chemTableBody = document.querySelector('#chemTable tbody');
-const chemSearchInput = document.getElementById('chemSearchInput');
-const chemReloadBtn = document.getElementById('chemReloadBtn');
-
-// Tab click handler
-chemTabBtn.addEventListener('click', () => {
-  // deactivate other tabs
-  tabLog.classList.remove('active');
-  tabReports.classList.remove('active');
-  chemTabBtn.classList.add('active');
-
-  // hide other views
-  viewLog.style.display = 'none';
-  viewReports.style.display = 'none';
-  // show chemical view
-  chemSection.style.display = '';
-  // load the sheet
-  loadChemicalSheet();
-});
-
-// Function to fetch and render chemical inventory
-async function loadChemicalSheet() {
-  chemTableBody.innerHTML = '<tr><td colspan="2">Loading…</td></tr>';
-  try {
-    const url = `https://docs.google.com/spreadsheets/d/${CHEM_SHEET_ID}/gviz/tq?tqx=out:csv&gid=0`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('Network error');
-    const text = await res.text();
-    const rows = text.trim().split('\n').map(r => r.split(','));
-    // assume first row is header
-    const data = rows.slice(1);
-    renderChemTable(data);
-  } catch (err) {
-    console.error(err);
-    chemTableBody.innerHTML = '<tr><td colspan="2">⚠️ Could not load data</td></tr>';
-  }
-}
-
-// Function to render filtered table
-function renderChemTable(data) {
-  const q = (chemSearchInput.value || '').toLowerCase().trim();
-  const filtered = data.filter(r => r[0].toLowerCase().includes(q));
-  chemTableBody.innerHTML = '';
-  if (!filtered.length) {
-    chemTableBody.innerHTML = '<tr><td colspan="2">No results</td></tr>';
-    return;
-  }
-  filtered.forEach(r => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${r[0]}</td><td>${r[1] || ''}</td>`;
-    chemTableBody.appendChild(tr);
-  });
-}
-
-// Bind search and reload
-chemSearchInput.addEventListener('input', () => {
-  // we re-render based on last fetched data — but for simplicity just reload sheet
-  // or you can cache the last fetched `data`
-  loadChemicalSheet();
-});
-chemReloadBtn.addEventListener('click', loadChemicalSheet);
-
-// Optional: if you want to switch back to Logbook/Reports resetting
-tabLog.addEventListener('click', () => {
-  chemTabBtn.classList.remove('active');
-});
-tabReports.addEventListener('click', () => {
-  chemTabBtn.classList.remove('active');
-});
-
-
 
 // Warn before refresh
 window.addEventListener('beforeunload', e=>{ if(faculty_name.value||purpose.value){ e.preventDefault(); e.returnValue=''; } });
@@ -660,18 +583,71 @@ document.addEventListener("input", function(e) {
   }
 });
 
+// ========== CHEMICALS TAB ==========
+const tabChem = document.getElementById('tab-chemicals');
+const viewChem = document.getElementById('view-chemicals');
+const chemTableBody = document.querySelector('#chemTable tbody');
+const searchChem = document.getElementById('searchChem');
+const loadChemBtn = document.getElementById('loadChemBtn');
+
+// YOUR GOOGLE SHEET INFO
+const CHEM_SHEET_ID = "16Paf9dtIPQ39vYsRB3QiQk970o6RdpoP7f6EHm-hvc8";
+const CHEM_SHEET_NAME = "Sheet1"; // change if needed
+
+let chemicals = [];
+
+// Tab click
+tabChem.onclick = ()=>{
+  tabChem.classList.add('active');
+  tabLog.classList.remove('active');
+  tabReports.classList.remove('active');
+  viewChem.style.display = '';
+  viewLog.style.display = 'none';
+  viewReports.style.display = 'none';
+  renderChemicals();
+};
+
+// Fetch chemicals
+async function fetchChemicals(){
+  try{
+    const url = `https://docs.google.com/spreadsheets/d/${CHEM_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(CHEM_SHEET_NAME)}`;
+    const res = await fetch(url);
+    if(!res.ok) throw new Error('Fetch failed');
+    const text = await res.text();
+    const rows = text.trim().split('\n').map(r=>r.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/));
+    rows.shift(); // remove header
+    chemicals = rows.map(r=>({name: r[0]?.replace(/"/g,'') || '', availability: r[1]?.replace(/"/g,'') || ''}));
+    renderChemicals();
+    showToast('🧪 Chemical inventory loaded');
+  }catch(err){
+    console.error(err);
+    showToast('⚠️ Could not load chemicals');
+  }
+}
+
+// Render chemical table
+function renderChemicals(){
+  const q = (searchChem.value||'').toLowerCase().trim();
+  chemTableBody.innerHTML = '';
+  chemicals
+    .filter(c=>!q || c.name.toLowerCase().includes(q) || c.availability.toLowerCase().includes(q))
+    .forEach(c=>{
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${escapeHtml(c.name)}</td><td>${escapeHtml(c.availability)}</td>`;
+      chemTableBody.appendChild(tr);
+    });
+}
+
+// Search input
+searchChem.addEventListener('input', renderChemicals);
+
+// Load button
+loadChemBtn.onclick = fetchChemicals;
+
+
 
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
 
 

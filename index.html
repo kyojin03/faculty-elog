@@ -640,11 +640,32 @@ function renderChemicals() {
     tableBody.appendChild(tr);
   });
 }
+// =======================
+// CHEMICAL SEARCH
+// =======================
+const searchChemInput = document.getElementById('searchChem');
+searchChemInput.addEventListener('input', () => {
+  const q = searchChemInput.value.toLowerCase().trim();
+  const tableBody = document.querySelector('#chemTable tbody');
+  tableBody.innerHTML = '';
+
+  chemicals
+    .filter(c => c.name.toLowerCase().includes(q) || c.availability.toLowerCase().includes(q))
+    .forEach(chem => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${escapeHtml(chem.name)}</td>
+        <td>${escapeHtml(chem.availability)}</td>
+      `;
+      tableBody.appendChild(tr);
+    });
+});
 
 
 </script>
 </body>
 </html>
+
 
 
 

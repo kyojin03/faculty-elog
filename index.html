@@ -60,145 +60,164 @@
 </head>
 
 <body>
-<header>
-  <div class="header-container">
-    <img src="gs.jfif" class="gsc-logo" alt="GSC logo">
-    <div class="header-text">
-      <h1>Good Samaritan Colleges</h1>
-      <p>Laboratory Usage System</p>
+  <header>
+    <div class="header-container">
+      <img src="gs.jfif" class="gsc-logo" alt="GSC logo">
+      <div class="header-text">
+        <h1>Good Samaritan Colleges</h1>
+        <p>Laboratory Usage System</p>
+      </div>
     </div>
-  </div>
-</header>
+  </header>
 
-<nav>
-  <div id="tab-logbook" class="tab active">Logbook</div>
-  <div id="tab-reports" class="tab">Reports</div>
-  <div id="tab-chemicals" class="tab">Chemicals</div>
-</nav>
+  <nav>
+    <div id="tab-logbook" class="tab active">Logbook</div>
+    <div id="tab-reports" class="tab">Reports</div>
+    <div id="tab-chemicals" class="tab">Chemicals</div>
+  </nav>
 
-<main>
-  <!-- LOGBOOK -->
-  <section id="view-logbook">
-    <div class="card">
-      <form id="elogForm">
-        <h2 style="margin:0 0 10px;color:var(--gsc-blue)">Log in Form</h2>
-        <div class="row">
-          <div class="col"><label>Faculty Name</label><input id="faculty_name" placeholder="Ex. Juan Dela Cruz" required></div>
-          <div class="col"><label>Department</label><input id="department" placeholder="Ex. CNAM" required></div>
-          <div class="col"><label>Room</label><input id="room_name" placeholder="Ex. Chemistry" required></div>
-        </div>
+  <main>
+    <!-- LOGBOOK -->
+    <section id="view-logbook">
+      <div class="card">
+        <form id="elogForm">
+          <h2 style="margin:0 0 10px;color:var(--gsc-blue)">Log in Form</h2>
 
-        <div class="row">
-          <div class="col"><label>Room #</label><input id="room_number" placeholder="Ex. 301"></div>
-          <div class="col"><label>Major Equipment W/ Quantity</label><input id="equipment" placeholder="Ex. Microscope-1"></div>
-          <div class="col"><label>Date</label><input type="date" id="date" required></div>
-        </div>
+          <div class="row">
+            <div class="col"><label>Faculty Name</label><input id="faculty_name" placeholder="Ex. Juan Dela Cruz" required></div>
+            <div class="col"><label>Department</label><input id="department" placeholder="Ex. CNAM" required></div>
+            <div class="col">
+  <label>Room</label>
+  <input id="room_name" placeholder="Auto-filled from Room #" required readonly>
+</div>
 
-        <div class="row">
-          <div class="col"><label>Time In</label><input type="time" id="time_in" required></div>
-          <div class="col"><label>Time Out</label><input type="time" id="time_out" required></div>
-          <div class="col">
-            <label>Activity Type</label>
-            <select id="activity_type" required>
-              <option value="EXPERIMENT">EXPERIMENT</option>
-              <option value="CLASS">CLASS</option>
-              <option value="RESEARCH">RESEARCH</option>
-              <option value="PREPARATION">PREPARATION</option>
-              <option value="OTHERS">OTHERS</option>
-            </select>
+          </div>
+
+          <div class="row">
+            <!-- ✅ CHANGED: Room # is now a select -->
+            <div class="col">
+              <label>Room #</label>
+              <select id="room_number" required>
+                <option value="" disabled selected>Select room #</option>
+                <option value="302">302</option>
+                <option value="303">303</option>
+                <option value="305">305</option>
+                <option value="401">401</option>
+                <option value="402">402</option>
+                <option value="403">403</option>
+              </select>
+            </div>
+
+            <div class="col"><label>Major Equipment W/ Quantity</label><input id="equipment" placeholder="Ex. Microscope-1"></div>
+            <div class="col"><label>Date</label><input type="date" id="date" required></div>
+          </div>
+
+          <div class="row">
+            <div class="col"><label>Time In</label><input type="time" id="time_in" required></div>
+            <div class="col"><label>Time Out</label><input type="time" id="time_out" required></div>
+
+            <div class="col">
+              <label>Activity Type</label>
+              <select id="activity_type" required>
+                <option value="EXPERIMENT">EXPERIMENT</option>
+                <option value="CLASS">CLASS</option>
+                <option value="RESEARCH">RESEARCH</option>
+                <option value="PREPARATION">PREPARATION</option>
+                <option value="OTHERS">OTHERS</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col"><label>Purpose</label><input id="purpose" placeholder="Experiment on solutions" required></div>
+          </div>
+
+          <label>Remarks</label>
+          <textarea id="remarks" rows="2" placeholder="Optional"></textarea>
+
+          <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px">
+            <button class="primary" type="submit">Add Log</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="controls">
+          <div style="display:flex;gap:8px;align-items:center">
+            <input id="searchInput" class="search-input" placeholder="Search faculty / room / equipment" />
+            <select id="filterDept"><option value="">All Departments</option></select>
+            <input type="date" id="filterDateStart" class="chip small" title="Start date" />
+            <input type="date" id="filterDateEnd" class="chip small" title="End date" />
+            <button id="clearFilters" class="secondary">Clear</button>
+          </div>
+          <div class="flex-right">
+            <button id="exportCsvBtn" class="secondary">Export CSV</button>
+            <button id="printLogsBtn" class="secondary">Print</button>
+            <button id="loadSheetBtn" class="secondary">Load Live Sheet</button>
           </div>
         </div>
 
-        <div class="row">
-          <div class="col"><label>Purpose</label><input id="purpose" placeholder="Experiment on solutions" required></div>
-        </div>
-
-        <label>Remarks</label>
-        <textarea id="remarks" rows="2" placeholder="Optional"></textarea>
-
-        <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px">
-          <button class="primary" type="submit">Add Log</button>
-        </div>
-      </form>
-    </div>
-
-    <div class="card">
-      <div class="controls">
-        <div style="display:flex;gap:8px;align-items:center">
-          <input id="searchInput" class="search-input" placeholder="Search faculty / room / equipment" />
-          <select id="filterDept"><option value="">All Departments</option></select>
-          <input type="date" id="filterDateStart" class="chip small" title="Start date" />
-          <input type="date" id="filterDateEnd" class="chip small" title="End date" />
-          <button id="clearFilters" class="secondary">Clear</button>
-        </div>
-        <div class="flex-right">
-          <button id="exportCsvBtn" class="secondary">Export CSV</button>
-          <button id="printLogsBtn" class="secondary">Print</button>
-          <button id="loadSheetBtn" class="secondary">Load Live Sheet</button>
+        <div class="table-wrap card" style="padding:0">
+          <table id="elogTable">
+            <thead>
+              <tr>
+                <th>Timestamp</th><th>Faculty</th><th>Dept</th><th>Room</th><th>Room #</th><th>Equip</th>
+                <th>Date</th><th>In</th><th>Out</th><th>Activity</th><th>Purpose</th><th>Remarks</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
         </div>
       </div>
+    </section>
 
-      <div class="table-wrap card" style="padding:0">
-        <table id="elogTable">
-          <thead>
-            <tr>
-              <th>Timestamp</th><th>Faculty</th><th>Dept</th><th>Room</th><th>Room #</th><th>Equip</th>
-              <th>Date</th><th>In</th><th>Out</th><th>Activity</th><th>Purpose</th><th>Remarks</th><th>Actions</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <!-- REPORTS -->
-  <section id="view-reports" style="display:none;">
-    <div class="card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
-      <div>
-        <h2 style="margin:0;color:var(--gsc-blue)">Usage Reports</h2>
-        <div style="margin-top:6px;color:#444">Generated: <span id="reportDatePretty"></span></div>
-      </div>
-
-      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+    <!-- REPORTS -->
+    <section id="view-reports" style="display:none;">
+      <div class="card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
         <div>
-          <label class="small" style="margin:0 0 4px">Report Month</label>
-          <input type="month" id="reportMonth" class="chip small" />
+          <h2 style="margin:0;color:var(--gsc-blue)">Usage Reports</h2>
+          <div style="margin-top:6px;color:#444">Generated: <span id="reportDatePretty"></span></div>
         </div>
-        <button id="printReportsBtn" class="primary">Print Reports</button>
+
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <div>
+            <label class="small" style="margin:0 0 4px">Report Month</label>
+            <input type="month" id="reportMonth" class="chip small" />
+          </div>
+          <button id="printReportsBtn" class="primary">Print Reports</button>
+        </div>
       </div>
-    </div>
 
-    <div class="reports-grid" style="margin-top:12px">
-      <div class="report-card card"><canvas id="chartRooms"></canvas><div class="list-area"><strong>Rooms (count)</strong><div id="listRooms"></div></div></div>
-      <div class="report-card card"><canvas id="chartEquipment"></canvas><div class="list-area"><strong>Equipment (count)</strong><div id="listEquipment"></div></div></div>
-      <div class="report-card card"><canvas id="chartFaculty"></canvas><div class="list-area"><strong>Faculty (count)</strong><div id="listFaculty"></div></div></div>
-      <div class="report-card card"><canvas id="chartFacultyHours"></canvas><div class="list-area"><strong>Faculty (total hours)</strong><div id="listFacultyHours"></div></div></div>
-      <div class="report-card card"><canvas id="chartExperimentFaculty"></canvas><div class="list-area"><strong>Experiment Faculty (count)</strong><div id="listExperimentFaculty"></div></div></div>
-    </div>
-  </section>
-
-  <!-- CHEMICALS -->
-  <section id="view-chemicals" style="display:none;">
-    <div class="card">
-      <h2 style="margin:0 0 10px;color:var(--gsc-blue)">Chemicals Inventory</h2>
-      <input id="searchChem" class="search-input" placeholder="Search chemical name / availability" style="margin-bottom:10px"/>
-      <div class="table-wrap">
-        <table id="chemTable">
-          <thead><tr><th>Chemical Name</th><th>Availability</th></tr></thead>
-          <tbody></tbody>
-        </table>
+      <div class="reports-grid" style="margin-top:12px">
+        <div class="report-card card"><canvas id="chartRooms"></canvas><div class="list-area"><strong>Rooms (count)</strong><div id="listRooms"></div></div></div>
+        <div class="report-card card"><canvas id="chartEquipment"></canvas><div class="list-area"><strong>Equipment (count)</strong><div id="listEquipment"></div></div></div>
+        <div class="report-card card"><canvas id="chartFaculty"></canvas><div class="list-area"><strong>Faculty (count)</strong><div id="listFaculty"></div></div></div>
+        <div class="report-card card"><canvas id="chartFacultyHours"></canvas><div class="list-area"><strong>Faculty (total hours)</strong><div id="listFacultyHours"></div></div></div>
+        <div class="report-card card"><canvas id="chartExperimentFaculty"></canvas><div class="list-area"><strong>Experiment Faculty (count)</strong><div id="listExperimentFaculty"></div></div></div>
       </div>
-    </div>
-  </section>
-</main>
+    </section>
 
-<footer>
-  © 2025 Good Samaritan Colleges | Faculty Laboratory eLog System — Improved<br>
-  Prepared by Piolo L. Bernardino — Laboratory Custodian
-</footer>
+    <!-- CHEMICALS -->
+    <section id="view-chemicals" style="display:none;">
+      <div class="card">
+        <h2 style="margin:0 0 10px;color:var(--gsc-blue)">Chemicals Inventory</h2>
+        <input id="searchChem" class="search-input" placeholder="Search chemical name / availability" style="margin-bottom:10px"/>
+        <div class="table-wrap">
+          <table id="chemTable">
+            <thead><tr><th>Chemical Name</th><th>Availability</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
 
-<div id="toast" class="toast"></div>
+  <footer>
+    © 2025 Good Samaritan Colleges | Faculty Laboratory eLog System — Improved<br>
+    Prepared by Piolo L. Bernardino — Laboratory Custodian
+  </footer>
+
+  <div id="toast" class="toast"></div>
 
 <script>
 // ========== CONFIG =============
@@ -253,7 +272,7 @@ function makeId(){return Date.now()+Math.floor(Math.random()*1000);}
 function showToast(msg, duration=2500){toastEl.textContent=msg; toastEl.style.display='block'; setTimeout(()=>toastEl.style.display='none', duration); }
 function escapeHtml(s){ if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
-// Normalize sheet date -> YYYY-MM-DD for month filter
+// ✅ Normalize sheet date -> YYYY-MM-DD for month filter
 function normalizeSheetDate(s){
   s = (s || '').replace(/"/g,'').trim();
   if(/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
@@ -267,17 +286,38 @@ function normalizeSheetDate(s){
   return s;
 }
 
+// ✅ Room # -> Room name mapping (auto-fill)
+const ROOM_MAP = {
+  "302": "MICROBIOLOGY ROOM",
+  "303": "CLINICAL LAB",
+  "305": "CLINICAL LAB",
+  "401": "CENTRAL SUPPLY ROOM",
+  "402": "ANATOMY AND PHYSIOLOGY",
+  "403": "CHEMISTRY LAB"
+};
+
 (function init(){
   const now = new Date();
   document.getElementById('date').value = now.toISOString().split('T')[0];
   const hh = String(now.getHours()).padStart(2,'0'), mm = String(now.getMinutes()).padStart(2,'0');
   document.getElementById('time_in').value = `${hh}:${mm}`;
 
+  // default report month to current month + fetch on change
   if(reportMonthEl){
     reportMonthEl.value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
     reportMonthEl.addEventListener('change', async () => {
       await fetchFromSheet();
       updateReports();
+    });
+  }
+
+  // auto-fill room name when room number changes
+  const roomNumberEl = document.getElementById('room_number');
+  const roomNameEl = document.getElementById('room_name');
+  if(roomNumberEl && roomNameEl){
+    roomNumberEl.addEventListener('change', function(){
+      const mapped = ROOM_MAP[this.value];
+      if(mapped) roomNameEl.value = mapped;
     });
   }
 
@@ -326,6 +366,7 @@ function setDefaultDateTime(){
   document.getElementById('time_in').value = String(now.getHours()).padStart(2,'0')+ ':' + String(now.getMinutes()).padStart(2,'0');
   document.getElementById('time_out').value = '';
   document.getElementById('activity_type').value = 'EXPERIMENT';
+  document.getElementById('room_number').value = ''; // ✅ reset room #
 }
 
 async function enqueueSync(item){
@@ -350,6 +391,7 @@ async function uploadToGoogleForm(obj){
   await fetch(GOOGLE_FORM_ACTION, {method:'POST', mode:'no-cors', body: fd});
 }
 
+// retry unsynced on startup/network
 window.addEventListener('online', ()=>{ if(unsynced.length) unsynced.slice().forEach(i=>enqueueSync(i)); });
 
 // ========== RENDER TABLE & CRUD ==========
@@ -421,7 +463,7 @@ function applyFilters(list){
     if(ds && l.date < ds) return false;
     if(de && l.date > de) return false;
     if(!q) return true;
-    return [l.faculty_name, l.room_name, l.equipment, l.department, l.purpose, l.activity_type]
+    return [l.faculty_name, l.room_name, l.room_number, l.equipment, l.department, l.purpose, l.activity_type]
       .some(f => String(f||'').toLowerCase().includes(q));
   });
 }
@@ -464,9 +506,9 @@ async function fetchFromSheet(){
     const text = await res.text();
 
     const rows = text.trim().split('\n').map(r=>r.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/));
-    rows.shift();
+    rows.shift(); // remove header
 
-    // Based on your Sheet headers:
+    // Sheet headers (confirmed by you):
     // 0 Timestamp, 1 Name, 2 Department, 3 Room name, 4 Room Number, 5 Equipment Used,
     // 6 Date, 7 Time In, 8 Time Out, 9 Purpose, 10 Remarks, 11 Activity Type
     logs = rows.map(r=>({
@@ -494,11 +536,12 @@ async function fetchFromSheet(){
   }
 }
 
+// auto-refresh while reports visible
 setInterval(()=>{ if(viewReports.style.display !== 'none') fetchFromSheet(); }, 60000);
 
 // ========== MONTH FILTER HELPERS ==========
 function logsForSelectedMonth(){
-  const m = reportMonthEl?.value;
+  const m = reportMonthEl?.value; // YYYY-MM
   if(!m) return logs;
   return logs.filter(l => (l.date || '').startsWith(m));
 }
@@ -606,8 +649,10 @@ function updateReports(){
 tabLog.onclick = ()=>{ tabLog.classList.add('active'); tabReports.classList.remove('active'); tabChem.classList.remove('active'); viewLog.style.display=''; viewReports.style.display='none'; viewChem.style.display='none'; };
 tabReports.onclick = ()=>{ tabReports.classList.add('active'); tabLog.classList.remove('active'); tabChem.classList.remove('active'); viewReports.style.display=''; viewLog.style.display='none'; viewChem.style.display='none'; updateReports(); };
 
+// Warn before refresh
 window.addEventListener('beforeunload', e=>{ if(faculty_name.value||purpose.value){ e.preventDefault(); e.returnValue=''; } });
 
+// AUTO-UPPERCASE FOR ALL TEXT FIELDS (select is untouched)
 document.addEventListener("input", function(e) {
   if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") {
     if (e.target.type !== "date" && e.target.type !== "time") {

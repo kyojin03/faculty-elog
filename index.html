@@ -60,152 +60,145 @@
 </head>
 
 <body>
-  <header>
-    <div class="header-container">
-      <img src="gs.jfif" class="gsc-logo" alt="GSC logo">
-      <div class="header-text">
-        <h1>Good Samaritan Colleges</h1>
-        <p>Laboratory Usage System</p>
+<header>
+  <div class="header-container">
+    <img src="gs.jfif" class="gsc-logo" alt="GSC logo">
+    <div class="header-text">
+      <h1>Good Samaritan Colleges</h1>
+      <p>Laboratory Usage System</p>
+    </div>
+  </div>
+</header>
+
+<nav>
+  <div id="tab-logbook" class="tab active">Logbook</div>
+  <div id="tab-reports" class="tab">Reports</div>
+  <div id="tab-chemicals" class="tab">Chemicals</div>
+</nav>
+
+<main>
+  <!-- LOGBOOK -->
+  <section id="view-logbook">
+    <div class="card">
+      <form id="elogForm">
+        <h2 style="margin:0 0 10px;color:var(--gsc-blue)">Log in Form</h2>
+        <div class="row">
+          <div class="col"><label>Faculty Name</label><input id="faculty_name" placeholder="Ex. Juan Dela Cruz" required></div>
+          <div class="col"><label>Department</label><input id="department" placeholder="Ex. CNAM" required></div>
+          <div class="col"><label>Room</label><input id="room_name" placeholder="Ex. Chemistry" required></div>
+        </div>
+
+        <div class="row">
+          <div class="col"><label>Room #</label><input id="room_number" placeholder="Ex. 301"></div>
+          <div class="col"><label>Major Equipment W/ Quantity</label><input id="equipment" placeholder="Ex. Microscope-1"></div>
+          <div class="col"><label>Date</label><input type="date" id="date" required></div>
+        </div>
+
+        <div class="row">
+          <div class="col"><label>Time In</label><input type="time" id="time_in" required></div>
+          <div class="col"><label>Time Out</label><input type="time" id="time_out" required></div>
+          <div class="col">
+            <label>Activity Type</label>
+            <select id="activity_type" required>
+              <option value="EXPERIMENT">EXPERIMENT</option>
+              <option value="CLASS">CLASS</option>
+              <option value="RESEARCH">RESEARCH</option>
+              <option value="PREPARATION">PREPARATION</option>
+              <option value="OTHERS">OTHERS</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col"><label>Purpose</label><input id="purpose" placeholder="Experiment on solutions" required></div>
+        </div>
+
+        <label>Remarks</label>
+        <textarea id="remarks" rows="2" placeholder="Optional"></textarea>
+
+        <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px">
+          <button class="primary" type="submit">Add Log</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <div class="controls">
+        <div style="display:flex;gap:8px;align-items:center">
+          <input id="searchInput" class="search-input" placeholder="Search faculty / room / equipment" />
+          <select id="filterDept"><option value="">All Departments</option></select>
+          <input type="date" id="filterDateStart" class="chip small" title="Start date" />
+          <input type="date" id="filterDateEnd" class="chip small" title="End date" />
+          <button id="clearFilters" class="secondary">Clear</button>
+        </div>
+        <div class="flex-right">
+          <button id="exportCsvBtn" class="secondary">Export CSV</button>
+          <button id="printLogsBtn" class="secondary">Print</button>
+          <button id="loadSheetBtn" class="secondary">Load Live Sheet</button>
+        </div>
+      </div>
+
+      <div class="table-wrap card" style="padding:0">
+        <table id="elogTable">
+          <thead>
+            <tr>
+              <th>Timestamp</th><th>Faculty</th><th>Dept</th><th>Room</th><th>Room #</th><th>Equip</th>
+              <th>Date</th><th>In</th><th>Out</th><th>Activity</th><th>Purpose</th><th>Remarks</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
       </div>
     </div>
-  </header>
+  </section>
 
-  <nav>
-    <div id="tab-logbook" class="tab active">Logbook</div>
-    <div id="tab-reports" class="tab">Reports</div>
-    <div id="tab-chemicals" class="tab">Chemicals</div>
-  </nav>
-
-  <main>
-    <!-- LOGBOOK -->
-    <section id="view-logbook">
-      <div class="card">
-        <form id="elogForm">
-          <h2 style="margin:0 0 10px;color:var(--gsc-blue)">Log in Form</h2>
-          <div class="row">
-            <div class="col"><label>Faculty Name</label><input id="faculty_name" placeholder="Ex. Juan Dela Cruz" required></div>
-            <div class="col"><label>Department</label><input id="department" placeholder="Ex. CNAM" required></div>
-            <div class="col"><label>Room</label><input id="room_name" placeholder="Ex. Chemistry" required></div>
-          </div>
-
-          <div class="row">
-            <div class="col"><label>Room #</label><input id="room_number" placeholder="Ex. 301"></div>
-            <div class="col"><label>Major Equipment W/ Quantity</label><input id="equipment" placeholder="Ex. Microscope-1"></div>
-            <div class="col"><label>Date</label><input type="date" id="date" required></div>
-          </div>
-
-          <div class="row">
-            <div class="col"><label>Time In</label><input type="time" id="time_in" required></div>
-            <div class="col"><label>Time Out</label><input type="time" id="time_out" required></div>
-
-            <!-- NEW: Activity Type (for Experiment counting) -->
-            <div class="col">
-              <label>Activity Type</label>
-              <select id="activity_type" required>
-                <option value="EXPERIMENT">EXPERIMENT</option>
-                <option value="CLASS">CLASS</option>
-                <option value="RESEARCH">RESEARCH</option>
-                <option value="PREPARATION">PREPARATION</option>
-                <option value="OTHERS">OTHERS</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col"><label>Purpose</label><input id="purpose" placeholder="Experiment on solutions" required></div>
-          </div>
-
-          <label>Remarks</label>
-          <textarea id="remarks" rows="2" placeholder="Optional"></textarea>
-
-          <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px">
-            <button class="primary" type="submit">Add Log</button>
-          </div>
-        </form>
+  <!-- REPORTS -->
+  <section id="view-reports" style="display:none;">
+    <div class="card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+      <div>
+        <h2 style="margin:0;color:var(--gsc-blue)">Usage Reports</h2>
+        <div style="margin-top:6px;color:#444">Generated: <span id="reportDatePretty"></span></div>
       </div>
 
-      <div class="card">
-        <div class="controls">
-          <div style="display:flex;gap:8px;align-items:center">
-            <input id="searchInput" class="search-input" placeholder="Search faculty / room / equipment" />
-            <select id="filterDept"><option value="">All Departments</option></select>
-            <input type="date" id="filterDateStart" class="chip small" title="Start date" />
-            <input type="date" id="filterDateEnd" class="chip small" title="End date" />
-            <button id="clearFilters" class="secondary">Clear</button>
-          </div>
-          <div class="flex-right">
-            <button id="exportCsvBtn" class="secondary">Export CSV</button>
-            <button id="printLogsBtn" class="secondary">Print</button>
-            <button id="loadSheetBtn" class="secondary">Load Live Sheet</button>
-          </div>
-        </div>
-
-        <div class="table-wrap card" style="padding:0">
-          <table id="elogTable">
-            <thead>
-              <tr>
-                <th>Timestamp</th><th>Faculty</th><th>Dept</th><th>Room</th><th>Room #</th><th>Equip</th>
-                <th>Date</th><th>In</th><th>Out</th><th>Activity</th><th>Purpose</th><th>Remarks</th><th>Actions</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- REPORTS -->
-    <section id="view-reports" style="display:none;">
-      <div class="card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
         <div>
-          <h2 style="margin:0;color:var(--gsc-blue)">Usage Reports</h2>
-          <div style="margin-top:6px;color:#444">Generated: <span id="reportDatePretty"></span></div>
+          <label class="small" style="margin:0 0 4px">Report Month</label>
+          <input type="month" id="reportMonth" class="chip small" />
         </div>
-
-        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-          <!-- NEW: Monthly selector -->
-          <div>
-            <label class="small" style="margin:0 0 4px">Report Month</label>
-            <input type="month" id="reportMonth" class="chip small" />
-          </div>
-          <button id="printReportsBtn" class="primary">Print Reports</button>
-        </div>
+        <button id="printReportsBtn" class="primary">Print Reports</button>
       </div>
+    </div>
 
-      <div class="reports-grid" style="margin-top:12px">
-        <div class="report-card card"><canvas id="chartRooms"></canvas><div class="list-area"><strong>Rooms (count)</strong><div id="listRooms"></div></div></div>
-        <div class="report-card card"><canvas id="chartEquipment"></canvas><div class="list-area"><strong>Equipment (count)</strong><div id="listEquipment"></div></div></div>
-        <div class="report-card card"><canvas id="chartFaculty"></canvas><div class="list-area"><strong>Faculty (count)</strong><div id="listFaculty"></div></div></div>
+    <div class="reports-grid" style="margin-top:12px">
+      <div class="report-card card"><canvas id="chartRooms"></canvas><div class="list-area"><strong>Rooms (count)</strong><div id="listRooms"></div></div></div>
+      <div class="report-card card"><canvas id="chartEquipment"></canvas><div class="list-area"><strong>Equipment (count)</strong><div id="listEquipment"></div></div></div>
+      <div class="report-card card"><canvas id="chartFaculty"></canvas><div class="list-area"><strong>Faculty (count)</strong><div id="listFaculty"></div></div></div>
+      <div class="report-card card"><canvas id="chartFacultyHours"></canvas><div class="list-area"><strong>Faculty (total hours)</strong><div id="listFacultyHours"></div></div></div>
+      <div class="report-card card"><canvas id="chartExperimentFaculty"></canvas><div class="list-area"><strong>Experiment Faculty (count)</strong><div id="listExperimentFaculty"></div></div></div>
+    </div>
+  </section>
 
-        <!-- NEW: Faculty Hours -->
-        <div class="report-card card"><canvas id="chartFacultyHours"></canvas><div class="list-area"><strong>Faculty (total hours)</strong><div id="listFacultyHours"></div></div></div>
-
-        <!-- NEW: Experiment Faculty -->
-        <div class="report-card card"><canvas id="chartExperimentFaculty"></canvas><div class="list-area"><strong>Experiment Faculty (count)</strong><div id="listExperimentFaculty"></div></div></div>
+  <!-- CHEMICALS -->
+  <section id="view-chemicals" style="display:none;">
+    <div class="card">
+      <h2 style="margin:0 0 10px;color:var(--gsc-blue)">Chemicals Inventory</h2>
+      <input id="searchChem" class="search-input" placeholder="Search chemical name / availability" style="margin-bottom:10px"/>
+      <div class="table-wrap">
+        <table id="chemTable">
+          <thead><tr><th>Chemical Name</th><th>Availability</th></tr></thead>
+          <tbody></tbody>
+        </table>
       </div>
-    </section>
+    </div>
+  </section>
+</main>
 
-    <!-- CHEMICALS -->
-    <section id="view-chemicals" style="display:none;">
-      <div class="card">
-        <h2 style="margin:0 0 10px;color:var(--gsc-blue)">Chemicals Inventory</h2>
-        <input id="searchChem" class="search-input" placeholder="Search chemical name / availability" style="margin-bottom:10px"/>
-        <div class="table-wrap">
-          <table id="chemTable">
-            <thead><tr><th>Chemical Name</th><th>Availability</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-  </main>
+<footer>
+  © 2025 Good Samaritan Colleges | Faculty Laboratory eLog System — Improved<br>
+  Prepared by Piolo L. Bernardino — Laboratory Custodian
+</footer>
 
-  <footer>
-    © 2025 Good Samaritan Colleges | Faculty Laboratory eLog System — Improved<br>
-    Prepared by Piolo L. Bernardino — Laboratory Custodian
-  </footer>
-
-  <div id="toast" class="toast"></div>
+<div id="toast" class="toast"></div>
 
 <script>
 // ========== CONFIG =============
@@ -219,7 +212,7 @@ const FORM_ENTRY = {
   date:"entry.1998901142",
   time_in:"entry.736543893",
   time_out:"entry.1466121044",
-  activity_type:"entry.1483377813",  // ✅ this one
+  activity_type:"entry.1483377813",
   purpose:"entry.589165766",
   remarks:"entry.1595227859"
 };
@@ -236,8 +229,10 @@ const printReportsBtn = document.getElementById('printReportsBtn');
 const toastEl = document.getElementById('toast');
 const tabLog = document.getElementById('tab-logbook');
 const tabReports = document.getElementById('tab-reports');
+const tabChem = document.getElementById('tab-chemicals');
 const viewLog = document.getElementById('view-logbook');
 const viewReports = document.getElementById('view-reports');
+const viewChem = document.getElementById('view-chemicals');
 const searchInput = document.getElementById('searchInput');
 const filterDept = document.getElementById('filterDept');
 const filterDateStart = document.getElementById('filterDateStart');
@@ -258,16 +253,32 @@ function makeId(){return Date.now()+Math.floor(Math.random()*1000);}
 function showToast(msg, duration=2500){toastEl.textContent=msg; toastEl.style.display='block'; setTimeout(()=>toastEl.style.display='none', duration); }
 function escapeHtml(s){ if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
+// Normalize sheet date -> YYYY-MM-DD for month filter
+function normalizeSheetDate(s){
+  s = (s || '').replace(/"/g,'').trim();
+  if(/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if(m){
+    const mm = String(m[1]).padStart(2,'0');
+    const dd = String(m[2]).padStart(2,'0');
+    const yy = m[3];
+    return `${yy}-${mm}-${dd}`;
+  }
+  return s;
+}
+
 (function init(){
   const now = new Date();
   document.getElementById('date').value = now.toISOString().split('T')[0];
   const hh = String(now.getHours()).padStart(2,'0'), mm = String(now.getMinutes()).padStart(2,'0');
   document.getElementById('time_in').value = `${hh}:${mm}`;
 
-  // default report month to current month
   if(reportMonthEl){
     reportMonthEl.value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-    reportMonthEl.addEventListener('change', updateReports);
+    reportMonthEl.addEventListener('change', async () => {
+      await fetchFromSheet();
+      updateReports();
+    });
   }
 
   renderTable();
@@ -334,12 +345,9 @@ async function enqueueSync(item){
 async function uploadToGoogleForm(obj){
   const fd = new FormData();
   for(const k in FORM_ENTRY){
-    // Skip if activity_type entry isn't configured yet
-    if(k === 'activity_type' && !FORM_ENTRY.activity_type) continue;
     fd.append(FORM_ENTRY[k], obj[k] || '');
   }
-  const res = await fetch(GOOGLE_FORM_ACTION, {method:'POST', mode:'no-cors', body: fd});
-  return res;
+  await fetch(GOOGLE_FORM_ACTION, {method:'POST', mode:'no-cors', body: fd});
 }
 
 window.addEventListener('online', ()=>{ if(unsynced.length) unsynced.slice().forEach(i=>enqueueSync(i)); });
@@ -450,18 +458,17 @@ printReportsBtn.onclick = ()=> { tabReports.click(); setTimeout(()=>window.print
 loadSheetBtn.onclick = fetchFromSheet;
 async function fetchFromSheet(){
   try{
-    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
+    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}&t=${Date.now()}`;
     const res = await fetch(url);
     if(!res.ok) throw new Error('Fetch failed');
     const text = await res.text();
 
     const rows = text.trim().split('\n').map(r=>r.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/));
-    rows.shift(); // remove header
+    rows.shift();
 
-    // NOTE:
-    // This assumes sheet columns are:
-    // 0 Timestamp, 1 faculty, 2 dept, 3 room, 4 room#, 5 equip, 6 date, 7 in, 8 out, 9 purpose, 10 activity_type, 11 remarks
-    // If your Google Form column order is different, adjust indexes below.
+    // Based on your Sheet headers:
+    // 0 Timestamp, 1 Name, 2 Department, 3 Room name, 4 Room Number, 5 Equipment Used,
+    // 6 Date, 7 Time In, 8 Time Out, 9 Purpose, 10 Remarks, 11 Activity Type
     logs = rows.map(r=>({
       _id: makeId(),
       created_at: Date.now(),
@@ -470,12 +477,12 @@ async function fetchFromSheet(){
       room_name: (r[3]||'').replace(/"/g,''),
       room_number: (r[4]||'').replace(/"/g,''),
       equipment: (r[5]||'').replace(/"/g,''),
-      date: (r[6]||'').replace(/"/g,''),
+      date: normalizeSheetDate(r[6]),
       time_in: (r[7]||'').replace(/"/g,''),
       time_out: (r[8]||'').replace(/"/g,''),
       purpose: (r[9]||'').replace(/"/g,''),
-      activity_type: (r[10]||'EXPERIMENT').replace(/"/g,''),
-      remarks: (r[11]||'').replace(/"/g,'')
+      remarks: (r[10]||'').replace(/"/g,''),
+      activity_type: (r[11]||'EXPERIMENT').replace(/"/g,'')
     }));
 
     localStorage.setItem('facultyLogs_v3', JSON.stringify(logs));
@@ -491,7 +498,7 @@ setInterval(()=>{ if(viewReports.style.display !== 'none') fetchFromSheet(); }, 
 
 // ========== MONTH FILTER HELPERS ==========
 function logsForSelectedMonth(){
-  const m = reportMonthEl?.value; // YYYY-MM
+  const m = reportMonthEl?.value;
   if(!m) return logs;
   return logs.filter(l => (l.date || '').startsWith(m));
 }
@@ -591,7 +598,6 @@ function updateReports(){
   chartRooms = updateChart('chartRooms', c.rooms, chartRooms);
   chartEquipment = updateChart('chartEquipment', c.equipment, chartEquipment);
   chartFaculty = updateChart('chartFaculty', c.faculty, chartFaculty);
-
   chartFacultyHours = updateChart('chartFacultyHours', hours, chartFacultyHours, v=>v);
   chartExperimentFaculty = updateChart('chartExperimentFaculty', exp, chartExperimentFaculty);
 }
@@ -600,10 +606,8 @@ function updateReports(){
 tabLog.onclick = ()=>{ tabLog.classList.add('active'); tabReports.classList.remove('active'); tabChem.classList.remove('active'); viewLog.style.display=''; viewReports.style.display='none'; viewChem.style.display='none'; };
 tabReports.onclick = ()=>{ tabReports.classList.add('active'); tabLog.classList.remove('active'); tabChem.classList.remove('active'); viewReports.style.display=''; viewLog.style.display='none'; viewChem.style.display='none'; updateReports(); };
 
-// Warn before refresh
 window.addEventListener('beforeunload', e=>{ if(faculty_name.value||purpose.value){ e.preventDefault(); e.returnValue=''; } });
 
-// AUTO-UPPERCASE FOR ALL TEXT FIELDS (keep select as is)
 document.addEventListener("input", function(e) {
   if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") {
     if (e.target.type !== "date" && e.target.type !== "time") {
@@ -613,8 +617,10 @@ document.addEventListener("input", function(e) {
 });
 
 // ========== CHEMICALS ==========
-const tabChem = document.getElementById('tab-chemicals');
-const viewChem = document.getElementById('view-chemicals');
+const CHEM_SHEET_ID = '16Paf9dtIPQ39vYsRB3QiQk970o6RdpoP7f6EHm-hvc8';
+const CHEM_SHEET_NAME = 'chem';
+let chemicals = [];
+
 tabChem.onclick = () => {
   tabChem.classList.add('active');
   tabLog.classList.remove('active');
@@ -624,11 +630,6 @@ tabChem.onclick = () => {
   viewReports.style.display = 'none';
   loadChemicals();
 };
-
-// LOAD CHEMICALS SHEET
-const CHEM_SHEET_ID = '16Paf9dtIPQ39vYsRB3QiQk970o6RdpoP7f6EHm-hvc8';
-const CHEM_SHEET_NAME = 'chem';
-let chemicals = [];
 
 async function loadChemicals() {
   try {
@@ -680,5 +681,3 @@ searchChemInput.addEventListener('input', () => {
 </script>
 </body>
 </html>
-
-

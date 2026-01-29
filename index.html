@@ -84,13 +84,18 @@
           <h2 style="margin:0 0 10px;color:var(--gsc-blue)">Log in Form</h2>
 
           <div class="row">
-            <div class="col"><label>Faculty Name</label><input id="faculty_name" placeholder="Ex. Juan Dela Cruz" required></div>
+            <!-- ✅ UPDATED: Faculty Name now has dropdown suggestions from logs -->
+            <div class="col">
+              <label>Faculty Name</label>
+              <input id="faculty_name" placeholder="Ex. Juan Dela Cruz" required list="facultyNameList">
+              <datalist id="facultyNameList"></datalist>
+            </div>
+
             <div class="col"><label>Department</label><input id="department" placeholder="Ex. CNAM" required></div>
             <div class="col">
-  <label>Room</label>
-  <input id="room_name" placeholder="Auto-filled from Room #" required readonly>
-</div>
-
+              <label>Room</label>
+              <input id="room_name" placeholder="Auto-filled from Room #" required readonly>
+            </div>
           </div>
 
           <div class="row">
@@ -296,6 +301,18 @@ const ROOM_MAP = {
   "403": "CHEMISTRY LAB"
 };
 
+// ✅ NEW: Populate Faculty Name dropdown suggestions (from logs)
+function populateFacultyNameList(){
+  const dl = document.getElementById('facultyNameList');
+  if(!dl) return;
+
+  const names = Array.from(
+    new Set(logs.map(l => (l.faculty_name || '').trim()).filter(Boolean))
+  ).sort();
+
+  dl.innerHTML = names.map(n => `<option value="${escapeHtml(n)}"></option>`).join('');
+}
+
 (function init(){
   const now = new Date();
   document.getElementById('date').value = now.toISOString().split('T')[0];
@@ -323,6 +340,7 @@ const ROOM_MAP = {
 
   renderTable();
   populateDeptFilter();
+  populateFacultyNameList(); // ✅ NEW
   updateReports();
 })();
 
@@ -356,6 +374,7 @@ form.addEventListener('submit', async e =>{
   form.reset();
   setDefaultDateTime();
   populateDeptFilter();
+  populateFacultyNameList(); // ✅ NEW
   showToast('✅ Log added locally');
   enqueueSync(newItem);
 });
@@ -420,6 +439,7 @@ function renderTable(){
     tableBody.appendChild(tr);
   });
   localStorage.setItem('facultyLogs_v3', JSON.stringify(logs));
+  populateFacultyNameList(); // ✅ NEW (keeps dropdown always updated)
   updateReports();
 }
 
@@ -428,6 +448,7 @@ window.deleteLog = id => {
     logs = logs.filter(x=>x._id!==id);
     localStorage.setItem('facultyLogs_v3', JSON.stringify(logs));
     renderTable();
+    populateDeptFilter();
     showToast('🗑️ Entry deleted');
   }
 };
@@ -448,6 +469,7 @@ window.editLog = id => {
 
   localStorage.setItem('facultyLogs_v3', JSON.stringify(logs));
   renderTable();
+  populateDeptFilter();
   showToast('✏️ Entry updated');
 }
 
@@ -529,6 +551,8 @@ async function fetchFromSheet(){
 
     localStorage.setItem('facultyLogs_v3', JSON.stringify(logs));
     renderTable();
+    populateDeptFilter();
+    populateFacultyNameList(); // ✅ NEW
     showToast('📊 Live data loaded from Google Sheets');
   }catch(err){
     console.error(err);

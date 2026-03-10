@@ -106,10 +106,12 @@
                 <option value="" disabled selected>Select room #</option>
                 <option value="302">302</option>
                 <option value="303">303</option>
+                 <option value="303">304</option>
                 <option value="305">305</option>
                 <option value="401">401</option>
                 <option value="402">402</option>
                 <option value="403">403</option>
+                <option value="P3-101">P3-101</option>
               </select>
             </div>
 
@@ -295,10 +297,12 @@ function normalizeSheetDate(s){
 const ROOM_MAP = {
   "302": "MICROBIOLOGY ROOM",
   "303": "CLINICAL LAB",
+  "304": "LECTURE ROOM"
   "305": "CLINICAL LAB",
   "401": "CENTRAL SUPPLY ROOM",
   "402": "ANATOMY AND PHYSIOLOGY",
   "403": "CHEMISTRY LAB"
+  "P3-101": "CHEMISTRY/BIOLOGY LAB"
 };
 
 // ✅ NEW: Populate Faculty Name dropdown suggestions (from logs)
@@ -750,3 +754,4 @@ searchChemInput.addEventListener('input', () => {
 </script>
 </body>
 </html>
+
